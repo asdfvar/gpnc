@@ -48,19 +48,18 @@ namespace com {
       MPI_Request request;
 
       // perform a non-blocking receive
-      return MPI_Irecv ( buf, count, MPI_FLOAT, src_id, MPI_ANY_TAG, status );
+      return MPI_Irecv ( buf, count, MPI_FLOAT, src_id, MPI_ANY_TAG, status, &request );
    }
 
    int Com::recv( double*     buf,
                   int         count,
-                  int         src_id,
-                  MPI_Status* status )
+                  int         src_id )
    {
       MPI_Comm    status;
       MPI_Request request;
 
       // perform a non-blocking receive
-      return MPI_Irecv ( buf, count, MPI_DOUBLE, src_id, MPI_ANY_TAG, status );
+      return MPI_Irecv ( buf, count, MPI_DOUBLE, src_id, MPI_ANY_TAG, status, &request );
    }
 
 }
