@@ -2,14 +2,34 @@
 #define COM_H
 
 #include <mpi.h>
+#include <string>
 
 namespace com {
 
+   typedef struct {
+      int connections[10];
+      int dims[10];
+      int n_connections;
+   } Topology;
+
    class Com {
+
+    public:
+
+      Com( size_t vol_size );
+     ~Com( void );
+
+      void write( const std::string& file,
+                  float*             data,
+                  Topology*          topology );
 
     private:
 
-      int* volume[1024];
+      int*    volume;
+      size_t  vol_size;
+      string  file_list[1024];
+
+      MPI_Request request[1024];
 
       int send( int*         buf,
                 int          count, 

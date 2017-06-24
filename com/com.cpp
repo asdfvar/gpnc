@@ -1,6 +1,25 @@
 #include "com.h"
+#include <iostream>
 
 namespace com {
+
+   Com::Com( size_t vol_size_in )
+   {
+      vol_size = vol_size_in;
+      volume   = new int[vol_size];
+   }
+
+   Com::~Com( void )
+   {
+      delete[] volume;
+      std::cout << "deleting communication object" << std::endl;
+   }
+
+   void Com::write( const std::string& file,
+                    float*             data,
+                    Topology*          topology )
+   {
+   }
 
    int Com::send( int*         buf,
                   int          count,
