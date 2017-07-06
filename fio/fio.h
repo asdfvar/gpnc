@@ -14,6 +14,8 @@ namespace fio {
          Text_file ( std::string in_file );
         ~Text_file ( void );
 
+         int get_int( const std::string& );
+
          void print_all( void );
 
       private:
