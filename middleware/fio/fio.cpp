@@ -1,6 +1,78 @@
 #include "fio.h"
 #include "string_utils.h"
 
+static bool comment_line( const std::string&     contents,
+                          const char             comment,
+                          std::string::size_type ret,
+                          std::string::size_type ret_nxt )
+{
+   for (std::string::size_type ind = ret + 1;
+        ind < ret_nxt;
+        ind++)
+   {
+      if (contents[ind] != ' ')
+      {
+         if (contents[ind] == comment) return true;
+         return false;
+      }
+   }
+
+   return false;
+}
+
+static std::string get_param_str( const std::string& contents,
+                                  const std::string& parameter )
+{
+   std::string::size_type loc     = contents.find( parameter );
+   std::string::size_type ret     = 0;
+   std::string::size_type ret_nxt = contents.find( '\n' );
+
+   /*
+   ** return if the parameter is not found
+   */
+   if (loc == std::string::npos)
+   {
+      std::cout << "\"" << parameter << "\" parameter not found" << std::endl;
+      return "";
+   }
+
+   /*
+   ** search for the beginning and end of the line that
+   ** contains the parameter that is being searched for.
+   ** extract the parameter if it is not on a comment line.
+   */
+   while( ret_nxt < loc )
+   {
+      ret     = ret_nxt;
+      ret_nxt = contents.find( '\n', ret + 1);
+   }
+
+   if( !comment_line( contents, '#', ret, ret_nxt ) )
+   {
+
+      std::string::size_type eq = contents.find( '=', loc );
+      int ind;
+
+      // advance past white space
+      for( ind = eq + 1; contents[ind] == ' ' && ind < contents.length(); ind++) {}
+
+      // build the number string
+      std::string str_parm = "";
+      for( ; contents[ind] != ' ' && ind < contents.length(); ind++)
+      {
+         str_parm += contents[ind];
+      }
+
+      // convert the number string to an integer
+      return str_parm;
+   }
+
+   std::cout << "\"" << parameter << "\" parameter not found" << std::endl;
+   return "";
+}
+                                  
+
+
 namespace fio {
 
    /*
@@ -35,7 +107,7 @@ namespace fio {
    */
    Text_file::~Text_file( void )
    {
-      std::cout << "clearing text-file contents" << std::endl;
+      std::cout << "clearing parameter text-file-object contents" << std::endl;
    }
 
    /*
@@ -49,33 +121,20 @@ namespace fio {
    /*
    ** function name: get_int from Text_file
    */
-   int Text_file::get_int( const std::string& str_val )
+   int Text_file::get_int( const std::string& parameter )
    {
-      std::string::size_type loc = contents.find( str_val );
-      std::string::size_type eq = 0;
+      std::string str_parm = get_param_str( contents, parameter );
+      if ( str_parm.empty() ) return 0;
+      return atoi( str_parm.c_str() );
+   }
 
-      if (loc == std::string::npos)
-      {
-         std::cout << str_val << " parameter not found" << std::endl;
-         return 0;
-      } else {
-
-         eq = contents.find( '=', loc );
-         int ind;
-
-         // advance past white space
-         for( ind = eq + 1; contents[ind] == ' ' && ind < contents.length(); ind++) {}
-
-         // build the number string
-         std::string str_num = "";
-         for( ; contents[ind] != ' ' && ind < contents.length(); ind++)
-         {
-            str_num += contents[ind];
-         }
-
-         // convert the number string to an integer
-         return atoi( str_num.c_str() );
-      }
-      return 0;
+   /*
+   ** function name: get_real from Text_file
+   */
+   double Text_file::get_real( const std::string& parameter )
+   {
+      std::string str_parm = get_param_str( contents, parameter );
+      if ( str_parm.empty() ) return 0.0;
+      return atof( str_parm.c_str() );
    }
 }  
