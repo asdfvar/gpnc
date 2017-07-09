@@ -3,6 +3,7 @@
 
 #include <mpi.h>
 #include <string>
+#include <iostream>
 
 namespace com {
 
@@ -25,9 +26,9 @@ namespace com {
 
     private:
 
-      int*    volume;
-      size_t  vol_size;
-      string  file_list[1024];
+      int*         volume;
+      size_t       vol_size;
+      std::string  file_list[1024];
 
       MPI_Request request[1024];
 
