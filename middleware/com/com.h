@@ -5,32 +5,26 @@
 #include <string>
 #include <iostream>
 
-namespace com {
+class fck {
+   public:
+   fck( int n );
+};
 
-   typedef struct {
-      int connections[10];
-      int dims[10];
-      int n_connections;
-   } Topology;
+void dope( int k );
+
+namespace com {
 
    class Com {
 
     public:
 
-      Com( size_t vol_size );
+      Com( int argc, char* argv[] );
+      Com( void );
+      Com( int n );
      ~Com( void );
 
       void write( const std::string& file,
-                  float*             data,
-                  Topology*          topology );
-
-    private:
-
-      int*         volume;
-      size_t       vol_size;
-      std::string  file_list[1024];
-
-      MPI_Request request[1024];
+                  float*             data );
 
       int send( int*         buf,
                 int          count, 
@@ -63,6 +57,16 @@ namespace com {
                 MPI_Request* request );
 
       int wait( MPI_Request* request );
+
+    private:
+
+      int myid;
+      int numprocs;
+
+      std::string  file_list[1024];
+
+      MPI_Request request[1024];
+
    };
 }
 

@@ -1,23 +1,37 @@
 #include "com.h"
 #include <iostream>
 
+fck::fck( int n ) {}
+
+void dope( int k )
+{
+   int t = k * 7;
+}
+
 namespace com {
 
-   Com::Com( size_t vol_size_in )
+   Com::Com( void ) {}
+   Com::Com( int n ) {}
+
+#if 1
+   Com::Com( int argc, char* argv[] )
    {
-      vol_size = vol_size_in;
-      volume   = new int[vol_size];
+      MPI_Init( &argc, &argv );
+      MPI_Comm_size( MPI_COMM_WORLD, &numprocs );
+      MPI_Comm_rank( MPI_COMM_WORLD, &myid );
+std::cout << "myid = " << myid << std::endl;
+std::cout << "numprocs = " << numprocs << std::endl;
    }
+#endif
 
    Com::~Com( void )
    {
-      delete[] volume;
+      MPI_Finalize();
       std::cout << "deleting communication object" << std::endl;
    }
 
    void Com::write( const std::string& file,
-                    float*             data,
-                    Topology*          topology )
+                    float*             data )
    {
    }
 
@@ -36,7 +50,7 @@ namespace com {
                   MPI_Request* request )
    {
       // perform a non-blocking send
-      return MPI_Isend ( buf, count, MPI_FLOAT, dest_id, MPI_ANY_TAG, MPI_COMM_WORLD, request );
+      return MPI_Isend ( buf, count, MPI_FLOAT, dest_id, 1, MPI_COMM_WORLD, request );
    }
 
    int Com::send( double*      buf,
@@ -63,7 +77,7 @@ namespace com {
                   MPI_Request* request )
    {
       // perform a non-blocking receive
-      return MPI_Irecv ( buf, count, MPI_FLOAT, src_id, MPI_ANY_TAG, MPI_COMM_WORLD, request );
+      return MPI_Irecv ( buf, count, MPI_FLOAT, src_id, 1, MPI_COMM_WORLD, request );
    }
 
    int Com::recv( double*      buf,

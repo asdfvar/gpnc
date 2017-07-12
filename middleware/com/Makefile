@@ -9,7 +9,7 @@ OBJ = com.o
 LIBEXE = libcom.a
 
 all: $(OBJ)
-	$(CL) $(LIBEXE)
+	$(CL) $(LIBEXE) $^
 
 clean:
 	rm $(OBJ) $(LIBEXE)
