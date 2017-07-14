@@ -1,0 +1,9 @@
+#!/bin/bash
+# parameter file
+# parameters are defined by: <name> = <value>
+
+parameter_int    = 7                   # an integer parameter
+parameter_float  = 2.71828             # a single-precision parameter
+parameter_double = 3.14159265358979323 # a double-precision parameter
+
+# more to come

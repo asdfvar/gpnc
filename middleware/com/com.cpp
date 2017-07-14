@@ -10,19 +10,16 @@ void dope( int k )
 
 namespace com {
 
-   Com::Com( void ) {}
-   Com::Com( int n ) {}
-
-#if 1
    Com::Com( int argc, char* argv[] )
    {
       MPI_Init( &argc, &argv );
       MPI_Comm_size( MPI_COMM_WORLD, &numprocs );
       MPI_Comm_rank( MPI_COMM_WORLD, &myid );
-std::cout << "myid = " << myid << std::endl;
-std::cout << "numprocs = " << numprocs << std::endl;
+
+      std::cout << "creating communication object " << myid
+                << " out of " << numprocs << " processes."
+                << std::endl;
    }
-#endif
 
    Com::~Com( void )
    {

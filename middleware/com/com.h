@@ -19,8 +19,6 @@ namespace com {
     public:
 
       Com( int argc, char* argv[] );
-      Com( void );
-      Com( int n );
      ~Com( void );
 
       void write( const std::string& file,
