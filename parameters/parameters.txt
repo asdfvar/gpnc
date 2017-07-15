@@ -1,0 +1,16 @@
+#!/bin/bash
+# parameter file
+# parameters are defined by: <name> = <value>
+# valid types for <value> are int, float, and double
+
+parameter_int     = 7                   # an integer parameter
+parameter_float   = 2.71828             # a single-precision parameter
+parameter_double  = 3.14159265358979323 # a double-precision parameter
+
+# size in words to allocate for the master processing work buffer
+memory_size_master = 256
+
+# size in words to allocate for the slave processing work buffer
+memory_size_slave = 256
+
+# more to come

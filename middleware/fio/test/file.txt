@@ -1,0 +1,7 @@
+# this file has text in it
+# another line
+# yet more
+
+parameter  =    7998 # comment
+pi         =  3.14159
+the end
