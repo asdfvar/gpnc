@@ -17,7 +17,7 @@ namespace com {
    Com::~Com( void )
    {
       MPI_Finalize();
-      std::cout << "deleting communication object" << std::endl;
+      std::cout << "deleting process " << myid << " communication object" << std::endl;
    }
 
    void Com::write( const std::string& file,
@@ -83,5 +83,27 @@ namespace com {
    {
       MPI_Status status;
       return MPI_Wait ( request, &status );
+   }
+
+   int create_tsk( pthread_t* thread, void* (*start_routine)(void*), void* arg)
+   {
+      const pthread_attr_t* attr = NULL;
+
+      return pthread_create(
+            thread,
+            attr,
+            start_routine,
+            arg);
+   }
+
+   int join_tsk( pthread_t thread)
+   {
+      void** value_ptr = NULL;
+      return pthread_join( thread, value_ptr );
+   }
+
+   int tsk_barrier_wait( pthread_barrier_t* barrier)
+   {
+      return pthread_barrier_wait( barrier );
    }
 }
