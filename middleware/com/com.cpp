@@ -1,13 +1,6 @@
 #include "com.h"
 #include <iostream>
 
-fck::fck( int n ) {}
-
-void dope( int k )
-{
-   int t = k * 7;
-}
-
 namespace com {
 
    Com::Com( int argc, char* argv[] )

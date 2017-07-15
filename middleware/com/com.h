@@ -5,13 +5,6 @@
 #include <string>
 #include <iostream>
 
-class fck {
-   public:
-   fck( int n );
-};
-
-void dope( int k );
-
 namespace com {
 
    class Com {

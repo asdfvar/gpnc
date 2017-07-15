@@ -80,7 +80,6 @@ namespace fio {
    */
    Text_file::Text_file( std::string in_file )
    {
-
       std::ifstream input;
       input.open( in_file.c_str(), std::ios::in );
 
@@ -99,7 +98,6 @@ namespace fio {
 
       // close file
       input.close();
-
    }  
 
    /*
