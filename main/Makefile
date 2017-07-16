@@ -14,7 +14,10 @@ LIBS    = -lcom -lfio -lmem -pthread
 MIDDLEWARE = ../middleware/
 
 masterOBJ = master.o
-slaveOBJ  = slave.o
+
+slaveOBJ  = slave.o      \
+            worker_task.o
+
 OBJ       = $(masterOBJ) $(slaveOBJ)
 
 masterEXE = master
@@ -40,4 +43,7 @@ master.o: master.cpp
 	$(CC) $^ -c $(INC) $(LIBS)
 
 slave.o: slave.cpp
+	$(CC) $^ -c $(INC) $(LIBS)
+
+worker_task.o: worker_task.cpp
 	$(CC) $^ -c $(INC) $(LIBS)

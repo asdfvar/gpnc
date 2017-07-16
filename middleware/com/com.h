@@ -4,9 +4,11 @@
 #include <mpi.h>
 #include <string>
 #include <iostream>
+#include <pthread.h>
 
 namespace com {
 
+   // MPI interface
    class Com {
 
     public:
@@ -54,11 +56,26 @@ namespace com {
       int myid;
       int numprocs;
 
-      std::string  file_list[1024];
-
-      MPI_Request request[1024];
-
    };
+
+   typedef MPI_Request proc_request;
+
+   // POSIX threading interface
+   int create_tsk( pthread_t* thread,
+                   void*      (*start_routine)(void*),
+                   void*      arg);
+
+   int join_tsk  ( pthread_t thread );
+
+   int tsk_barrier_init( pthread_barrier_t*,
+                         unsigned int count );
+
+   int tsk_barrier_wait( pthread_barrier_t* barrier );
+
+   int tsk_barrier_destroy( pthread_barrier_t* barrier);
+
+   typedef pthread_barrier_t tsk_barrier;
+   typedef pthread_t         tsk_handler;
 }
 
 #endif
