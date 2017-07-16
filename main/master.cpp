@@ -26,7 +26,7 @@ int main( int argc, char* argv[] )
    mem::Memory workspace( mem_size );
 
    float buf[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-   com::com_request request;
+   com::proc_request request;
 
    std::cout << "about to send" << std::endl;
 
