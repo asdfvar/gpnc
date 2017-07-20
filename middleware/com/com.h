@@ -22,31 +22,37 @@ namespace com {
       int send( int*         buf,
                 int          count, 
                 int          dest_id,
+                int          tag,
                 MPI_Request* request );
 
       int send( float*       buf,
                 int          count, 
                 int          dest_id,
+                int          tag,
                 MPI_Request* request );
 
       int send( double*      buf,
                 int          count, 
                 int          dest_id,
+                int          tag,
                 MPI_Request* request );
 
       int recv( int*         buf,
                 int          count,
                 int          dest_id,
+                int          tag,
                 MPI_Request* request );
 
       int recv( float*       buf,
                 int          count,
                 int          dest_id,
+                int          tag,
                 MPI_Request* request );
 
       int recv( double*      buf,
                 int          count,
                 int          dest_id,
+                int          tag,
                 MPI_Request* request );
 
       int wait( MPI_Request* request );

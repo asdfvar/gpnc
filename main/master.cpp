@@ -30,7 +30,11 @@ int main( int argc, char* argv[] )
 
    std::cout << "about to send" << std::endl;
 
-   comObj.send( (float*)buf, 4, 2, &request );
+   comObj.send( (float*)buf,
+                4,            // count
+                2,            // proc id
+                1,            // tag
+               &request );
 
    std::cout << "sending" << std::endl;
 
