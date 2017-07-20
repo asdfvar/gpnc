@@ -11,8 +11,9 @@ int main( int argc, char* argv[] )
    std::cout << "about to receive" << std::endl;
 
    comObj.recv( (float*)buf,
-                4,
-                0,
+                4,            // count
+                0,            // proc id
+                1,            // tag
                &request );
 
    std::cout << "receiving" << std::endl;
