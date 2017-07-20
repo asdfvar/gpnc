@@ -31,7 +31,6 @@ int main( int argc, char* argv[] )
                                 << worker_tsk_parameters.par_double << std::endl;
 
    com::tsk_handler worker_tsk_handle;
-
    com::tsk_barrier worker_barrier;
    com::tsk_barrier_init( &worker_barrier, 2 );
 
@@ -51,7 +50,7 @@ int main( int argc, char* argv[] )
    // destroy thread barrier
    com::tsk_barrier_destroy( &worker_barrier );
 
-   // suspend execution of the slave task
+   // suspend execution of the worker task
    com::join_tsk( worker_tsk_handle );
 
    // free workspace memory from heap

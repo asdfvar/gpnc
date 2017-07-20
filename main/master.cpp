@@ -4,6 +4,13 @@
 #include "memory.h"
 #include <iostream>
 
+typedef struct {
+   mem::Memory       workspace;
+   com::tsk_barrier* barrier;
+} Master_tsk_params;
+
+static void* master_tsk( void* task_args );
+
 int main( int argc, char* argv[] )
 {
 
@@ -25,6 +32,22 @@ int main( int argc, char* argv[] )
 
    mem::Memory workspace( mem_size );
 
+   Master_tsk_params master_tsk_params;
+   master_tsk_params.workspace = workspace;
+
+   com::tsk_handler master_tsk_handle;
+   com::tsk_barrier master_barrier;
+
+   master_tsk_params.barrier = &master_barrier;
+   com::tsk_barrier_init( &master_barrier, 2 );
+
+   com::create_tsk( &master_tsk_handle,
+                     master_tsk,
+                     (void*)&master_tsk_params );
+
+   com::tsk_barrier_wait( &master_barrier );
+   std::cout << "master task processing complete" << std::endl;
+
    float buf[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
    com::proc_request request;
 
@@ -42,8 +65,27 @@ int main( int argc, char* argv[] )
 
    std::cout << "sent" << std::endl;
 
-   // finalize
+   /***************************************************************************
+   * finish processing
+   ***************************************************************************/
+
+   // destroy thread barrier
+   com::tsk_barrier_destroy( &master_barrier );
+
+   // suspend execution of the master task
+   com::join_tsk( master_tsk_handle );
+
+   // free workspace memory from heap
    workspace.finalize();
 
    return 0;
+}
+
+static void* master_tsk( void* task_args )
+{
+   Master_tsk_params* master_tsk_params = (Master_tsk_params*)task_args;
+
+   std::cout << "master task processing" << std::endl;
+
+   com::tsk_barrier_wait( master_tsk_params->barrier );
 }
