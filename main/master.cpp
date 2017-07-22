@@ -6,7 +6,7 @@
 
 typedef struct {
    mem::Memory       workspace;
-   com::tsk_barrier* barrier;
+   com::barrier* barrier;
 } Master_tsk_params;
 
 static void* master_tsk( void* task_args );
@@ -14,7 +14,10 @@ static void* master_tsk( void* task_args );
 int main( int argc, char* argv[] )
 {
 
-   com::Com comObj( argc, argv );
+   int numprocs;
+   int myid;
+
+   com::proc::start( argc, argv, &numprocs, &myid );
 
    fio::Text_file parameters( "../parameters/parameters.txt" );
 
@@ -35,25 +38,25 @@ int main( int argc, char* argv[] )
    Master_tsk_params master_tsk_params;
    master_tsk_params.workspace = workspace;
 
-   com::tsk_handler master_tsk_handle;
-   com::tsk_barrier master_barrier;
+   com::handler master_tsk_handle;
+   com::barrier master_barrier;
 
    master_tsk_params.barrier = &master_barrier;
-   com::tsk_barrier_init( &master_barrier, 2 );
+   com::barrier_init( &master_barrier, 2 );
 
-   com::create_tsk( &master_tsk_handle,
+   com::create( &master_tsk_handle,
                      master_tsk,
                      (void*)&master_tsk_params );
 
-   com::tsk_barrier_wait( &master_barrier );
+   com::barrier_wait( &master_barrier );
    std::cout << "master task processing complete" << std::endl;
 
    float buf[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-   com::proc_request request;
+   com::proc::request request;
 
    std::cout << "about to send" << std::endl;
 
-   comObj.send( (float*)buf,
+   com::proc::Isend( (float*)buf,
                 4,            // count
                 2,            // proc id
                 1,            // tag
@@ -61,7 +64,7 @@ int main( int argc, char* argv[] )
 
    std::cout << "sending" << std::endl;
 
-   comObj.wait( &request );
+   com::proc::wait( &request );
 
    std::cout << "sent" << std::endl;
 
@@ -70,13 +73,16 @@ int main( int argc, char* argv[] )
    ***************************************************************************/
 
    // destroy thread barrier
-   com::tsk_barrier_destroy( &master_barrier );
+   com::barrier_destroy( &master_barrier );
 
    // suspend execution of the master task
-   com::join_tsk( master_tsk_handle );
+   com::join( master_tsk_handle );
 
    // free workspace memory from heap
    workspace.finalize();
+
+   // finalize process communication
+   com::proc::finalize();
 
    return 0;
 }
@@ -87,5 +93,5 @@ static void* master_tsk( void* task_args )
 
    std::cout << "master task processing" << std::endl;
 
-   com::tsk_barrier_wait( master_tsk_params->barrier );
+   com::barrier_wait( master_tsk_params->barrier );
 }

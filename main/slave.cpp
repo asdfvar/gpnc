@@ -8,7 +8,10 @@
 int main( int argc, char* argv[] )
 {
 
-   com::Com comObj( argc, argv );
+   int numprocs;
+   int myid;
+
+   com::proc::start( argc, argv, &numprocs, &myid );
 
    fio::Text_file parameters( "../parameters/parameters.txt" );
 
@@ -30,17 +33,17 @@ int main( int argc, char* argv[] )
                                 << worker_tsk_parameters.par_float << ", "
                                 << worker_tsk_parameters.par_double << std::endl;
 
-   com::tsk_handler worker_tsk_handle;
-   com::tsk_barrier worker_barrier;
-   com::tsk_barrier_init( &worker_barrier, 2 );
+   com::handler worker_tsk_handle;
+   com::barrier worker_barrier;
+   com::barrier_init( &worker_barrier, 2 );
 
    worker_tsk_parameters.barrier = &worker_barrier;
 
-   com::create_tsk( &worker_tsk_handle,
+   com::create( &worker_tsk_handle,
                      worker_task,
                      (void*)&worker_tsk_parameters );
 
-   com::tsk_barrier_wait( &worker_barrier );
+   com::barrier_wait( &worker_barrier );
    std::cout << "AFTER barrier" << std::endl;
 
    /***************************************************************************
@@ -48,13 +51,16 @@ int main( int argc, char* argv[] )
    ***************************************************************************/
 
    // destroy thread barrier
-   com::tsk_barrier_destroy( &worker_barrier );
+   com::barrier_destroy( &worker_barrier );
 
    // suspend execution of the worker task
-   com::join_tsk( worker_tsk_handle );
+   com::join( worker_tsk_handle );
 
    // free workspace memory from heap
    workspace.finalize();
+
+   // finalize process communication
+   com::proc::finalize();
 
    return 0;
 }

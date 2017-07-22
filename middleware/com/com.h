@@ -5,83 +5,122 @@
 #include <string>
 #include <iostream>
 #include <pthread.h>
+#include <typeinfo>
 
 namespace com {
 
    // MPI interface
-   class Com {
+   namespace proc {
 
-    public:
+      static void start(
+            int argc,
+            char* argv[],
+            int* numprocs,
+            int* myid           )
+      {
+         MPI_Init( &argc, &argv );
+         MPI_Comm_size( MPI_COMM_WORLD, numprocs );
+         MPI_Comm_rank( MPI_COMM_WORLD, myid );
+      }
 
-      Com( int argc, char* argv[] );
-     ~Com( void );
+      static void finalize( void )
+      {
+         MPI_Finalize();
+      }
 
-      void write( const std::string& file,
-                  float*             data );
+      template <class Type>
+         static int Isend(
+               Type*        buf,
+               int          count, 
+               int          dest_id,
+               int          tag,
+               MPI_Request* request )
+         {
+            // perform a non-blocking send
+            if( typeid(Type) == typeid(int) )
+               return MPI_Isend ( buf, count, MPI_INT, dest_id, tag, MPI_COMM_WORLD, request );
+            else if( typeid(Type) == typeid(float) )
+               return MPI_Isend ( buf, count, MPI_FLOAT, dest_id, tag, MPI_COMM_WORLD, request );
+            else if( typeid(Type) == typeid(double) )
+               return MPI_Isend ( buf, count, MPI_DOUBLE, dest_id, tag, MPI_COMM_WORLD, request );
+            else {
+               std::cout << "unknown type" << std::endl;
+            }
+         }
 
-      int send( int*         buf,
-                int          count, 
-                int          dest_id,
-                int          tag,
-                MPI_Request* request );
+      template <class Type>
+         static int Irecv(
+               Type*         buf,
+               int          count,
+               int          src_id,
+               int          tag,
+               MPI_Request* request )
+         {
+            // perform a non-blocking receive
+            if( typeid(Type) == typeid(int) )
+               return MPI_Irecv ( buf, count, MPI_INT, src_id, tag, MPI_COMM_WORLD, request );
+            else if( typeid(Type) == typeid(float) )
+               return MPI_Irecv ( buf, count, MPI_FLOAT, src_id, tag, MPI_COMM_WORLD, request );
+            else if( typeid(Type) == typeid(double) )
+               return MPI_Irecv ( buf, count, MPI_DOUBLE, src_id, tag, MPI_COMM_WORLD, request );
+            else {
+               std::cout << "unknown type" << std::endl;
+            }
+         }
 
-      int send( float*       buf,
-                int          count, 
-                int          dest_id,
-                int          tag,
-                MPI_Request* request );
+      static int wait( MPI_Request* request )
+      {
+         MPI_Status status;
+         return MPI_Wait ( request, &status );
+      }
 
-      int send( double*      buf,
-                int          count, 
-                int          dest_id,
-                int          tag,
-                MPI_Request* request );
-
-      int recv( int*         buf,
-                int          count,
-                int          dest_id,
-                int          tag,
-                MPI_Request* request );
-
-      int recv( float*       buf,
-                int          count,
-                int          dest_id,
-                int          tag,
-                MPI_Request* request );
-
-      int recv( double*      buf,
-                int          count,
-                int          dest_id,
-                int          tag,
-                MPI_Request* request );
-
-      int wait( MPI_Request* request );
-
-    private:
-
-      int myid;
-      int numprocs;
-
-   };
-
-   typedef MPI_Request proc_request;
+      typedef MPI_Request request;
+   }
 
    // POSIX threading interface
-   int create_tsk( pthread_t* thread,
-                   void*      (*start_routine)(void*),
-                   void*      arg);
+//   namespace tsk {
 
-   int join_tsk  ( pthread_t thread );
+      static int create(
+            pthread_t* thread,
+            void*      (*start_routine)(void*),
+            void*      arg)
+      {
+         const pthread_attr_t* attr = NULL;
 
-   int tsk_barrier_init( pthread_barrier_t*,
-                         unsigned int count );
+         return pthread_create(
+               thread,
+               attr,
+               start_routine,
+               arg);
+      }
 
-   int tsk_barrier_wait( pthread_barrier_t* barrier );
+      static int join  ( pthread_t thread )
+      {
+         void** value_ptr = NULL;
+         return pthread_join( thread, value_ptr );
+      }
 
-   int tsk_barrier_destroy( pthread_barrier_t* barrier);
+      static int barrier_init(
+            pthread_barrier_t* barrier,
+            unsigned int       count )
+      {
+         const pthread_barrierattr_t* barrier_attr = NULL;
+         return pthread_barrier_init( barrier, barrier_attr, count );
+      }
 
-   typedef pthread_barrier_t tsk_barrier;
-   typedef pthread_t         tsk_handler;
+      static int barrier_wait( pthread_barrier_t* barrier )
+      {
+         return pthread_barrier_wait( barrier );
+      }
+
+      static int barrier_destroy( pthread_barrier_t* barrier)
+      {
+         return pthread_barrier_destroy( barrier );
+      }
+
+      typedef pthread_barrier_t barrier;
+      typedef pthread_t         handler;
+//   }
 }
 
 #endif
