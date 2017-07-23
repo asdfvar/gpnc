@@ -10,5 +10,5 @@ void* worker_task( void* task_args )
    std::cout << __FILE__ << ":" << __LINE__ << ":execution from slave task" << std::endl;
 
    std::cout << "BEFORE barrier" << std::endl;
-   com::barrier_wait( worker_tsk_parameters->barrier );
+   com::tsk::barrier_wait( worker_tsk_parameters->barrier );
 }

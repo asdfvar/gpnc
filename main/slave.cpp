@@ -33,17 +33,17 @@ int main( int argc, char* argv[] )
                                 << worker_tsk_parameters.par_float << ", "
                                 << worker_tsk_parameters.par_double << std::endl;
 
-   com::handler worker_tsk_handle;
-   com::barrier worker_barrier;
-   com::barrier_init( &worker_barrier, 2 );
+   com::tsk::handler worker_tsk_handle;
+   com::tsk::barrier worker_barrier;
+   com::tsk::barrier_init( &worker_barrier, 2 );
 
    worker_tsk_parameters.barrier = &worker_barrier;
 
-   com::create( &worker_tsk_handle,
+   com::tsk::create( &worker_tsk_handle,
                      worker_task,
                      (void*)&worker_tsk_parameters );
 
-   com::barrier_wait( &worker_barrier );
+   com::tsk::barrier_wait( &worker_barrier );
    std::cout << "AFTER barrier" << std::endl;
 
    /***************************************************************************
@@ -51,10 +51,10 @@ int main( int argc, char* argv[] )
    ***************************************************************************/
 
    // destroy thread barrier
-   com::barrier_destroy( &worker_barrier );
+   com::tsk::barrier_destroy( &worker_barrier );
 
    // suspend execution of the worker task
-   com::join( worker_tsk_handle );
+   com::tsk::join( worker_tsk_handle );
 
    // free workspace memory from heap
    workspace.finalize();

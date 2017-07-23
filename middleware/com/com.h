@@ -78,7 +78,7 @@ namespace com {
    }
 
    // POSIX threading interface
-//   namespace tsk {
+   namespace tsk {
 
       static int create(
             pthread_t* thread,
@@ -120,7 +120,7 @@ namespace com {
 
       typedef pthread_barrier_t barrier;
       typedef pthread_t         handler;
-//   }
+   }
 }
 
 #endif

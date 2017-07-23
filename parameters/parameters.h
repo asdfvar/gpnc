@@ -15,7 +15,7 @@ typedef struct
    int                par_int;
    float              par_float;
    double             par_double;
-   com::barrier*      barrier;
+   com::tsk::barrier* barrier;
 } Worker_tsk_params;
 
 #endif
