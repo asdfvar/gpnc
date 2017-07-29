@@ -44,10 +44,15 @@ int main( int argc, char* argv[] )
    master_tsk_params.barrier = &master_barrier;
    com::tsk::barrier_init( &master_barrier, 2 );
 
+   /***************************************************************************
+   * start the master task
+   ***************************************************************************/
+
    com::tsk::create( &master_tsk_handle,
                      master_tsk,
                      (void*)&master_tsk_params );
 
+   // wait for the master task to finish
    com::tsk::barrier_wait( &master_barrier );
    std::cout << "master task processing complete" << std::endl;
 
@@ -78,11 +83,11 @@ int main( int argc, char* argv[] )
    // suspend execution of the master task
    com::tsk::join( master_tsk_handle );
 
-   // free workspace memory from heap
-   workspace.finalize();
-
    // finalize process communication
    com::proc::finalize();
+
+   // free workspace memory from heap
+   workspace.finalize();
 
    return 0;
 }

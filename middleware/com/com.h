@@ -44,7 +44,7 @@ namespace com {
             else if( typeid(Type) == typeid(double) )
                return MPI_Isend ( buf, count, MPI_DOUBLE, dest_id, tag, MPI_COMM_WORLD, request );
             else {
-               std::cout << "unknown type" << std::endl;
+               std::cout << __FILE__ << ":" << __LINE__ << ":unknown type" << std::endl;
             }
          }
 

@@ -56,11 +56,11 @@ int main( int argc, char* argv[] )
    // suspend execution of the worker task
    com::tsk::join( worker_tsk_handle );
 
-   // free workspace memory from heap
-   workspace.finalize();
-
    // finalize process communication
    com::proc::finalize();
+
+   // free workspace memory from heap
+   workspace.finalize();
 
    return 0;
 }
