@@ -13,10 +13,10 @@ namespace com {
    namespace proc {
 
       static void start(
-            int argc,
+            int   argc,
             char* argv[],
-            int* numprocs,
-            int* myid           )
+            int*  numprocs,
+            int*  myid )
       {
          MPI_Init( &argc, &argv );
          MPI_Comm_size( MPI_COMM_WORLD, numprocs );
@@ -34,15 +34,16 @@ namespace com {
                int          count, 
                int          dest_id,
                int          tag,
+               MPI_Comm     comm,
                MPI_Request* request )
          {
             // perform a non-blocking send
             if( typeid(Type) == typeid(int) )
-               return MPI_Isend ( buf, count, MPI_INT, dest_id, tag, MPI_COMM_WORLD, request );
+               return MPI_Isend ( buf, count, MPI_INT, dest_id, tag, comm, request );
             else if( typeid(Type) == typeid(float) )
-               return MPI_Isend ( buf, count, MPI_FLOAT, dest_id, tag, MPI_COMM_WORLD, request );
+               return MPI_Isend ( buf, count, MPI_FLOAT, dest_id, tag, comm, request );
             else if( typeid(Type) == typeid(double) )
-               return MPI_Isend ( buf, count, MPI_DOUBLE, dest_id, tag, MPI_COMM_WORLD, request );
+               return MPI_Isend ( buf, count, MPI_DOUBLE, dest_id, tag, comm, request );
             else {
                std::cout << __FILE__ << ":" << __LINE__ << ":unknown type" << std::endl;
             }
@@ -54,15 +55,16 @@ namespace com {
                int          count,
                int          src_id,
                int          tag,
+               MPI_Comm     comm,
                MPI_Request* request )
          {
             // perform a non-blocking receive
             if( typeid(Type) == typeid(int) )
-               return MPI_Irecv ( buf, count, MPI_INT, src_id, tag, MPI_COMM_WORLD, request );
+               return MPI_Irecv ( buf, count, MPI_INT, src_id, tag, comm, request );
             else if( typeid(Type) == typeid(float) )
-               return MPI_Irecv ( buf, count, MPI_FLOAT, src_id, tag, MPI_COMM_WORLD, request );
+               return MPI_Irecv ( buf, count, MPI_FLOAT, src_id, tag, comm, request );
             else if( typeid(Type) == typeid(double) )
-               return MPI_Irecv ( buf, count, MPI_DOUBLE, src_id, tag, MPI_COMM_WORLD, request );
+               return MPI_Irecv ( buf, count, MPI_DOUBLE, src_id, tag, comm, request );
             else {
                std::cout << "unknown type" << std::endl;
             }
@@ -74,7 +76,8 @@ namespace com {
          return MPI_Wait ( request, &status );
       }
 
-      typedef MPI_Request request;
+      typedef MPI_Request Request;
+      typedef MPI_Comm    Comm;
    }
 
    // POSIX threading interface

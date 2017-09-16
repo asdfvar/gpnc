@@ -10,7 +10,7 @@ int main( int argc, char* argv[] )
    com::proc::start( argc, argv, &numprocs, &myid );
 
    float buf[10];
-   com::proc::request request;
+   com::proc::Request request;
    std::cout << "about to receive" << std::endl;
 
    com::proc::Irecv(
@@ -18,6 +18,7 @@ int main( int argc, char* argv[] )
          4,            // count
          0,            // proc id
          1,            // tag
+         MPI_COMM_WORLD,
          &request );
 
    std::cout << "receiving" << std::endl;

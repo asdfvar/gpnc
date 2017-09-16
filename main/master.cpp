@@ -57,15 +57,17 @@ int main( int argc, char* argv[] )
    std::cout << "master task processing complete" << std::endl;
 
    float buf[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-   com::proc::request request;
+   com::proc::Request request;
 
    std::cout << "about to send" << std::endl;
 
-   com::proc::Isend( (float*)buf,
-                4,            // count
-                2,            // proc id
-                1,            // tag
-               &request );
+   com::proc::Isend(
+         (float*)buf,
+         4,            // count
+         2,            // proc id
+         1,            // tag
+         MPI_COMM_WORLD,
+         &request );
 
    std::cout << "sending" << std::endl;
 
