@@ -13,11 +13,12 @@ int main( int argc, char* argv[] )
    com::proc::request request;
    std::cout << "about to receive" << std::endl;
 
-   com::proc::Irecv( (float*)buf,
-                4,            // count
-                0,            // proc id
-                1,            // tag
-               &request );
+   com::proc::Irecv(
+         (float*)buf,
+         4,            // count
+         0,            // proc id
+         1,            // tag
+         &request );
 
    std::cout << "receiving" << std::endl;
 
@@ -28,8 +29,8 @@ int main( int argc, char* argv[] )
    std::cout << "buf = " << buf[0] << buf[1] << buf[2] << buf[3] << std::endl;
 
    /***************************************************************************
-   * finish processing
-   ***************************************************************************/
+    * finish processing
+    ***************************************************************************/
 
    // finalize process communication
    com::proc::finalize();
