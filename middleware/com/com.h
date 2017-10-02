@@ -12,7 +12,7 @@ namespace com {
    // MPI interface
    namespace proc {
 
-      static void start(
+      static void start (
             int   argc,
             char* argv[],
             int*  numprocs,
@@ -26,6 +26,28 @@ namespace com {
       static void finalize( void )
       {
          MPI_Finalize();
+      }
+
+      static void free ( MPI_Comm* com_handle )
+      {
+         MPI_Comm_free( com_handle );
+      }
+
+      static void split (
+            int       group_number,
+            int       rank,
+            MPI_Comm* group_handle )
+      {
+         MPI_Comm_split( MPI_COMM_WORLD, group_number, rank, group_handle );
+      }
+
+      static void intercomm_create(
+            MPI_Comm  local_comm,
+            int       remote_leader,
+            int       tag,
+            MPI_Comm* new_intercomm )
+      {
+         MPI_Intercomm_create( local_comm, 0, MPI_COMM_WORLD, remote_leader, tag, new_intercomm );
       }
 
       template <class Type>
