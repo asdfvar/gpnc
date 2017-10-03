@@ -17,7 +17,7 @@ namespace io
    class Write {
 
       public:
-         Write( int argc, char** argv, int group_number );
+         Write( int rank, int group_number );
          ~Write( void );
 
          void create( int target_group, int tag );

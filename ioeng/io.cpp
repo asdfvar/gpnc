@@ -4,14 +4,8 @@
 namespace io
 {
 
-   Write::Write ( int argc, char** argv, int group_number )
+   Write::Write ( int rank, int group_number )
    {
-      int rank;
-      int numprocs;
-
-      // initiate MPI communication
-      com::proc::start( argc, argv, &numprocs, &rank );
-
       // build intra-communicator for local sub-group
       com::proc::split( group_number, rank, &my_group_handle );
 
@@ -36,8 +30,5 @@ namespace io
       // free communicators
       while (num_group_handles > 0)
          com::proc::free( &group_handles[--num_group_handles] );
-
-      // finalize MPI
-      com::proc::finalize();
    }
 }
