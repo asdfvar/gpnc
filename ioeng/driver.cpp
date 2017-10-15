@@ -1,4 +1,6 @@
 #include "com.h"
+#include "io.h"
+#include "groups.h"
 #include <iostream>
 
 int main( int argc, char* argv[] )
@@ -8,6 +10,10 @@ int main( int argc, char* argv[] )
    int myid;
 
    com::proc::start( argc, argv, &numprocs, &myid );
+   com::proc::Comm my_comm;
+   com::proc::split( IO_DRIVE_GROUP, myid, &my_comm );
+
+//   io::Write writeObj( myid, IO_DRIVE_GROUP, 7 );
 
    float buf[10];
    com::proc::Request request;

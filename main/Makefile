@@ -3,6 +3,7 @@ INC     = -I../middleware/com/    \
           -I../middleware/fio/    \
           -I../middleware/memory/ \
           -I../parameters/        \
+          -I../pm/                \
           -I/usr/local/include
 
 LIBPATH = -L../middleware/fio/    \
