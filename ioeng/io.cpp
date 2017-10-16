@@ -5,7 +5,7 @@
 namespace io
 {
 
-   Write::Write ( int rank, int group_number, int tag )
+   Write::Write ( int rank, int group_number, com::proc::Comm myComm, int tag )
    {
 
       // initiate number of group handles to zero
@@ -15,7 +15,7 @@ namespace io
 //      com::proc::split( group_number, rank, &my_group_handle );
 
       com::proc::intercomm_create(
-            my_group_handle,
+            myComm,
             group_number,
             tag,
             &group_handles[num_group_handles++]);
@@ -36,8 +36,10 @@ namespace io
 
    Write::~Write ( void )
    {
+#if 0
       // free communicators
       while (num_group_handles > 0)
          com::proc::free( &group_handles[--num_group_handles] );
+#endif
    }
 }

@@ -1,2 +1,2 @@
 #!/bin/bash
-mpirun -n 1 ../main/master : -n 1 ../main/slave : -n 1 ../ioeng/ioexe
+mpirun -n 1 ../ioeng/ioexe : -n 1 ../main/master : -n 1 ../main/slave

@@ -1,13 +1,17 @@
 CC      = mpic++
+
 INC     = -I../middleware/com/    \
           -I../middleware/fio/    \
           -I../middleware/memory/ \
           -I../parameters/        \
           -I../pm/                \
-          -I/usr/local/include
+          -I../ioeng/             \
+          -I/usr/local/include/   \
+#
 
 LIBPATH = -L../middleware/fio/    \
-          -L../middleware/memory/
+          -L../middleware/memory/ \
+#
 
 LIBS    = -lfio -lmem -pthread
 

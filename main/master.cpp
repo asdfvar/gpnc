@@ -1,4 +1,5 @@
 #include "com.h"
+#include "io.h"
 #include "fio.h"
 #include "parameters.h"
 #include "memory.h"
@@ -19,9 +20,10 @@ int main( int argc, char* argv[] )
    int myid;
 
    com::proc::start( argc, argv, &numprocs, &myid );
-
    com::proc::Comm my_comm;
    com::proc::split( MASTER_GROUP, myid, &my_comm );
+   com::proc::Comm IO_comm;
+   com::proc::intercomm_create( my_comm, IO_DRIVE_GROUP, 19, &IO_comm );
 
    fio::Text_file parameters( "../parameters/parameters.txt" );
 
@@ -68,9 +70,9 @@ int main( int argc, char* argv[] )
    com::proc::Isend(
          (float*)buf,
          4,            // count
-         2,            // proc id
+         0,            // proc id
          1,            // tag
-         MPI_COMM_WORLD,
+         IO_comm,
          &request );
 
    std::cout << "sending" << std::endl;
@@ -82,8 +84,9 @@ int main( int argc, char* argv[] )
    /***************************************************************************
    * finish processing
    ***************************************************************************/
-//   com::proc::free( my
-std::cout << __FILE__ << ":" << __LINE__ << ":got here" << std::endl;
+
+   // free IO-group comm handle
+   com::proc::free( &IO_comm );
 
    // destroy thread barrier
    com::tsk::barrier_destroy( &master_barrier );

@@ -15,7 +15,10 @@ int main( int argc, char* argv[] )
    com::proc::start( argc, argv, &numprocs, &myid );
 
    com::proc::Comm my_comm;
-   com::proc::split( SLAVE_GROUP, myid, &my_comm );
+
+//   com::proc::split( SLAVE_GROUP, myid, &my_comm );
+int group_number = 2;
+   MPI_Comm_split( MPI_COMM_WORLD, group_number, myid, &my_comm );
 
    fio::Text_file parameters( "../parameters/parameters.txt" );
 

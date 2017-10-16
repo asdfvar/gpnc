@@ -12,8 +12,10 @@ int main( int argc, char* argv[] )
    com::proc::start( argc, argv, &numprocs, &myid );
    com::proc::Comm my_comm;
    com::proc::split( IO_DRIVE_GROUP, myid, &my_comm );
+   com::proc::Comm master_comm;
+   com::proc::intercomm_create( my_comm, MASTER_GROUP, 19, &master_comm );
 
-//   io::Write writeObj( myid, IO_DRIVE_GROUP, 7 );
+//   io::Write writeObj( myid, MASTER_GROUP, my_comm, 7 );
 
    float buf[10];
    com::proc::Request request;
@@ -24,7 +26,7 @@ int main( int argc, char* argv[] )
          4,            // count
          0,            // proc id
          1,            // tag
-         MPI_COMM_WORLD,
+         master_comm,
          &request );
 
    std::cout << "receiving" << std::endl;
@@ -38,6 +40,9 @@ int main( int argc, char* argv[] )
    /***************************************************************************
     * finish processing
     ***************************************************************************/
+
+   // free master-group comm handle
+   com::proc::free( &master_comm );
 
    // finalize process communication
    com::proc::finalize();
