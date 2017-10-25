@@ -16,12 +16,16 @@ static void* master_tsk( void* task_args );
 int main( int argc, char* argv[] )
 {
 
+   // get global rank and number of procs
    int numprocs;
    int myid;
-
    com::proc::start( argc, argv, &numprocs, &myid );
+
+   // create output group
    com::proc::Comm my_comm;
    com::proc::split( MASTER_GROUP, myid, &my_comm );
+
+   // get local rank
    com::proc::Comm IO_comm;
    com::proc::intercomm_create( my_comm, IO_DRIVE_GROUP, 19, &IO_comm );
 

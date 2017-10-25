@@ -6,16 +6,26 @@
 int main( int argc, char* argv[] )
 {
 
+   // get global rank and number of procs
+   int global_rank;
    int numprocs;
-   int myid;
+   com::proc::init(      argc,       argv    );
+   com::proc::size( com::proc::Comm_world, &numprocs    );
+   com::proc::rank( com::proc::Comm_world, &global_rank );
 
-   com::proc::start( argc, argv, &numprocs, &myid );
+   // create output group
    com::proc::Comm my_comm;
-   com::proc::split( IO_DRIVE_GROUP, myid, &my_comm );
+   com::proc::split( IO_DRIVE_GROUP, global_rank, &my_comm );
+
+   // get local rank
+   int local_rank;
+   com::proc::rank( my_comm, &local_rank );
+
+   // inter-communicator to master
    com::proc::Comm master_comm;
    com::proc::intercomm_create( my_comm, MASTER_GROUP, 19, &master_comm );
 
-//   io::Write writeObj( myid, MASTER_GROUP, my_comm, 7 );
+//   io::Write writeObj( global_rank, MASTER_GROUP, my_comm, 7 );
 
    float buf[10];
    com::proc::Request request;
