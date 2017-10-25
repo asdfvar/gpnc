@@ -59,3 +59,23 @@ int main( int argc, char* argv[] )
 
    return 0;
 }
+
+#if 0
+  /*
+   * Function NAME: write_val
+   */
+  void write_val(float val, std::string out_file_path, bool init)
+  {
+
+    std::ofstream out_file;
+    if (init) {
+       out_file.open (out_file_path.c_str());
+       std::cout << "Writing data to " << out_file_path << std::endl;
+    } else {
+       out_file.open (out_file_path.c_str(), std::ios::app);
+    }
+    out_file << val << "\n";
+    out_file.close();
+
+  }
+#endif
