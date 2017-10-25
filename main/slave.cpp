@@ -3,7 +3,7 @@
 #include "parameters.h"
 #include "memory.h"
 #include "worker_task.h"
-#include "groups.h"
+#include "proc_maps.h"
 #include <iostream>
 
 int main( int argc, char* argv[] )

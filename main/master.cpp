@@ -3,7 +3,7 @@
 #include "fio.h"
 #include "parameters.h"
 #include "memory.h"
-#include "groups.h"
+#include "proc_maps.h"
 #include <iostream>
 
 typedef struct {
@@ -31,7 +31,7 @@ int main( int argc, char* argv[] )
 
    // inter-communicator to data extraction
    com::proc::Comm IO_comm;
-   com::proc::intercomm_create( my_comm, DATA_EXTRACTION_GROUP, 19, &IO_comm );
+   com::proc::intercomm_create( my_comm, DATA_EXTRACTION_GROUP, DATA_EXT, &IO_comm );
 
    fio::Text_file parameters( "../parameters/parameters.txt" );
 
