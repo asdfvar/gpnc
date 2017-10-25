@@ -15,7 +15,7 @@ int main( int argc, char* argv[] )
 
    // create output group
    com::proc::Comm my_comm;
-   com::proc::split( IO_DRIVE_GROUP, global_rank, &my_comm );
+   com::proc::split( DATA_EXTRACTION_GROUP, global_rank, &my_comm );
 
    // get local rank
    int local_rank;

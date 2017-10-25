@@ -26,8 +26,12 @@ int main( int argc, char* argv[] )
    com::proc::split( MASTER_GROUP, myid, &my_comm );
 
    // get local rank
+   int local_rank;
+   com::proc::rank( my_comm, &local_rank );
+
+   // inter-communicator to data extraction
    com::proc::Comm IO_comm;
-   com::proc::intercomm_create( my_comm, IO_DRIVE_GROUP, 19, &IO_comm );
+   com::proc::intercomm_create( my_comm, DATA_EXTRACTION_GROUP, 19, &IO_comm );
 
    fio::Text_file parameters( "../parameters/parameters.txt" );
 
