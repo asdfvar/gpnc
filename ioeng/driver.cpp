@@ -1,5 +1,4 @@
 #include "com.h"
-#include "io.h"
 #include "proc_maps.h"
 #include <iostream>
 
@@ -24,8 +23,6 @@ int main( int argc, char* argv[] )
    // inter-communicator to master
    com::proc::Comm master_comm;
    com::proc::intercomm_create( my_comm, MASTER_GROUP, DATA_EXT, &master_comm );
-
-//   io::Write writeObj( global_rank, MASTER_GROUP, my_comm, 7 );
 
    float buf[10];
    com::proc::Request request;

@@ -1,6 +1,6 @@
 CC      = mpic++
 
-OBJ     = driver.o io.o
+OBJ     = driver.o
 
 INC     = -I../middleware/com/ \
           -I../middleware/fio/ \
@@ -19,7 +19,4 @@ clean:
 	rm $(OBJ) $(EXE)
 
 driver.o: driver.cpp
-	$(CC) $(INC) $(LIBS) $(LIBPATH) $(LIBS) $^ -c
-
-io.o: io.cpp
 	$(CC) $(INC) $(LIBS) $(LIBPATH) $(LIBS) $^ -c

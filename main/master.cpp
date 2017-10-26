@@ -1,5 +1,5 @@
 #include "com.h"
-#include "io.h"
+#include "data_extraction.h"
 #include "fio.h"
 #include "parameters.h"
 #include "memory.h"
@@ -34,10 +34,11 @@ int main( int argc, char* argv[] )
    com::proc::Comm IO_comm;
    com::proc::intercomm_create( my_comm, DATA_EXTRACTION_GROUP, DATA_EXT, &IO_comm );
 
+   // read parameter file
    fio::Text_file parameters( getenv( "GPNC_PARAMS" ) );
 
    std::cout << std::endl;
-   std::cout << "reading in parameter file contents:" << std::endl;
+   std::cout << "reading in parameter-file contents:" << std::endl;
    parameters.print_all();
    std::cout << std::endl;
 
@@ -48,6 +49,7 @@ int main( int argc, char* argv[] )
    inp_parameters.par_double = parameters.get_real( "parameter_double" );
    size_t mem_size           = parameters.get_int( "memory_size_master" );
 
+   // declare and define workspace
    mem::Memory workspace( mem_size );
 
    Master_tsk_params master_tsk_params;
