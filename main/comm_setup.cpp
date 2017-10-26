@@ -9,7 +9,7 @@ Comm_setup::Comm_setup( int argc, char* argv[] )
    com::proc::init( argc, argv );
 
    // get number of processors
-   com::proc::size( com::proc::Comm_world, &numprocs
+   com::proc::size( com::proc::Comm_world, &numprocs );
 
    // get global rank
    com::proc::rank( com::proc::Comm_world, &global_rank );
@@ -21,7 +21,7 @@ Comm_setup::Comm_setup( int argc, char* argv[] )
    com::proc::rank( my_comm, &local_rank );
 
    // inter-communicator to data extraction
-   com::proc::intercomm_create( my_comm, DATA_EXTRACTION_GROUP, DATA_EXT, DATA_EXT, &dex_comm );
+   com::proc::intercomm_create( my_comm, DATA_EXTRACTION_GROUP, DATA_EXT, &dex_comm );
 
 }
 

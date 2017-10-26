@@ -17,10 +17,13 @@ LIBS    = -lfio -lmem -pthread
 
 MIDDLEWARE = ../middleware/
 
-masterOBJ = master.o
+masterOBJ = master.o     \
+            comm_setup.o \
+#
 
-slaveOBJ  = slave.o      \
-            worker_task.o
+slaveOBJ  = slave.o       \
+            worker_task.o \
+#
 
 OBJ       = $(masterOBJ) $(slaveOBJ)
 
@@ -42,6 +45,9 @@ clean:
 	rm $(OBJ) $(EXE)
 
 master.o: master.cpp
+	$(CC) $^ -c $(INC) $(LIBS)
+
+comm_setup.o: comm_setup.cpp
 	$(CC) $^ -c $(INC) $(LIBS)
 
 slave.o: slave.cpp
