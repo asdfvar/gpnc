@@ -1,4 +1,5 @@
 #include "com.h"
+#include "comm_setup.h"
 #include "data_extraction.h"
 #include "fio.h"
 #include "parameters.h"
@@ -8,7 +9,7 @@
 #include <stdlib.h>
 
 typedef struct {
-   mem::Memory       workspace;
+   mem::Memory        workspace;
    com::tsk::barrier* barrier;
 } Master_tsk_params;
 
@@ -17,22 +18,8 @@ static void* master_tsk( void* task_args );
 int main( int argc, char* argv[] )
 {
 
-   // get global rank and number of procs
-   int numprocs;
-   int myid;
-   com::proc::start( argc, argv, &numprocs, &myid );
-
-   // create output group
-   com::proc::Comm my_comm;
-   com::proc::split( MASTER_GROUP, myid, &my_comm );
-
-   // get local rank
-   int local_rank;
-   com::proc::rank( my_comm, &local_rank );
-
-   // inter-communicator to data extraction
-   com::proc::Comm IO_comm;
-   com::proc::intercomm_create( my_comm, DATA_EXTRACTION_GROUP, DATA_EXT, &IO_comm );
+   // setup processor communications
+   Comm_setup Master_comm( argc, argv );
 
    // read parameter file
    fio::Text_file parameters( getenv( "GPNC_PARAMS" ) );
@@ -83,7 +70,7 @@ int main( int argc, char* argv[] )
          4,            // count
          0,            // proc id
          1,            // tag
-         IO_comm,
+         Master_comm.get_dex_comm(),
          &request );
 
    std::cout << "sending" << std::endl;
@@ -96,9 +83,6 @@ int main( int argc, char* argv[] )
    * finish processing
    ***************************************************************************/
 
-   // free IO-group comm handle
-   com::proc::free( &IO_comm );
-
    // destroy thread barrier
    com::tsk::barrier_destroy( &master_barrier );
 
@@ -106,7 +90,7 @@ int main( int argc, char* argv[] )
    com::tsk::join( master_tsk_handle );
 
    // finalize process communication
-   com::proc::finalize();
+   Master_comm.finalize();
 
    // free workspace memory from heap
    workspace.finalize();

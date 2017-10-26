@@ -29,3 +29,17 @@ com::proc::Comm Comm_setup::get_dex_comm( void )
 {
    return dex_comm;
 }
+
+void Comm_setup::finalize( void )
+{
+   // free data extraction communication handle
+   com::proc::free( &dex_comm );
+
+   // finalize processor communication
+   com::proc::finalize();
+}
+
+Comm_setup::~Comm_setup( void )
+{
+   // null
+}

@@ -13,6 +13,12 @@ class Comm_setup {
       // get data extraction communicator handle
       com::proc::Comm get_dex_comm( void );
 
+      // finalize communication setup
+      void finalize( void );
+
+      // destructor
+      ~Comm_setup( void );
+
    private:
 
       // number of global processors
