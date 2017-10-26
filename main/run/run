@@ -1,0 +1,5 @@
+#!/bin/bash
+
+basedir=$PWD/../../
+
+./submit $basedir

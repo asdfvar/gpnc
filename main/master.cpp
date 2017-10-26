@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "proc_maps.h"
 #include <iostream>
+#include <stdlib.h>
 
 typedef struct {
    mem::Memory       workspace;
@@ -33,7 +34,7 @@ int main( int argc, char* argv[] )
    com::proc::Comm IO_comm;
    com::proc::intercomm_create( my_comm, DATA_EXTRACTION_GROUP, DATA_EXT, &IO_comm );
 
-   fio::Text_file parameters( "../parameters/parameters.txt" );
+   fio::Text_file parameters( getenv( "GPNC_PARAMS" ) );
 
    std::cout << std::endl;
    std::cout << "reading in parameter file contents:" << std::endl;
