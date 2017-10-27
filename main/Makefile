@@ -23,6 +23,7 @@ masterOBJ = master.o      \
 
 slaveOBJ  = slave.o       \
             worker_task.o \
+            slave_comm.o  \
 #
 
 OBJ       = $(masterOBJ) $(slaveOBJ)
@@ -48,6 +49,9 @@ master.o: master.cpp
 	$(CC) $^ -c $(INC) $(LIBS)
 
 master_comm.o: master_comm.cpp
+	$(CC) $^ -c $(INC) $(LIBS)
+
+slave_comm.o: slave_comm.cpp
 	$(CC) $^ -c $(INC) $(LIBS)
 
 slave.o: slave.cpp

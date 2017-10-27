@@ -15,7 +15,7 @@ Master_comm::Master_comm( int argc, char* argv[] ) : Comm_parent( argc, argv )
    com::proc::rank( my_comm, &local_rank );
 
    // inter-communicator to data extraction
-   com::proc::intercomm_create( my_comm, DATA_EXTRACTION_GROUP, DATA_EXT, &dex_comm );
+   com::proc::intercomm_create( my_comm, DATA_EXTRACTION_GROUP, MASTER_DATA_EXT, &dex_comm );
 
 }
 

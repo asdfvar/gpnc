@@ -22,7 +22,13 @@ int main( int argc, char* argv[] )
 
    // inter-communicator to master
    com::proc::Comm master_comm;
-   com::proc::intercomm_create( my_comm, MASTER_GROUP, DATA_EXT, &master_comm );
+   com::proc::intercomm_create( my_comm, MASTER_GROUP, MASTER_DATA_EXT, &master_comm );
+
+#if 0
+   // inter-communicator to slave
+   com::proc::Comm slave_comm;
+   com::proc::intercomm_create( my_comm, MASTER_GROUP, SLAVE_DATA_EXT, &slave_comm );
+#endif
 
    float buf[10];
    com::proc::Request request;
@@ -50,6 +56,11 @@ int main( int argc, char* argv[] )
 
    // free master-group comm handle
    com::proc::free( &master_comm );
+
+#if 0
+   // free slave-group comm handle
+   com::proc::free( &slave_comm );
+#endif
 
    // finalize process communication
    com::proc::finalize();

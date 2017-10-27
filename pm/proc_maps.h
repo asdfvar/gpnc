@@ -5,6 +5,6 @@
 #define MASTER_GROUP          1
 #define SLAVE_GROUP           2
 
-enum Proc_tags { DATA_EXT };
+enum Proc_tags { MASTER_DATA_EXT, SLAVE_DATA_EXT };
 
 #endif

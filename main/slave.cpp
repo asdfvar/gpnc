@@ -7,10 +7,12 @@
 #include "worker_task.h"
 #include "proc_maps.h"
 #include <iostream>
+#include "slave_comm.h"
 
 int main( int argc, char* argv[] )
 {
 
+#if 1
    int numprocs;
    int myid;
 
@@ -21,6 +23,9 @@ int main( int argc, char* argv[] )
 //   com::proc::split( SLAVE_GROUP, myid, &my_comm );
 int group_number = 2;
    MPI_Comm_split( MPI_COMM_WORLD, group_number, myid, &my_comm );
+#else
+   Slave_comm slave_comm( argc, argv );
+#endif
 
    fio::Text_file parameters( "../parameters/parameters.txt" );
 
@@ -58,7 +63,6 @@ int group_number = 2;
    /***************************************************************************
    * finish processing
    ***************************************************************************/
-std::cout << __FILE__ << ":" << __LINE__ << ":got here" << std::endl;
 
    // destroy thread barrier
    com::tsk::barrier_destroy( &worker_barrier );
@@ -66,8 +70,13 @@ std::cout << __FILE__ << ":" << __LINE__ << ":got here" << std::endl;
    // suspend execution of the worker task
    com::tsk::join( worker_tsk_handle );
 
+std::cout << __FILE__ << ":" << __LINE__ << ":got here" << std::endl;
+#if 1
    // finalize process communication
    com::proc::finalize();
+#else
+   slave_comm.finalize();
+#endif
 
    // free workspace memory from heap
    workspace.finalize();
