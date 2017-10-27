@@ -1,5 +1,1 @@
-make parent class for Comm_setup as Comm_setup_parent and put this in the pm/ directory.
-rename Comm_setup as Comm_setup_master.
-have the numprocs, global_ranks, local_rank be protected members of Comm_setup_parent.
-
 develop high-level abstraction for data extraction.
