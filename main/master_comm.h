@@ -1,14 +1,17 @@
+// master_comm.h
+
 #ifndef COMM_SETUP_H
 #define COMM_SETUP_H
 
+#include "comm_parent.h"
 #include "com.h"
 
-class Comm_setup {
+class Master_comm : public Comm_parent {
 
    public:
 
       // constructor
-      Comm_setup( int argc, char* argv[] );
+      Master_comm( int argc, char* argv[] );
 
       // get data extraction communicator handle
       com::proc::Comm get_dex_comm( void );
@@ -17,7 +20,7 @@ class Comm_setup {
       void finalize( void );
 
       // destructor
-      ~Comm_setup( void );
+      ~Master_comm( void );
 
    private:
 

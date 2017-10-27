@@ -1,7 +1,7 @@
 // master.cpp
 
 #include "com.h"
-#include "comm_setup.h"
+#include "master_comm.h"
 #include "data_extraction.h"
 #include "fio.h"
 #include "parameters.h"
@@ -21,7 +21,7 @@ int main( int argc, char* argv[] )
 {
 
    // setup processor communications
-   Comm_setup Master_comm( argc, argv );
+   Master_comm master_comm( argc, argv );
 
    // read parameter file
    fio::Text_file parameters( getenv( "GPNC_PARAMS" ) );
@@ -72,7 +72,7 @@ int main( int argc, char* argv[] )
          4,            // count
          0,            // proc id
          1,            // tag
-         Master_comm.get_dex_comm(),
+         master_comm.get_dex_comm(),
          &request );
 
    std::cout << "sending" << std::endl;
@@ -92,7 +92,7 @@ int main( int argc, char* argv[] )
    com::tsk::join( master_tsk_handle );
 
    // finalize process communication
-   Master_comm.finalize();
+   master_comm.finalize();
 
    // free workspace memory from heap
    workspace.finalize();
