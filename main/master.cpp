@@ -110,10 +110,12 @@ int main( int argc, char* argv[] )
 
 static void* master_task( void* task_args )
 {
+   // cast task arguments as Master_task_params type
    Master_task_params* master_task_params = (Master_task_params*)task_args;
 
-   std::cout << "master task processing" << std::endl;
+   // announce ourselves
+   std::cout << "start master task processing" << std::endl;
 
-   // tell main thread this task has complete
+   // tell the main thread this task is complete
    com::tsk::barrier_wait( master_task_params->barrier );
 }

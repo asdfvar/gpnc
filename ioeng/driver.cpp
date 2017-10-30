@@ -112,7 +112,7 @@ static void* master_dex_task( void* task_args )
    // announce ourselves
    std::cout << "master DEX task processing" << std::endl;
 
-   // tell the main thread this task has complete
+   // tell the main thread this task is complete
    com::tsk::barrier_wait( master_dex_params->barrier );
 }
 
