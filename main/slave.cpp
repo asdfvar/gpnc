@@ -12,7 +12,7 @@
 int main( int argc, char* argv[] )
 {
 
-#if 1
+#if 0
    int numprocs;
    int myid;
 
@@ -71,7 +71,7 @@ int group_number = 2;
    com::tsk::join( worker_tsk_handle );
 
 std::cout << __FILE__ << ":" << __LINE__ << ":got here" << std::endl;
-#if 1
+#if 0
    // finalize process communication
    com::proc::finalize();
 #else
