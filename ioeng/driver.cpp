@@ -4,6 +4,17 @@
 #include "proc_maps.h"
 #include <iostream>
 
+typedef struct {
+   com::tsk::barrier* barrier;
+} Master_dex_params;
+
+typedef struct {
+} Slave_dex_params;
+
+static void* master_dex_task( void* task_args );
+
+static void* slave_dex_task( void* task_args );
+
 int main( int argc, char* argv[] )
 {
 
@@ -30,6 +41,31 @@ int main( int argc, char* argv[] )
    com::proc::Comm slave_comm;
    com::proc::intercomm_create( my_comm, SLAVE_GROUP, SLAVE_DATA_EXT, &slave_comm );
 
+   // declare the master DEX task handle
+   com::tsk::handler master_dex_handle;
+
+   // declare the master DEX barrier
+   com::tsk::barrier master_dex_barrier;
+
+   // declare the master DEX parameters
+   Master_dex_params master_dex_params;
+
+   // initialize the master DEX barrier
+   com::tsk::barrier_init( &master_dex_barrier, 2 );
+
+   master_dex_params.barrier = &master_dex_barrier;
+
+   /*
+   ** start master data extraction task
+   */
+   com::tsk::create( &master_dex_handle,
+                     master_dex_task,
+                     (void*)&master_dex_params );
+
+   // wait for the master DEX task to finish
+   com::tsk::barrier_wait( &master_dex_barrier );
+   std::cout << "master DEX task processing complete" << std::endl;
+
    float buf[10];
    com::proc::Request request;
    std::cout << "about to receive" << std::endl;
@@ -50,9 +86,11 @@ int main( int argc, char* argv[] )
 
    std::cout << "buf = " << buf[0] << buf[1] << buf[2] << buf[3] << std::endl;
 
-   /***************************************************************************
-    * finish processing
-    ***************************************************************************/
+   /*
+   ** close down and finalize DEX processing
+   */
+
+   com::tsk::barrier_destroy( &master_dex_barrier );
 
    // free master-group comm handle
    com::proc::free( &master_comm );
@@ -64,6 +102,23 @@ int main( int argc, char* argv[] )
    com::proc::finalize();
 
    return 0;
+}
+
+static void* master_dex_task( void* task_args )
+{
+   // cast task arguments as Master_dex_params type
+   Master_dex_params* master_dex_params = (Master_dex_params*)task_args;
+
+   // announce ourselves
+   std::cout << "master DEX task processing" << std::endl;
+
+   // tell the main thread this task has complete
+   com::tsk::barrier_wait( master_dex_params->barrier );
+}
+
+static void* slave_dex_task( void* task_args )
+{
+
 }
 
 #if 0

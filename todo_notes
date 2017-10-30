@@ -1,1 +1,2 @@
 develop high-level abstraction for data extraction.
+create new DEX threads to handle slave process extractions
