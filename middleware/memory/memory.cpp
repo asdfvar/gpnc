@@ -2,6 +2,15 @@
 #include <iostream>
 
 namespace mem {
+
+/*
+** constructor name: Memory
+*/
+Memory::Memory( void )
+{
+   // NULL
+}
+
 /*
 ** constructor name: Memory
 */

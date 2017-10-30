@@ -7,6 +7,7 @@ namespace mem {
 
 class Memory {
    public:
+      Memory( void );
       Memory( size_t );
      ~Memory( void );
 

@@ -1,22 +1,30 @@
 CC      = mpic++
+
 INC     = -I../middleware/com/    \
           -I../middleware/fio/    \
           -I../middleware/memory/ \
           -I../parameters/        \
-          -I/usr/local/include
+          -I../pm/                \
+          -I../ioeng/             \
+          -I/usr/local/include/   \
+#
 
-LIBPATH = -L../middleware/com/    \
-          -L../middleware/fio/    \
-          -L../middleware/memory/
+LIBPATH = -L../middleware/fio/    \
+          -L../middleware/memory/ \
+#
 
-LIBS    = -lcom -lfio -lmem -pthread
+LIBS    = -lfio -lmem -pthread
 
 MIDDLEWARE = ../middleware/
 
-masterOBJ = master.o
+masterOBJ = master.o      \
+            master_comm.o \
+#
 
-slaveOBJ  = slave.o      \
-            worker_task.o
+slaveOBJ  = slave.o       \
+            worker_task.o \
+            slave_comm.o  \
+#
 
 OBJ       = $(masterOBJ) $(slaveOBJ)
 
@@ -25,7 +33,6 @@ slaveEXE  = slave
 EXE       = $(masterEXE) $(slaveEXE)
 
 all: $(OBJ) 
-	cd $(MIDDLEWARE)/com    && $(MAKE)
 	cd $(MIDDLEWARE)/fio    && $(MAKE)
 	cd $(MIDDLEWARE)/memory && $(MAKE)
 	cd ../ioeng && $(MAKE)
@@ -33,13 +40,18 @@ all: $(OBJ)
 	$(CC) $(slaveOBJ) $(INC) $(LIBS) $(LIBPATH) -o $(slaveEXE)
 
 clean:
-	make -C $(MIDDLEWARE)/com    clean
 	make -C $(MIDDLEWARE)/fio    clean
 	make -C $(MIDDLEWARE)/memory clean
 	make -C ../ioeng clean
 	rm $(OBJ) $(EXE)
 
 master.o: master.cpp
+	$(CC) $^ -c $(INC) $(LIBS)
+
+master_comm.o: master_comm.cpp
+	$(CC) $^ -c $(INC) $(LIBS)
+
+slave_comm.o: slave_comm.cpp
 	$(CC) $^ -c $(INC) $(LIBS)
 
 slave.o: slave.cpp

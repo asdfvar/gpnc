@@ -1,14 +1,31 @@
+// slave.cpp
+
 #include "com.h"
 #include "fio.h"
 #include "parameters.h"
 #include "memory.h"
 #include "worker_task.h"
+#include "proc_maps.h"
 #include <iostream>
+#include "slave_comm.h"
 
 int main( int argc, char* argv[] )
 {
 
-   com::Com comObj( argc, argv );
+#if 0
+   int numprocs;
+   int myid;
+
+   com::proc::start( argc, argv, &numprocs, &myid );
+
+   com::proc::Comm my_comm;
+
+//   com::proc::split( SLAVE_GROUP, myid, &my_comm );
+int group_number = 2;
+   MPI_Comm_split( MPI_COMM_WORLD, group_number, myid, &my_comm );
+#else
+   Slave_comm slave_comm( argc, argv );
+#endif
 
    fio::Text_file parameters( "../parameters/parameters.txt" );
 
@@ -30,18 +47,17 @@ int main( int argc, char* argv[] )
                                 << worker_tsk_parameters.par_float << ", "
                                 << worker_tsk_parameters.par_double << std::endl;
 
-   com::tsk_handler worker_tsk_handle;
-
-   com::tsk_barrier worker_barrier;
-   com::tsk_barrier_init( &worker_barrier, 2 );
+   com::tsk::handler worker_tsk_handle;
+   com::tsk::barrier worker_barrier;
+   com::tsk::barrier_init( &worker_barrier, 2 );
 
    worker_tsk_parameters.barrier = &worker_barrier;
 
-   com::create_tsk( &worker_tsk_handle,
+   com::tsk::create( &worker_tsk_handle,
                      worker_task,
                      (void*)&worker_tsk_parameters );
 
-   com::tsk_barrier_wait( &worker_barrier );
+   com::tsk::barrier_wait( &worker_barrier );
    std::cout << "AFTER barrier" << std::endl;
 
    /***************************************************************************
@@ -49,10 +65,18 @@ int main( int argc, char* argv[] )
    ***************************************************************************/
 
    // destroy thread barrier
-   com::tsk_barrier_destroy( &worker_barrier );
+   com::tsk::barrier_destroy( &worker_barrier );
 
-   // suspend execution of the slave task
-   com::join_tsk( worker_tsk_handle );
+   // suspend execution of the worker task
+   com::tsk::join( worker_tsk_handle );
+
+std::cout << __FILE__ << ":" << __LINE__ << ":got here" << std::endl;
+#if 0
+   // finalize process communication
+   com::proc::finalize();
+#else
+   slave_comm.finalize();
+#endif
 
    // free workspace memory from heap
    workspace.finalize();

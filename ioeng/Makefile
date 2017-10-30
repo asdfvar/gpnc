@@ -1,8 +1,14 @@
 CC      = mpic++
+
 OBJ     = driver.o
-INC     = -I../middleware/com/ -I../middleware/fio/
-LIBPATH = -L../middleware/com/ -L../middleware/fio/
-LIBS    = -lcom -lfio
+
+INC     = -I../middleware/com/ \
+          -I../middleware/fio/ \
+          -I../pm/
+
+LIBPATH = -L../middleware/fio/
+
+LIBS    = -lfio
 
 EXE = ioexe
 
