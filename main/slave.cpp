@@ -12,20 +12,7 @@
 int main( int argc, char* argv[] )
 {
 
-#if 0
-   int numprocs;
-   int myid;
-
-   com::proc::start( argc, argv, &numprocs, &myid );
-
-   com::proc::Comm my_comm;
-
-//   com::proc::split( SLAVE_GROUP, myid, &my_comm );
-int group_number = 2;
-   MPI_Comm_split( MPI_COMM_WORLD, group_number, myid, &my_comm );
-#else
    Slave_comm slave_comm( argc, argv );
-#endif
 
    fio::Text_file parameters( "../parameters/parameters.txt" );
 
@@ -70,13 +57,7 @@ int group_number = 2;
    // suspend execution of the worker task
    com::tsk::join( worker_tsk_handle );
 
-std::cout << __FILE__ << ":" << __LINE__ << ":got here" << std::endl;
-#if 0
-   // finalize process communication
-   com::proc::finalize();
-#else
    slave_comm.finalize();
-#endif
 
    // free workspace memory from heap
    workspace.finalize();
