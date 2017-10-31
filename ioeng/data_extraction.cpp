@@ -3,18 +3,8 @@
 #include "com.h"
 #include "proc_maps.h"
 #include <iostream>
-
-typedef struct {
-   com::tsk::barrier* barrier;
-} Master_dex_params;
-
-typedef struct {
-   com::tsk::barrier* barrier;
-} Slave_dex_params;
-
-static void* master_dex_task( void* task_args );
-
-static void* slave_dex_task( void* task_args );
+#include "master_dex.h"
+#include "slave_dex.h"
 
 int main( int argc, char* argv[] )
 {
@@ -144,30 +134,6 @@ int main( int argc, char* argv[] )
    com::proc::finalize();
 
    return 0;
-}
-
-static void* master_dex_task( void* task_args )
-{
-   // cast task arguments as Master_dex_params type
-   Master_dex_params* master_dex_params = (Master_dex_params*)task_args;
-
-   // announce ourselves
-   std::cout << "master DEX task processing start" << std::endl;
-
-   // tell the main thread this task is complete
-   com::tsk::barrier_wait( master_dex_params->barrier );
-}
-
-static void* slave_dex_task( void* task_args )
-{
-   // cast task arguments as Slave_dex_params type
-   Slave_dex_params* slave_dex_params = (Slave_dex_params*)task_args;
-
-   // announce ourselves
-   std::cout << "slave DEX task processing start" << std::endl;
-
-   // tell the main thread this task is complete
-   com::tsk::barrier_wait( slave_dex_params->barrier );
 }
 
 #if 0
