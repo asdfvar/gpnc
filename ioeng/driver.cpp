@@ -9,6 +9,7 @@ typedef struct {
 } Master_dex_params;
 
 typedef struct {
+   com::tsk::barrier* barrier;
 } Slave_dex_params;
 
 static void* master_dex_task( void* task_args );
@@ -21,13 +22,16 @@ int main( int argc, char* argv[] )
    // get global rank and number of procs
    int global_rank;
    int numprocs;
-   com::proc::init(      argc,       argv    );
+   com::proc::init( argc, argv );
    com::proc::size( com::proc::Comm_world, &numprocs    );
    com::proc::rank( com::proc::Comm_world, &global_rank );
 
    // create output group
    com::proc::Comm my_comm;
-   com::proc::split( DATA_EXTRACTION_GROUP, global_rank, &my_comm );
+   com::proc::split(
+         DATA_EXTRACTION_GROUP,
+         global_rank,
+         &my_comm );
 
    // get local rank
    int local_rank;
@@ -35,11 +39,10 @@ int main( int argc, char* argv[] )
 
    // inter-communicator to master
    com::proc::Comm master_comm;
-   com::proc::intercomm_create( my_comm, MASTER_GROUP, MASTER_DATA_EXT, &master_comm );
-
-   // inter-communicator to slave
-   com::proc::Comm slave_comm;
-   com::proc::intercomm_create( my_comm, SLAVE_GROUP, SLAVE_DATA_EXT, &slave_comm );
+   com::proc::intercomm_create( my_comm,
+         MASTER_GROUP,
+         MASTER_DATA_EXT,
+         &master_comm );
 
    // declare the master DEX task handle
    com::tsk::handler master_dex_handle;
@@ -56,15 +59,50 @@ int main( int argc, char* argv[] )
    master_dex_params.barrier = &master_dex_barrier;
 
    /*
-   ** start master data extraction task
-   */
-   com::tsk::create( &master_dex_handle,
-                     master_dex_task,
-                     (void*)&master_dex_params );
+    ** start master data extraction task
+    */
+   com::tsk::create(
+         &master_dex_handle,
+         master_dex_task,
+         (void*)&master_dex_params );
+
+   // inter-communicator to slave
+   com::proc::Comm slave_comm;
+   com::proc::intercomm_create(
+         my_comm,
+         SLAVE_GROUP,
+         SLAVE_DATA_EXT,
+         &slave_comm );
+
+   // declare the slave DEX task handle
+   com::tsk::handler slave_dex_handle;
+
+   // declare the slave DEX barrier
+   com::tsk::barrier slave_dex_barrier;
+
+   // declare the slave DEX parameters
+   Slave_dex_params slave_dex_params;
+
+   // initialize the slave DEX barrier
+   com::tsk::barrier_init( &slave_dex_barrier, 2 );
+
+   slave_dex_params.barrier = &slave_dex_barrier;
+
+   /*
+    ** start slave data extraction task
+    */
+   com::tsk::create(
+         &slave_dex_handle,
+         slave_dex_task,
+         (void*)&slave_dex_params );
 
    // wait for the master DEX task to finish
    com::tsk::barrier_wait( &master_dex_barrier );
    std::cout << "master DEX task processing complete" << std::endl;
+
+   // wait for the slave DEX task to finish
+   com::tsk::barrier_wait( &slave_dex_barrier );
+   std::cout << "slave DEX task processing complete" << std::endl;
 
    float buf[10];
    com::proc::Request request;
@@ -87,10 +125,14 @@ int main( int argc, char* argv[] )
    std::cout << "buf = " << buf[0] << buf[1] << buf[2] << buf[3] << std::endl;
 
    /*
-   ** close down and finalize DEX processing
-   */
+    ** close down and finalize DEX processing
+    */
 
+   // destroy master DEX barrier
    com::tsk::barrier_destroy( &master_dex_barrier );
+
+   // destroy slave DEX barrier
+   com::tsk::barrier_destroy( &slave_dex_barrier );
 
    // free master-group comm handle
    com::proc::free( &master_comm );
@@ -110,7 +152,7 @@ static void* master_dex_task( void* task_args )
    Master_dex_params* master_dex_params = (Master_dex_params*)task_args;
 
    // announce ourselves
-   std::cout << "master DEX task processing" << std::endl;
+   std::cout << "master DEX task processing start" << std::endl;
 
    // tell the main thread this task is complete
    com::tsk::barrier_wait( master_dex_params->barrier );
@@ -118,7 +160,14 @@ static void* master_dex_task( void* task_args )
 
 static void* slave_dex_task( void* task_args )
 {
+   // cast task arguments as Slave_dex_params type
+   Slave_dex_params* slave_dex_params = (Slave_dex_params*)task_args;
 
+   // announce ourselves
+   std::cout << "slave DEX task processing start" << std::endl;
+
+   // tell the main thread this task is complete
+   com::tsk::barrier_wait( slave_dex_params->barrier );
 }
 
 #if 0
