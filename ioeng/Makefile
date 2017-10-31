@@ -1,10 +1,14 @@
 CC      = mpic++
 
-OBJ     = driver.o
+OBJ     = data_extraction.o    \
+          master_dex.o         \
+          slave_dex.o          \
+#
 
 INC     = -I../middleware/com/ \
           -I../middleware/fio/ \
-          -I../pm/
+          -I../pm/             \
+#
 
 LIBPATH = -L../middleware/fio/
 
@@ -18,5 +22,11 @@ all: $(OBJ)
 clean:
 	rm $(OBJ) $(EXE)
 
-driver.o: driver.cpp
+data_extraction.o: data_extraction.cpp
+	$(CC) $(INC) $(LIBS) $(LIBPATH) $(LIBS) $^ -c
+
+master_dex.o: master_dex.cpp
+	$(CC) $(INC) $(LIBS) $(LIBPATH) $(LIBS) $^ -c
+
+slave_dex.o: slave_dex.cpp
 	$(CC) $(INC) $(LIBS) $(LIBPATH) $(LIBS) $^ -c

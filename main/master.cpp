@@ -12,10 +12,12 @@
 
 typedef struct {
    mem::Memory        workspace;
+   fio::Text_file*    parameters;
    com::tsk::barrier* barrier;
-} Master_tsk_params;
+   Master_comm*       master_comm;
+} Master_task_params;
 
-static void* master_tsk( void* task_args );
+static void* master_task( void* task_args );
 
 int main( int argc, char* argv[] )
 {
@@ -41,22 +43,28 @@ int main( int argc, char* argv[] )
    // declare and define workspace
    mem::Memory workspace( mem_size );
 
-   Master_tsk_params master_tsk_params;
-   master_tsk_params.workspace = workspace;
-
+   // declare the master-task handle
    com::tsk::handler master_tsk_handle;
+
+   // declare the master-task barrier
    com::tsk::barrier master_barrier;
 
-   master_tsk_params.barrier = &master_barrier;
+   // initialize the master-task barrier
    com::tsk::barrier_init( &master_barrier, 2 );
 
-   /***************************************************************************
-   * start the master task
-   ***************************************************************************/
+   // populate the master-task parameters
+   Master_task_params master_task_params;
+   master_task_params.parameters  = &parameters;
+   master_task_params.workspace   = workspace;
+   master_task_params.barrier     = &master_barrier;
+   master_task_params.master_comm = &master_comm;
 
+   /*
+   ** start the master task
+   */
    com::tsk::create( &master_tsk_handle,
-                     master_tsk,
-                     (void*)&master_tsk_params );
+                     master_task,
+                     (void*)&master_task_params );
 
    // wait for the master task to finish
    com::tsk::barrier_wait( &master_barrier );
@@ -81,9 +89,9 @@ int main( int argc, char* argv[] )
 
    std::cout << "sent" << std::endl;
 
-   /***************************************************************************
-   * finish processing
-   ***************************************************************************/
+   /*
+   ** close down and finalize master processing
+   */
 
    // destroy thread barrier
    com::tsk::barrier_destroy( &master_barrier );
@@ -100,11 +108,14 @@ int main( int argc, char* argv[] )
    return 0;
 }
 
-static void* master_tsk( void* task_args )
+static void* master_task( void* task_args )
 {
-   Master_tsk_params* master_tsk_params = (Master_tsk_params*)task_args;
+   // cast task arguments as Master_task_params type
+   Master_task_params* master_task_params = (Master_task_params*)task_args;
 
-   std::cout << "master task processing" << std::endl;
+   // announce ourselves
+   std::cout << "start master task processing" << std::endl;
 
-   com::tsk::barrier_wait( master_tsk_params->barrier );
+   // tell the main thread this task is complete
+   com::tsk::barrier_wait( master_task_params->barrier );
 }
