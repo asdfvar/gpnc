@@ -2,7 +2,7 @@
 
 #include "com.h"
 #include "master_comm.h"
-#include "data_extraction.h"
+#include "extract_data.h"
 #include "fio.h"
 #include "parameters.h"
 #include "memory.h"

@@ -82,7 +82,7 @@ namespace com {
             else if( typeid(Type) == typeid(double) )
                return MPI_Isend ( buf, count, MPI_DOUBLE, dest_id, tag, comm, request );
             else {
-               std::cout << __FILE__ << ":" << __LINE__ << ":unknown type" << std::endl;
+               return MPI_Isend ( buf, count * sizeof(Type), MPI_BYTE, dest_id, tag, comm, request );
             }
          }
 

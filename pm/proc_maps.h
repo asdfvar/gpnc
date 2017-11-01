@@ -5,6 +5,9 @@
 #define MASTER_GROUP          1
 #define SLAVE_GROUP           2
 
-enum Proc_tags { MASTER_DATA_EXT, SLAVE_DATA_EXT };
+enum Proc_tags {
+   MASTER_DATA_EXT, // inter-comm creation for master process
+   SLAVE_DATA_EXT   // inter-comm creation for slave process
+};
 
 #endif

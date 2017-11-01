@@ -17,13 +17,15 @@ LIBS    = -lfio -lmem -pthread
 
 MIDDLEWARE = ../middleware/
 
-masterOBJ = master.o      \
-            master_comm.o \
+masterOBJ = master.o       \
+            master_comm.o  \
+            extract_data.o \
 #
 
-slaveOBJ  = slave.o       \
-            worker_task.o \
-            slave_comm.o  \
+slaveOBJ  = slave.o        \
+            worker_task.o  \
+            slave_comm.o   \
+            extract_data.o \
 #
 
 OBJ       = $(masterOBJ) $(slaveOBJ)
@@ -58,4 +60,7 @@ slave.o: slave.cpp
 	$(CC) $^ -c $(INC) $(LIBS)
 
 worker_task.o: worker_task.cpp
+	$(CC) $^ -c $(INC) $(LIBS)
+
+extract_data.o: extract_data.cpp
 	$(CC) $^ -c $(INC) $(LIBS)
