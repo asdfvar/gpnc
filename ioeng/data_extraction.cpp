@@ -29,7 +29,8 @@ int main( int argc, char* argv[] )
 
    // inter-communicator to master
    com::proc::Comm master_comm;
-   com::proc::intercomm_create( my_comm,
+   com::proc::intercomm_create(
+         my_comm,
          MASTER_GROUP,
          MASTER_DATA_EXT,
          &master_comm );
@@ -42,6 +43,8 @@ int main( int argc, char* argv[] )
 
    // declare the master DEX parameters
    Master_dex_params master_dex_params;
+
+   master_dex_params.master_comm = master_comm;
 
    // initialize the master DEX barrier
    com::tsk::barrier_init( &master_dex_barrier, 2 );

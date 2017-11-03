@@ -2,6 +2,7 @@
 
 #include "master_dex.h"
 #include "com.h"
+#include "proc_maps.h"
 #include <iostream>
 
 void* master_dex_task( void* task_args )
@@ -12,31 +13,41 @@ void* master_dex_task( void* task_args )
    // announce ourselves
    std::cout << "master DEX task processing start" << std::endl;
 
-   bool done = false;
+   bool finished = false;
 
    do {
 
       // receive meta data
-#if 0
+#if 1
+      com::proc::Request request;
+      Meta master_meta;
+
+float data;
+std::cout << "ABOUT TO RECEIVE DATA" << std::endl;
       com::proc::Irecv(
-            (float*)buf,
-            4,            // count
+#if 0
+           &master_meta,
+#else
+           &data,
+#endif
+            1,            // count
             0,            // proc id
-            1,            // tag
-            master_comm,
+            MASTER_META,  // tag
+            master_dex_params->master_comm,
             &request );
 
-      std::cout << "receiving" << std::endl;
+      std::cout << "receiving from master" << std::endl;
 
       com::proc::wait( &request );
+std::cout << "DATA RECEIVED: " << data << std::endl;
 #endif
       // check if this data extraction exists
 
       // write it to file
 
-      done = true;
+      finished = true;
 
-   } while( !done );
+   } while( !finished );
 
    // tell the main thread this task is complete
    com::tsk::barrier_wait( master_dex_params->barrier );

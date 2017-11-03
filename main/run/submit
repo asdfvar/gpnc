@@ -2,4 +2,4 @@
 
 export GPNC_PARAMS=$1/main/parameters/parameters.txt
 
-mpirun -n 1 $1/ioeng/ioexe : -n 1 $1/main/master : -n 1 $1/main/slave
+mpirun -n 1 $1/ioeng/ioexe : -n 1 $1/main/master : -n 4 $1/main/slave

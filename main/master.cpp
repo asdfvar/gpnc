@@ -116,6 +116,8 @@ static void* master_task( void* task_args )
    // announce ourselves
    std::cout << "start master task processing" << std::endl;
 
+   extract_data( master_task_params->master_comm->get_dex_comm() );
+
    // tell the main thread this task is complete
    com::tsk::barrier_wait( master_task_params->barrier );
 }

@@ -82,7 +82,8 @@ namespace com {
             else if( typeid(Type) == typeid(double) )
                return MPI_Isend ( buf, count, MPI_DOUBLE, dest_id, tag, comm, request );
             else {
-               return MPI_Isend ( buf, count * sizeof(Type), MPI_BYTE, dest_id, tag, comm, request );
+               return MPI_Isend ( (void*)buf, count * sizeof(Type),
+                                  MPI_BYTE, dest_id, tag, comm, request );
             }
          }
 
@@ -103,7 +104,8 @@ namespace com {
             else if( typeid(Type) == typeid(double) )
                return MPI_Irecv ( buf, count, MPI_DOUBLE, src_id, tag, comm, request );
             else {
-               std::cout << "unknown type" << std::endl;
+               return MPI_Irecv ( (void*)buf, count * sizeof(Type),
+                                  MPI_BYTE, src_id, tag, comm, request );
             }
          }
 

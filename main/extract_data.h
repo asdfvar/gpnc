@@ -3,12 +3,9 @@
 #ifndef EXTRACT_DATA_H
 #define EXTRACT_DATA_H
 
+#include "com.h"
 #include <string>
 
-template<class Type>
-void extract_data(
-      const std::string& filename,
-      Type* src,
-      int   dim );
+void extract_data( com::proc::Comm dex_comm );
 
 #endif
