@@ -10,6 +10,10 @@ void* master_dex_task( void* task_args )
    // cast task arguments as Master_dex_params type
    Master_dex_params* master_dex_params = (Master_dex_params*)task_args;
 
+   // receive meta data
+   com::proc::Request request;
+   Meta master_meta;
+
    // announce ourselves
    std::cout << "master DEX task processing start" << std::endl;
 
@@ -17,35 +21,31 @@ void* master_dex_task( void* task_args )
 
    do {
 
-      // receive meta data
-#if 1
-      com::proc::Request request;
-      Meta master_meta;
-
-float data;
-std::cout << "ABOUT TO RECEIVE DATA" << std::endl;
+std::cout << "ABOUT TO RECEIVE META DATA" << std::endl;
+      // receive meta data from master process
       com::proc::Irecv(
-#if 0
            &master_meta,
-#else
-           &data,
-#endif
             1,            // count
             0,            // proc id
             MASTER_META,  // tag
             master_dex_params->master_comm,
             &request );
 
-      std::cout << "receiving from master" << std::endl;
-
+      // wait for meta data to be received
       com::proc::wait( &request );
-std::cout << "DATA RECEIVED: " << data << std::endl;
-#endif
-      // check if this data extraction exists
+std::cout << "RECEIVED META DATA" << std::endl;
 
-      // write it to file
+      // check if this receive is a termination message
+      finished = master_meta.finished;
 
-      finished = true;
+      if ( !finished )
+      {
+         // receive data
+
+         // check if this data extraction exists
+
+         // write it to file
+      }
 
    } while( !finished );
 

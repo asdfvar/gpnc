@@ -97,26 +97,6 @@ int main( int argc, char* argv[] )
    com::tsk::barrier_wait( &slave_dex_barrier );
    std::cout << "slave DEX task processing complete" << std::endl;
 
-   float buf[10];
-   com::proc::Request request;
-   std::cout << "about to receive" << std::endl;
-
-   com::proc::Irecv(
-         (float*)buf,
-         4,            // count
-         0,            // proc id
-         1,            // tag
-         master_comm,
-         &request );
-
-   std::cout << "receiving" << std::endl;
-
-   com::proc::wait( &request );
-
-   std::cout << "received" << std::endl;
-
-   std::cout << "buf = " << buf[0] << buf[1] << buf[2] << buf[3] << std::endl;
-
    /*
     ** close down and finalize DEX processing
     */

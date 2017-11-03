@@ -8,4 +8,6 @@
 
 void extract_data( com::proc::Comm dex_comm );
 
+void finalize_extraction( com::proc::Comm dex_comm );
+
 #endif
