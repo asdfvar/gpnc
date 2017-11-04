@@ -8,14 +8,17 @@
 #include "proc_maps.h"
 
 template<class Data_type> void extract_data(
-      Data_type*      src,
-      int             count,
-      com::proc::Comm dex_comm )
+      Data_type*            src,
+      const std::string&    filename,
+      int                   count,
+      com::proc::Comm       dex_comm )
 {
 
    Meta meta_data;
 
-   meta_data.test      = 314159;
+   std::string filename_copy;
+// filename_copy += filename;
+//   meta_data.filename  = filename;
    meta_data.type_size = sizeof(Data_type);
    meta_data.count     = count;
 

@@ -2,7 +2,7 @@
 #define PROC_MAPS_H
 
 #include "com.h"
-#include <typeinfo>
+#include <string>
 
 #define DATA_EXTRACTION_GROUP 0
 #define MASTER_GROUP          1
@@ -17,9 +17,9 @@ enum Proc_tags {
 
 typedef struct {
    com::proc::Comm dex_comm;  // communication handle to the data extraction
+//   std::string     filename;  // filename
    int             type_size; // size of data type
    int             count;     // data array size
-   int             test;
    bool            terminate; // termination flag
 } Meta;
 

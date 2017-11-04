@@ -107,8 +107,9 @@ static void* master_task( void* task_args )
 
    // extract data
    extract_data(
-         data,    // source
-         4,       // count
+         data,       // source
+         "filename", // filename
+         4,          // count
          master_task_params->master_comm->get_dex_comm() );
 
    // terminate master data extraction task
