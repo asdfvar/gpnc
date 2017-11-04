@@ -97,11 +97,25 @@ static void* master_task( void* task_args )
    // announce ourselves
    std::cout << "start master task processing" << std::endl;
 
+   // TODO: use workbuffer
+   int* data = new int[1024];
+
+   data[0] = 2;
+   data[1] = 7;
+   data[2] = 1;
+   data[3] = 8;
+
    // extract data
-   extract_data( master_task_params->master_comm->get_dex_comm() );
+   extract_data(
+         data,    // source
+         4,       // count
+         master_task_params->master_comm->get_dex_comm() );
 
    // terminate master data extraction task
    finalize_extraction( master_task_params->master_comm->get_dex_comm() );
+
+   // TODO: use workbuffer
+   delete[] data;
 
    // tell the main thread this task is complete
    com::tsk::barrier_wait( master_task_params->barrier );
