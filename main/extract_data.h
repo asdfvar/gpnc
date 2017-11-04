@@ -7,13 +7,8 @@
 #include <string>
 #include "proc_maps.h"
 
-#if 1
 template<class Data_type> void extract_data(
       Data_type*      src,
-#else
-void extract_data(
-      int*      src,
-#endif
       int             count,
       com::proc::Comm dex_comm )
 {
