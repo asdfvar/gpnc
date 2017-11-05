@@ -1,23 +1,13 @@
 // master.cpp
 
 #include "com.h"
-#include "master_comm.h"
+#include "master.h"
 #include "extract_data.h"
 #include "fio.h"
-#include "parameters.h"
 #include "memory.h"
 #include "proc_maps.h"
 #include <iostream>
 #include <stdlib.h>
-
-typedef struct {
-   mem::Memory        workspace;
-   fio::Text_file*    parameters;
-   com::tsk::barrier* barrier;
-   Master_comm*       master_comm;
-} Master_task_params;
-
-static void* master_task( void* task_args );
 
 int main( int argc, char* argv[] )
 {
@@ -33,12 +23,7 @@ int main( int argc, char* argv[] )
    parameters.print_all();
    std::cout << std::endl;
 
-   Inp_params inp_parameters;
-
-   inp_parameters.par_int    = parameters.get_int( "parameter_int" );
-   inp_parameters.par_float  = parameters.get_real( "parameter_float" );
-   inp_parameters.par_double = parameters.get_real( "parameter_double" );
-   size_t mem_size           = parameters.get_int( "memory_size_master" );
+   size_t mem_size = parameters.get_int( "memory_size_master" );
 
    // declare and define workspace
    mem::Memory workspace( mem_size );
@@ -87,37 +72,4 @@ int main( int argc, char* argv[] )
    workspace.finalize();
 
    return 0;
-}
-
-static void* master_task( void* task_args )
-{
-   // cast task arguments as Master_task_params type
-   Master_task_params* master_task_params = (Master_task_params*)task_args;
-
-   // announce ourselves
-   std::cout << "start master task processing" << std::endl;
-
-   // TODO: use workbuffer
-   int* data = new int[1024];
-
-   data[0] = 2;
-   data[1] = 7;
-   data[2] = 1;
-   data[3] = 8;
-
-   // extract data
-   extract_data(
-         data,       // source
-         "filename", // filename
-         4,          // count
-         master_task_params->master_comm->get_dex_comm() );
-
-   // terminate master data extraction task
-   finalize_extraction( master_task_params->master_comm->get_dex_comm() );
-
-   // TODO: use workbuffer
-   delete[] data;
-
-   // tell the main thread this task is complete
-   com::tsk::barrier_wait( master_task_params->barrier );
 }

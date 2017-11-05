@@ -1,7 +1,7 @@
 // master_comm.cpp
 
 #include "comm_parent.h"
-#include "master_comm.h"
+#include "master.h"
 #include "com.h"
 #include "proc_maps.h"
 

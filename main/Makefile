@@ -18,6 +18,7 @@ LIBS    = -lfio -lmem -pthread
 MIDDLEWARE = ../middleware/
 
 masterOBJ = master.o       \
+            master_task.o  \
             master_comm.o  \
 #
 
@@ -49,6 +50,9 @@ clean:
 	rm $(OBJ) $(EXE)
 
 master.o: master.cpp
+	$(CC) $^ -c $(INC) $(LIBS)
+
+master_task.o: master_task.cpp
 	$(CC) $^ -c $(INC) $(LIBS)
 
 master_comm.o: master_comm.cpp
