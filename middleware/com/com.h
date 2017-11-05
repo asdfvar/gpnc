@@ -23,6 +23,21 @@ namespace com {
          MPI_Comm_rank( MPI_COMM_WORLD, myid );
       }
 
+      static void init( int argc, char* argv[] )
+      {
+         MPI_Init( &argc, &argv );
+      }
+
+      static void size( MPI_Comm comm, int* numprocs )
+      {
+         MPI_Comm_size( comm, numprocs );
+      }
+
+      static void rank( MPI_Comm comm, int* rank )
+      {
+         MPI_Comm_rank( comm, rank );
+      }
+
       static void finalize( void )
       {
          MPI_Finalize();
@@ -67,7 +82,8 @@ namespace com {
             else if( typeid(Type) == typeid(double) )
                return MPI_Isend ( buf, count, MPI_DOUBLE, dest_id, tag, comm, request );
             else {
-               std::cout << __FILE__ << ":" << __LINE__ << ":unknown type" << std::endl;
+               return MPI_Isend ( (void*)buf, count * sizeof(Type),
+                                  MPI_BYTE, dest_id, tag, comm, request );
             }
          }
 
@@ -88,7 +104,8 @@ namespace com {
             else if( typeid(Type) == typeid(double) )
                return MPI_Irecv ( buf, count, MPI_DOUBLE, src_id, tag, comm, request );
             else {
-               std::cout << "unknown type" << std::endl;
+               return MPI_Irecv ( (void*)buf, count * sizeof(Type),
+                                  MPI_BYTE, src_id, tag, comm, request );
             }
          }
 
@@ -98,8 +115,9 @@ namespace com {
          return MPI_Wait ( request, &status );
       }
 
-      typedef MPI_Request Request;
-      typedef MPI_Comm    Comm;
+      typedef MPI_Request         Request;
+      typedef MPI_Comm            Comm;
+      const   MPI_Comm Comm_world MPI_COMM_WORLD;
    }
 
    // POSIX threading interface

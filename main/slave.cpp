@@ -1,17 +1,18 @@
+// slave.cpp
+
 #include "com.h"
 #include "fio.h"
 #include "parameters.h"
 #include "memory.h"
 #include "worker_task.h"
+#include "proc_maps.h"
 #include <iostream>
+#include "slave_comm.h"
 
 int main( int argc, char* argv[] )
 {
 
-   int numprocs;
-   int myid;
-
-   com::proc::start( argc, argv, &numprocs, &myid );
+   Slave_comm slave_comm( argc, argv );
 
    fio::Text_file parameters( "../parameters/parameters.txt" );
 
@@ -56,8 +57,7 @@ int main( int argc, char* argv[] )
    // suspend execution of the worker task
    com::tsk::join( worker_tsk_handle );
 
-   // finalize process communication
-   com::proc::finalize();
+   slave_comm.finalize();
 
    // free workspace memory from heap
    workspace.finalize();
