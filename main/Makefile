@@ -19,16 +19,17 @@ MIDDLEWARE = ../middleware/
 
 masterOBJ = master.o       \
             master_comm.o  \
-            extract_data.o \
 #
 
 slaveOBJ  = slave.o        \
             worker_task.o  \
             slave_comm.o   \
-            extract_data.o \
 #
 
-OBJ       = $(masterOBJ) $(slaveOBJ)
+commonOBJ = extract_data.o \
+#
+
+OBJ       = $(masterOBJ) $(slaveOBJ) $(commonOBJ)
 
 masterEXE = master
 slaveEXE  = slave
@@ -38,8 +39,8 @@ all: $(OBJ)
 	cd $(MIDDLEWARE)/fio    && $(MAKE)
 	cd $(MIDDLEWARE)/memory && $(MAKE)
 	cd ../ioeng && $(MAKE)
-	$(CC) $(masterOBJ) $(INC) $(LIBS) $(LIBPATH) -o $(masterEXE)
-	$(CC) $(slaveOBJ) $(INC) $(LIBS) $(LIBPATH) -o $(slaveEXE)
+	$(CC) $(masterOBJ) $(commonOBJ) $(INC) $(LIBS) $(LIBPATH) -o $(masterEXE)
+	$(CC) $(slaveOBJ) $(commonOBJ) $(INC) $(LIBS) $(LIBPATH) -o $(slaveEXE)
 
 clean:
 	make -C $(MIDDLEWARE)/fio    clean
