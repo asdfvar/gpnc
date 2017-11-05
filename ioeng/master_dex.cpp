@@ -2,6 +2,7 @@
 
 #include "master_dex.h"
 #include "com.h"
+#include "proc_maps.h"
 #include <iostream>
 
 void* master_dex_task( void* task_args )
@@ -9,8 +10,73 @@ void* master_dex_task( void* task_args )
    // cast task arguments as Master_dex_params type
    Master_dex_params* master_dex_params = (Master_dex_params*)task_args;
 
+   // TODO: use workbuffer
+   int* data = new int[1024];
+
+   // receive meta data
+   com::proc::Request request;
+   Meta master_meta;
+
    // announce ourselves
    std::cout << "master DEX task processing start" << std::endl;
+
+   bool terminate = false;
+
+   do {
+
+      // receive meta data from master process
+      com::proc::Irecv(
+           &master_meta,
+            1,            // count
+            0,            // proc id
+            MASTER_META,  // tag
+            master_dex_params->master_comm,
+            &request );
+
+      // wait for meta data to be received
+      com::proc::wait( &request );
+
+      // check if this receive is a termination message
+      terminate = master_meta.terminate;
+
+      if ( !terminate )
+      {
+
+         // get data size
+         int count     = master_meta.count;
+         int type_size = master_meta.type_size;
+
+         char* dst = (char*)data;
+
+         // receive data
+         com::proc::Irecv(
+               dst,                // data destination
+               count * type_size,  // count
+               0,                  // proc id
+               MASTER_DATA,        // tag
+               master_dex_params->master_comm,
+               &request );
+
+         // wait for data to be received
+         com::proc::wait( &request );
+
+         int* data_int = static_cast<int*>(data);
+
+         std::cout << "data = ";
+         std::cout << data_int[0] << ", ";
+         std::cout << data_int[1] << ", ";
+         std::cout << data_int[2] << ", ";
+         std::cout << data_int[3] << std::endl;
+
+         // check if this data extraction exists
+
+         // write it to file
+      }
+
+   } while( !terminate );
+
+   // TODO: use workbuffer
+   delete[] data;
 
    // tell the main thread this task is complete
    com::tsk::barrier_wait( master_dex_params->barrier );

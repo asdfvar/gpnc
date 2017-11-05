@@ -9,6 +9,7 @@ void* master_dex_task( void* task_args );
 
 typedef struct
 {
+   com::proc::Comm    master_comm;
    com::tsk::barrier* barrier;
 } Master_dex_params;
 

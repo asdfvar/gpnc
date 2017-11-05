@@ -2,7 +2,7 @@
 
 #include "com.h"
 #include "master_comm.h"
-#include "data_extraction.h"
+#include "extract_data.h"
 #include "fio.h"
 #include "parameters.h"
 #include "memory.h"
@@ -70,25 +70,6 @@ int main( int argc, char* argv[] )
    com::tsk::barrier_wait( &master_barrier );
    std::cout << "master task processing complete" << std::endl;
 
-   float buf[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-   com::proc::Request request;
-
-   std::cout << "about to send" << std::endl;
-
-   com::proc::Isend(
-         (float*)buf,
-         4,            // count
-         0,            // proc id
-         1,            // tag
-         master_comm.get_dex_comm(),
-         &request );
-
-   std::cout << "sending" << std::endl;
-
-   com::proc::wait( &request );
-
-   std::cout << "sent" << std::endl;
-
    /*
    ** close down and finalize master processing
    */
@@ -115,6 +96,27 @@ static void* master_task( void* task_args )
 
    // announce ourselves
    std::cout << "start master task processing" << std::endl;
+
+   // TODO: use workbuffer
+   int* data = new int[1024];
+
+   data[0] = 2;
+   data[1] = 7;
+   data[2] = 1;
+   data[3] = 8;
+
+   // extract data
+   extract_data(
+         data,       // source
+         "filename", // filename
+         4,          // count
+         master_task_params->master_comm->get_dex_comm() );
+
+   // terminate master data extraction task
+   finalize_extraction( master_task_params->master_comm->get_dex_comm() );
+
+   // TODO: use workbuffer
+   delete[] data;
 
    // tell the main thread this task is complete
    com::tsk::barrier_wait( master_task_params->barrier );

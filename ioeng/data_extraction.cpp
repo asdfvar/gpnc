@@ -29,7 +29,8 @@ int main( int argc, char* argv[] )
 
    // inter-communicator to master
    com::proc::Comm master_comm;
-   com::proc::intercomm_create( my_comm,
+   com::proc::intercomm_create(
+         my_comm,
          MASTER_GROUP,
          MASTER_DATA_EXT,
          &master_comm );
@@ -42,6 +43,8 @@ int main( int argc, char* argv[] )
 
    // declare the master DEX parameters
    Master_dex_params master_dex_params;
+
+   master_dex_params.master_comm = master_comm;
 
    // initialize the master DEX barrier
    com::tsk::barrier_init( &master_dex_barrier, 2 );
@@ -93,26 +96,6 @@ int main( int argc, char* argv[] )
    // wait for the slave DEX task to finish
    com::tsk::barrier_wait( &slave_dex_barrier );
    std::cout << "slave DEX task processing complete" << std::endl;
-
-   float buf[10];
-   com::proc::Request request;
-   std::cout << "about to receive" << std::endl;
-
-   com::proc::Irecv(
-         (float*)buf,
-         4,            // count
-         0,            // proc id
-         1,            // tag
-         master_comm,
-         &request );
-
-   std::cout << "receiving" << std::endl;
-
-   com::proc::wait( &request );
-
-   std::cout << "received" << std::endl;
-
-   std::cout << "buf = " << buf[0] << buf[1] << buf[2] << buf[3] << std::endl;
 
    /*
     ** close down and finalize DEX processing
