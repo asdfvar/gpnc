@@ -1,10 +1,19 @@
-// slave_comm.h
+// slave.h
 
-#ifndef SLAVE_COMM_H
-#define SLAVE_COMM_H
+#ifndef SLAVE_H
+#define SLAVE_H
 
 #include "comm_parent.h"
 #include "com.h"
+#include "fio.h"
+
+void* slave_task( void* task_args );
+
+typedef struct
+{
+   fio::Text_file*    parameters;
+   com::tsk::barrier* barrier;
+} Slave_tsk_params;
 
 class Slave_comm : public Comm_parent {
 

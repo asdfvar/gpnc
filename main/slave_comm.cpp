@@ -1,7 +1,7 @@
 // slave_comm.cpp
 
 #include "comm_parent.h"
-#include "slave_comm.h"
+#include "slave.h"
 #include "com.h"
 #include "proc_maps.h"
 

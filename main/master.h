@@ -1,10 +1,12 @@
-// master_comm.h
+// master.h
 
-#ifndef MASTER_COMM_H
-#define MASTER_COMM_H
+#ifndef MASTER_H
+#define MASTER_H
 
 #include "comm_parent.h"
 #include "com.h"
+#include "fio.h"
+#include "memory.h"
 
 class Master_comm : public Comm_parent {
 
@@ -30,5 +32,14 @@ class Master_comm : public Comm_parent {
       // communication handle to the data extraction driver
       com::proc::Comm dex_comm;
 };
+
+void* master_task( void* task_args );
+
+typedef struct {
+   mem::Memory        workspace;
+   fio::Text_file*    parameters;
+   com::tsk::barrier* barrier;
+   Master_comm*       master_comm;
+} Master_task_params;
 
 #endif
