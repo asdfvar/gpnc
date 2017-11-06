@@ -1,5 +1,3 @@
 develop high-level abstraction for data extraction.
-create mutex to handle threading std-outputs to terminal
+create mutex to handle threading std-outputs to standard out
 need to work out the intercomm_create logic to interface with multiple slave processes
-rename all "worker task" nomenclature to "slave task"
-move slave-specific stuff to slave.h (need to create slave.h)
