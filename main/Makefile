@@ -23,7 +23,7 @@ masterOBJ = master.o       \
 #
 
 slaveOBJ  = slave.o        \
-            worker_task.o  \
+            slave_task.o   \
             slave_comm.o   \
 #
 
@@ -64,7 +64,7 @@ slave_comm.o: slave_comm.cpp
 slave.o: slave.cpp
 	$(CC) $^ -c $(INC) $(LIBS)
 
-worker_task.o: worker_task.cpp
+slave_task.o: slave_task.cpp
 	$(CC) $^ -c $(INC) $(LIBS)
 
 extract_data.o: extract_data.cpp

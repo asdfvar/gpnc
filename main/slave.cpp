@@ -3,39 +3,36 @@
 #include "com.h"
 #include "fio.h"
 #include "memory.h"
-#include "worker_task.h"
+#include "slave.h"
 #include "proc_maps.h"
 #include <iostream>
-#include "slave_comm.h"
 
 int main( int argc, char* argv[] )
 {
 
    Slave_comm slave_comm( argc, argv );
 
-   fio::Text_file parameters( "../parameters/parameters.txt" );
+   Slave_tsk_params slave_tsk_parameters;
 
-   Worker_tsk_params worker_tsk_parameters;
+   fio::Text_file parameters( getenv( "GPNC_PARAMS" ) );
+   slave_tsk_parameters.parameters = &parameters;
 
-   size_t mem_size           = parameters.get_int( "memory_size_slave" );
+   size_t mem_size = parameters.get_int( "memory_size_slave" );
 
    mem::Memory workspace( mem_size );
 
-   std::cout << "parameters = " << worker_tsk_parameters.par_int   << ", "
-                                << worker_tsk_parameters.par_float << ", "
-                                << worker_tsk_parameters.par_double << std::endl;
+   com::tsk::handler slave_tsk_handle;
+   com::tsk::barrier slave_barrier;
+   com::tsk::barrier_init( &slave_barrier, 2 );
 
-   com::tsk::handler worker_tsk_handle;
-   com::tsk::barrier worker_barrier;
-   com::tsk::barrier_init( &worker_barrier, 2 );
+   slave_tsk_parameters.barrier = &slave_barrier;
 
-   worker_tsk_parameters.barrier = &worker_barrier;
+   com::tsk::create( &slave_tsk_handle,
+                     slave_task,
+                     (void*)&slave_tsk_parameters );
 
-   com::tsk::create( &worker_tsk_handle,
-                     worker_task,
-                     (void*)&worker_tsk_parameters );
-
-   com::tsk::barrier_wait( &worker_barrier );
+   // wait for slave task to finish
+   com::tsk::barrier_wait( &slave_barrier );
    std::cout << "AFTER barrier" << std::endl;
 
    /***************************************************************************
@@ -43,10 +40,10 @@ int main( int argc, char* argv[] )
    ***************************************************************************/
 
    // destroy thread barrier
-   com::tsk::barrier_destroy( &worker_barrier );
+   com::tsk::barrier_destroy( &slave_barrier );
 
-   // suspend execution of the worker task
-   com::tsk::join( worker_tsk_handle );
+   // suspend execution of the slave task
+   com::tsk::join( slave_tsk_handle );
 
    slave_comm.finalize();
 
