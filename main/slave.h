@@ -11,6 +11,8 @@ void* slave_task( void* task_args );
 
 typedef struct
 {
+   int                rank;
+   int                task_id;
    fio::Text_file*    parameters;
    com::tsk::barrier* barrier;
 } Slave_tsk_params;

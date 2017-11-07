@@ -26,6 +26,11 @@ class Comm_parent {
          com::proc::rank( com::proc::Comm_world, &global_rank );
       }
 
+      int get_rank( void )
+      {
+         return local_rank;
+      }
+
       // finalize communication setup
       virtual void finalize( const std::string& proc_name )
       {

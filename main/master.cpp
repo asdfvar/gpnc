@@ -12,7 +12,7 @@
 int main( int argc, char* argv[] )
 {
 
-   // setup processor communications
+   // setup process communications
    Master_comm master_comm( argc, argv );
 
    // read parameter file
@@ -20,7 +20,9 @@ int main( int argc, char* argv[] )
 
    std::cout << std::endl;
    std::cout << "reading in parameter-file contents:" << std::endl;
+   std::cout << "###################################" << std::endl;
    parameters.print_all();
+   std::cout << "###################################" << std::endl;
    std::cout << std::endl;
 
    size_t mem_size = parameters.get_int( "memory_size_master" );
@@ -44,9 +46,7 @@ int main( int argc, char* argv[] )
    master_task_params.barrier     = &master_barrier;
    master_task_params.master_comm = &master_comm;
 
-   /*
-   ** start the master task
-   */
+   // start the master task
    com::tsk::create( &master_tsk_handle,
                      master_task,
                      (void*)&master_task_params );
