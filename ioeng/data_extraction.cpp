@@ -51,9 +51,7 @@ int main( int argc, char* argv[] )
 
    master_dex_params.barrier = &master_dex_barrier;
 
-   /*
-    ** start master data extraction task
-    */
+   // start master data extraction task
    com::tsk::create(
          &master_dex_handle,
          master_dex_task,
@@ -81,9 +79,7 @@ int main( int argc, char* argv[] )
 
    slave_dex_params.barrier = &slave_dex_barrier;
 
-   /*
-    ** start slave data extraction task
-    */
+   // start slave data extraction task
    com::tsk::create(
          &slave_dex_handle,
          slave_dex_task,
@@ -97,9 +93,9 @@ int main( int argc, char* argv[] )
    com::tsk::barrier_wait( &slave_dex_barrier );
    std::cout << "slave DEX task processing complete" << std::endl;
 
-   /*
-    ** close down and finalize DEX processing
-    */
+   /********************************************
+    ** close down and finalize DEX processing **
+    *******************************************/
 
    // destroy master DEX barrier
    com::tsk::barrier_destroy( &master_dex_barrier );
