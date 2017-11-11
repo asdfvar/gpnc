@@ -16,7 +16,7 @@ int main( int argc, char* argv[] )
    Master_comm master_comm( argc, argv );
 
    // read parameter file
-   fio::Text_file parameters( getenv( "GPNC_PARAMS" ) );
+   fio::Parameter parameters( getenv( "GPNC_PARAMS" ) );
 
    std::cout << std::endl;
    std::cout << "reading in parameter-file contents:" << std::endl;

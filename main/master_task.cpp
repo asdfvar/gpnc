@@ -11,7 +11,7 @@ void* master_task( void* task_args )
    Master_task_params* master_task_params = (Master_task_params*)task_args;
 
    // declare and define alias to parameters object
-   fio::Text_file* parameters = master_task_params->parameters;
+   fio::Parameter* parameters = master_task_params->parameters;
 
    // announce ourselves
    std::cout << "start master-task processing" << std::endl;

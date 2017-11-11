@@ -15,7 +15,7 @@ int main( int argc, char* argv[] )
    Slave_comm slave_comm( argc, argv );
 
    // read parameter file
-   fio::Text_file parameters( getenv( "GPNC_PARAMS" ) );
+   fio::Parameter parameters( getenv( "GPNC_PARAMS" ) );
 
    // define memory size for slave-task processing
    size_t mem_size = parameters.get_int( "memory_size_slave" );

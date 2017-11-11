@@ -76,9 +76,9 @@ static std::string get_param_str( const std::string& contents,
 namespace fio {
 
    /*
-   ** constructor name: Text_file
+   ** constructor name: Parameter
    */
-   Text_file::Text_file( std::string in_file )
+   Parameter::Parameter( std::string in_file )
    {
       std::ifstream input;
       input.open( in_file.c_str(), std::ios::in );
@@ -101,35 +101,33 @@ namespace fio {
    }  
 
    /*
-   ** destructor name: Text_file
+   ** destructor name: Parameter
    */
-   Text_file::~Text_file( void )
+   Parameter::~Parameter( void )
    {
       std::cout << "clearing parameter text-file-object contents" << std::endl;
    }
 
    /*
-   ** function name: print_all from Text_file
+   ** function name: print_all from Parameter
    */
-   void Text_file::print_all( void )
+   void Parameter::print_all( void )
    {
       std::cout << contents;
    }
 
    /*
-   ** function name: get_int from Text_file
+   ** function name: get_int from Parameter
    */
-   int Text_file::get_int( const std::string& parameter )
+   int Parameter::get_int( const std::string& parameter )
    {
       std::string str_parm = get_param_str( contents, parameter );
       if ( str_parm.empty() ) return 0;
       return atoi( str_parm.c_str() );
    }
 
-   /*
-   ** function name: get_real from Text_file
-   */
-   double Text_file::get_real( const std::string& parameter )
+   // get_real function from Parameter class
+   double Parameter::get_real( const std::string& parameter )
    {
       std::string str_parm = get_param_str( contents, parameter );
       if ( str_parm.empty() ) return 0.0;

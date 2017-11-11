@@ -8,11 +8,11 @@
 
 namespace fio {
 
-   class Text_file {
+   class Parameter {
 
       public:
-         Text_file ( std::string in_file );
-        ~Text_file ( void );
+         Parameter ( std::string in_file );
+        ~Parameter ( void );
 
          int    get_int ( const std::string& );
          double get_real( const std::string& );

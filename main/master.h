@@ -37,7 +37,7 @@ void* master_task( void* task_args );
 
 typedef struct {
    mem::Memory        workspace;
-   fio::Text_file*    parameters;
+   fio::Parameter*    parameters;
    com::tsk::barrier* barrier;
    Master_comm*       master_comm;
 } Master_task_params;

@@ -13,7 +13,7 @@ typedef struct
 {
    int                rank;
    int                task_id;
-   fio::Text_file*    parameters;
+   fio::Parameter*    parameters;
    com::tsk::barrier* barrier;
 } Slave_tsk_params;
 
