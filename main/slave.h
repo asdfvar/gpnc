@@ -6,16 +6,9 @@
 #include "comm_parent.h"
 #include "com.h"
 #include "fio.h"
+#include "memory.h"
 
 void* slave_task( void* task_args );
-
-typedef struct
-{
-   int                rank;
-   int                task_id;
-   fio::Parameter*    parameters;
-   com::tsk::barrier* barrier;
-} Slave_tsk_params;
 
 class Slave_comm : public Comm_parent {
 
@@ -41,5 +34,15 @@ class Slave_comm : public Comm_parent {
       // communication handle to the data extraction driver
       com::proc::Comm dex_comm;
 };
+
+typedef struct
+{
+   int                proc_id;
+   int                task_id;
+   mem::Memory        workspace;
+   fio::Parameter*    parameters;
+   com::tsk::barrier* barrier;
+   Slave_comm*        slave_comm;
+} Slave_tsk_params;
 
 #endif

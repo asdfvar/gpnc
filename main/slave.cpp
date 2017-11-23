@@ -32,9 +32,10 @@ int main( int argc, char* argv[] )
 
    // populate the slave-task parameters
    Slave_tsk_params slave_tsk_parameters;
-   slave_tsk_parameters.rank       = slave_comm.get_rank();
+   slave_tsk_parameters.proc_id    = slave_comm.get_rank();
    slave_tsk_parameters.parameters = &parameters;
    slave_tsk_parameters.barrier    = &slave_barrier;
+   slave_tsk_parameters.slave_comm = &slave_comm;
 
    for (int task_num = 0; task_num < num_slave_tasks; task_num++)
    {

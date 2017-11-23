@@ -12,6 +12,8 @@ enum Proc_tags {
    MASTER_DATA_EXT, // inter-comm creation for master process
    MASTER_META,     // meta data for master
    MASTER_DATA,     // data for master
+   SLAVE_META,      // meta data for slave
+   SLAVE_DATA,      // data for slave
    SLAVE_DATA_EXT   // inter-comm creation for slave process
 };
 

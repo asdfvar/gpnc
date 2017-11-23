@@ -49,11 +49,11 @@ namespace com {
       }
 
       static void split (
-            int       group_number,
+            int       color,
             int       rank,
             MPI_Comm* group_handle )
       {
-         MPI_Comm_split( MPI_COMM_WORLD, group_number, rank, group_handle );
+         MPI_Comm_split( MPI_COMM_WORLD, color, rank, group_handle );
       }
 
       static void intercomm_create(

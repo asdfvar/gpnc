@@ -18,12 +18,14 @@ int main( int argc, char* argv[] )
    // read parameter file
    fio::Parameter parameters( getenv( "GPNC_PARAMS" ) );
 
+#if 0
    std::cout << std::endl;
    std::cout << "reading in parameter-file contents:" << std::endl;
    std::cout << "###################################" << std::endl;
    parameters.print_all();
    std::cout << "###################################" << std::endl;
    std::cout << std::endl;
+#endif
 
    size_t mem_size = parameters.get_int( "memory_size_master" );
 
@@ -53,7 +55,6 @@ int main( int argc, char* argv[] )
 
    // wait for the master task to finish
    com::tsk::barrier_wait( &master_barrier );
-   std::cout << "master task processing complete" << std::endl;
 
    /*
    ** close down and finalize master processing

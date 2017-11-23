@@ -3,7 +3,7 @@
 ######################################################
 
 num_slave_procs=1
-num_slave_tasks=4
+num_slave_tasks=1
 
 ######################################################
 
@@ -16,4 +16,8 @@ export GPNC_NUM_SLAVE_PROCS=$num_slave_procs
 # export number of slave tasks to the environment variables
 export GPNC_NUM_SLAVE_TASKS=$num_slave_tasks
 
-mpirun -n 1 $1/ioeng/ioexe : -n 1 $1/main/master : -n $num_slave_procs $1/main/slave
+basename=$1
+
+mpirun -n 1 $basename/ioeng/ioexe : \
+       -n 1 $basename/main/master : \
+       -n $num_slave_procs $basename/main/slave
