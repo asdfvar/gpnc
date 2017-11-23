@@ -18,7 +18,7 @@ namespace master {
 
       // send meta data
       com::proc::Isend(
-            &meta_data,   // buf
+            &meta_data,  // buf
             1,           // count
             0,           // dest_id
             MASTER_META, // tag

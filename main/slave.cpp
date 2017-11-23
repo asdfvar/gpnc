@@ -30,23 +30,23 @@ int main( int argc, char* argv[] )
    com::tsk::barrier slave_barrier;
    com::tsk::barrier_init( &slave_barrier, num_slave_tasks + 1 );
 
+// TODO:
    // populate the slave-task parameters
-   Slave_tsk_params slave_tsk_parameters;
-   slave_tsk_parameters.proc_id    = slave_comm.get_rank();
-   slave_tsk_parameters.parameters = &parameters;
-   slave_tsk_parameters.barrier    = &slave_barrier;
-   slave_tsk_parameters.slave_comm = &slave_comm;
+   Slave_tsk_params slave_tsk_parameters[200];
 
    for (int task_num = 0; task_num < num_slave_tasks; task_num++)
    {
-      // set local task id
-      slave_tsk_parameters.task_id = task_num;
+      slave_tsk_parameters[task_num].proc_id    = slave_comm.get_rank();
+      slave_tsk_parameters[task_num].parameters = &parameters;
+      slave_tsk_parameters[task_num].barrier    = &slave_barrier;
+      slave_tsk_parameters[task_num].slave_comm = &slave_comm;
+      slave_tsk_parameters[task_num].task_id    = task_num;
 
       // start the slave tasks
       com::tsk::create(
             &slave_tsk_handle,
             slave_task,
-            (void*)&slave_tsk_parameters );
+            (void*)&slave_tsk_parameters[task_num] );
    }
 
    // wait for slave task to finish

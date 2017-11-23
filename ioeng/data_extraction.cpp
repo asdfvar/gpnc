@@ -99,6 +99,7 @@ int main( int argc, char* argv[] )
 
          slave_dex_params[index].proc_id = slave_proc + SLAVE_GROUP;
          slave_dex_params[index].task_id = slave_task;
+std::cout << __FILE__ << ":" << __LINE__ << ":got here task " << slave_task << std::endl;
 
          // start slave data extraction task
          com::tsk::create(

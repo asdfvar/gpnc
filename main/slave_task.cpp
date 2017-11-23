@@ -26,9 +26,9 @@ void* slave_task( void* task_args )
    int proc_id = slave_tsk_parameters->proc_id;
    int task_id = slave_tsk_parameters->task_id;
 
+
 // TODO:
 //      slave_tsk_parameters.task_id = task_num;
-#if 1
    // extract data
    extract_data(
          data,       // source
@@ -37,7 +37,6 @@ void* slave_task( void* task_args )
          proc_id,
          task_id,
          slave_tsk_parameters->slave_comm->get_dex_comm() );
-#endif
 
    /*
    ** End master-task processing

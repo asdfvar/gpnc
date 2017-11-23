@@ -25,14 +25,9 @@ void* slave_dex_task( void* task_args )
    com::proc::Request request_data;
 
    bool terminate = false;
+std::cout << __FILE__ << ":" << __LINE__ << ":got here task " << task_id << std::endl;
 
    do {
-
-std::cout << __FILE__ << ":" << __LINE__ << ":got here proc "
-          << proc_id
-          << " task "
-          << task_id
-          << std::endl;
 
       // receive meta data from slave process
       com::proc::Irecv(
@@ -47,13 +42,8 @@ std::cout << __FILE__ << ":" << __LINE__ << ":got here proc "
       // wait for meta data to be received
       com::proc::wait( &request_meta );
 
-std::cout << __FILE__ << ":" << __LINE__ << ":got here proc "
-          << proc_id
-          << " task "
-          << task_id
-          << std::endl;
-
       terminate = slave_meta.terminate;
+std::cout << __FILE__ << ":" << __LINE__ << ":got here task " << task_id << std::endl;
 
 #if 0
       if ( !terminate )
@@ -90,7 +80,7 @@ std::cout << __FILE__ << ":" << __LINE__ << ":got here proc "
 
    delete[] data;
 
+std::cout << __FILE__ << ":" << __LINE__ << ":got here task " << task_id << std::endl;
    // tell the main thread this task is complete
    com::tsk::barrier_wait( slave_dex_params->barrier );
-std::cout << __FILE__ << ":" << __LINE__ << ":got here" << std::endl;
 }
