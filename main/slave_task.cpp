@@ -45,7 +45,6 @@ void* slave_task( void* task_args )
    delete[] data;
 
    // terminate slave data extraction task
-//   finalize_extraction( slave_tsk_parameters->slave_comm->get_dex_comm() );
    finalize_extraction( com::proc::Comm_world, task_id );
 
    com::tsk::barrier_wait( slave_tsk_parameters->barrier );

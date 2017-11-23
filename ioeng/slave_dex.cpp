@@ -34,7 +34,6 @@ void* slave_dex_task( void* task_args )
             1,           // count
             proc_id,     // proc id
             SLAVE_META + 1000 + task_id,  // tag
-//            slave_dex_params->slave_comm,
             com::proc::Comm_world,
             &request_meta );
 
@@ -43,7 +42,6 @@ void* slave_dex_task( void* task_args )
 
       terminate = slave_meta.terminate;
 
-#if 1
       if ( !terminate )
       {
 
@@ -51,7 +49,6 @@ void* slave_dex_task( void* task_args )
          int   count     = slave_meta.count;
          int   type_size = slave_meta.type_size;
 
-std::cout << __FILE__ << ":" << __LINE__ << ":got here task " << task_id << std::endl;
          // receive data
          com::proc::Irecv(
                dst,                // data destination
@@ -63,7 +60,6 @@ std::cout << __FILE__ << ":" << __LINE__ << ":got here task " << task_id << std:
 
          // wait for data to be received
          com::proc::wait( &request_data );
-std::cout << __FILE__ << ":" << __LINE__ << ":got here task " << task_id << std::endl;
 
          int* data_int = static_cast<int*>(data);
 
@@ -74,7 +70,6 @@ std::cout << __FILE__ << ":" << __LINE__ << ":got here task " << task_id << std:
          std::cout << data_int[3] << std::endl;
 
       }
-#endif
 
    } while( !terminate );
 

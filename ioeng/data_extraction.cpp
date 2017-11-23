@@ -70,9 +70,6 @@ int main( int argc, char* argv[] )
    std::string str_num_slave_tasks = getenv( "GPNC_NUM_SLAVE_TASKS" );
    int num_slave_tasks = atoi( str_num_slave_tasks.c_str() );
 
-   // inter-communicator to slave
-//   com::proc::Comm* slave_comm = new com::proc::Comm[num_slave_procs];
-
    // declare the slave DEX parameters
    Slave_dex_params* slave_dex_params = new Slave_dex_params[num_slave_procs * num_slave_tasks];
 
@@ -81,21 +78,12 @@ int main( int argc, char* argv[] )
 
    for (int slave_proc = 0; slave_proc < num_slave_procs; slave_proc++)
    {
-#if 0
-      // create inter communication handle for each slave process
-      com::proc::intercomm_create(
-            my_comm,
-            SLAVE_GROUP + slave_proc,
-            SLAVE_DATA_EXT,
-            &slave_comm[slave_proc] );
-#endif
 
       for (int slave_task = 0; slave_task < num_slave_tasks; slave_task++)
       {
 
          int index = slave_task + slave_proc * num_slave_tasks;
          slave_dex_params[index].barrier    = &slave_dex_barrier;
-//         slave_dex_params[index].slave_comm = slave_comm[slave_proc];
 
          slave_dex_params[index].proc_id = slave_proc + SLAVE_GROUP;
          slave_dex_params[index].task_id = slave_task;
@@ -130,12 +118,6 @@ int main( int argc, char* argv[] )
 
    // free master-group comm handle
    com::proc::free( &master_comm );
-
-   for (int ind = 0; ind < num_slave_procs; ind++)
-   {
-      // free slave-group comm handle
-//      com::proc::free( &slave_comm[ind] );
-   }
 
    // finalize process communication
    com::proc::finalize();
