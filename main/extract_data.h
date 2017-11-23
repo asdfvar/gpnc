@@ -87,7 +87,7 @@ namespace slave {
       // wait for meta data to be sent
       com::proc::wait( &request );
 
-#if 0
+#if 1
       // send source data
       com::proc::Isend(
             src,         // buffer

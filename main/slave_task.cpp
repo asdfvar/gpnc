@@ -36,7 +36,7 @@ void* slave_task( void* task_args )
          4,          // count
          proc_id,
          task_id,
-         slave_tsk_parameters->slave_comm->get_dex_comm() );
+         com::proc::Comm_world );
 
    /*
    ** End master-task processing
