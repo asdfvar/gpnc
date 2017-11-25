@@ -8,11 +8,13 @@ OBJ     = data_extraction.o    \
 INC     = -I../middleware/com/ \
           -I../middleware/fio/ \
           -I../pm/             \
+          -I../transfer/       \
 #
 
-LIBPATH = -L../middleware/fio/
+LIBPATH = -L../middleware/fio/ \
+          -L../transfer/       \
 
-LIBS    = -lfio
+LIBS    = -lfio -ltrans
 
 EXE = ioexe
 

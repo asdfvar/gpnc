@@ -3,17 +3,19 @@ CC      = mpic++
 INC     = -I../middleware/com/    \
           -I../middleware/fio/    \
           -I../middleware/memory/ \
-          -I../parameters/        \
+          -I../transfer           \
           -I../pm/                \
           -I../ioeng/             \
+          -I../transfer/          \
           -I/usr/local/include/   \
 #
 
 LIBPATH = -L../middleware/fio/    \
           -L../middleware/memory/ \
+          -L../transfer/          \
 #
 
-LIBS    = -lfio -lmem -pthread
+LIBS    = -lfio -lmem -ltrans -pthread
 
 MIDDLEWARE = ../middleware/
 
@@ -27,10 +29,7 @@ slaveOBJ  = slave.o        \
             slave_comm.o   \
 #
 
-commonOBJ = extract_data.o \
-#
-
-OBJ       = $(masterOBJ) $(slaveOBJ) $(commonOBJ)
+OBJ       = $(masterOBJ) $(slaveOBJ)
 
 masterEXE = master
 slaveEXE  = slave
@@ -39,14 +38,16 @@ EXE       = $(masterEXE) $(slaveEXE)
 all: $(OBJ) 
 	cd $(MIDDLEWARE)/fio    && $(MAKE)
 	cd $(MIDDLEWARE)/memory && $(MAKE)
+	cd ../transfer && $(MAKE)
 	cd ../ioeng && $(MAKE)
-	$(CC) $(masterOBJ) $(commonOBJ) $(INC) $(LIBS) $(LIBPATH) -o $(masterEXE)
-	$(CC) $(slaveOBJ) $(commonOBJ) $(INC) $(LIBS) $(LIBPATH) -o $(slaveEXE)
+	$(CC) $(masterOBJ) $(INC) $(LIBS) $(LIBPATH) -o $(masterEXE)
+	$(CC) $(slaveOBJ) $(INC) $(LIBS) $(LIBPATH) -o $(slaveEXE)
 
 clean:
 	make -C $(MIDDLEWARE)/fio    clean
 	make -C $(MIDDLEWARE)/memory clean
 	make -C ../ioeng clean
+	make -C ../transfer clean
 	rm $(OBJ) $(EXE)
 
 master.o: master.cpp
@@ -65,7 +66,4 @@ slave.o: slave.cpp
 	$(CC) $^ -c $(INC) $(LIBS)
 
 slave_task.o: slave_task.cpp
-	$(CC) $^ -c $(INC) $(LIBS)
-
-extract_data.o: extract_data.cpp
 	$(CC) $^ -c $(INC) $(LIBS)

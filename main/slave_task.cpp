@@ -15,8 +15,8 @@ void* slave_task( void* task_args )
 
    std::cout << "slave task start" << std::endl;
 
-   int proc_id = slave_tsk_parameters->proc_id;
-   int task_id = slave_tsk_parameters->task_id;
+   int proc_id   = slave_tsk_parameters->proc_id;
+   int task_id   = slave_tsk_parameters->task_id;
    int num_procs = slave_tsk_parameters->num_slave_procs;
    int num_tasks = slave_tsk_parameters->num_slave_tasks;
 
