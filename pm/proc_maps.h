@@ -8,6 +8,8 @@
 #define MASTER_GROUP          1
 #define SLAVE_GROUP           2
 
+#define SLAVE_TAG_POOL        1
+
 enum Proc_tags {
    MASTER_DATA_EXT, // inter-comm creation for master process
    MASTER_META,     // meta data for master

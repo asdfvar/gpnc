@@ -43,6 +43,8 @@ typedef struct
    fio::Parameter*    parameters;
    com::tsk::barrier* barrier;
    Slave_comm*        slave_comm;
+   int                num_slave_procs;
+   int                num_slave_tasks;
 } Slave_tsk_params;
 
 #endif

@@ -80,8 +80,7 @@ namespace slave {
             1,           // count
             0,           // destination id
             SLAVE_META + 1000 + task_id,  // tag
-//            dex_comm,    // comm handle
-            com::proc::Comm_world,
+            dex_comm,    // comm handle
             &request );
 
       // wait for meta data to be sent

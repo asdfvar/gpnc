@@ -26,9 +26,14 @@ class Comm_parent {
          com::proc::rank( com::proc::Comm_world, &global_rank );
       }
 
-      int get_rank( void )
+      int get_local_rank( void )
       {
          return local_rank;
+      }
+
+      int get_global_rank( void )
+      {
+         return global_rank;
       }
 
       // finalize communication setup

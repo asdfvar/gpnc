@@ -2,10 +2,11 @@
 
 #include "master.h"
 #include "extract_data.h"
+#include "data_exchange.h"
 #include "fio.h"
 #include <iostream>
 
-// specify that the scope is of master processing
+// specify the scope used here
 using namespace master;
 
 void* master_task( void* task_args )
