@@ -62,6 +62,9 @@ int main( int argc, char* argv[] )
    * finish processing
    ***************************************************************************/
 
+   // wait for all processes to sync before closing down
+   com::proc::Barrier( com::proc::Comm_world );
+
    delete[] slave_tsk_parameters;
 
    // destroy thread barrier

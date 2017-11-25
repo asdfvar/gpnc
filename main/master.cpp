@@ -56,9 +56,12 @@ int main( int argc, char* argv[] )
    // wait for the master task to finish
    com::tsk::barrier_wait( &master_barrier );
 
-   /*
-   ** close down and finalize master processing
-   */
+   /**************************************************************************
+   * finish processing
+   ***************************************************************************/
+
+   // wait for all processes to sync before closing down
+   com::proc::Barrier( com::proc::Comm_world );
 
    // destroy thread barrier
    com::tsk::barrier_destroy( &master_barrier );

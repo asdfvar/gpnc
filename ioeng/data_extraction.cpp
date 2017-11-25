@@ -109,6 +109,9 @@ int main( int argc, char* argv[] )
     ** close down and finalize DEX processing **
     *******************************************/
 
+   // wait for all processes to sync before closing down
+   com::proc::Barrier( com::proc::Comm_world );
+
    delete[] slave_dex_params;
 
    // destroy master DEX barrier

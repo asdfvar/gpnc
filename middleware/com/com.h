@@ -115,6 +115,12 @@ namespace com {
          return MPI_Wait ( request, &status );
       }
 
+      static int Barrier(
+            MPI_Comm comm )
+      {
+         return MPI_Barrier( comm );
+      }
+
       typedef MPI_Request         Request;
       typedef MPI_Comm            Comm;
       const   MPI_Comm Comm_world MPI_COMM_WORLD;
