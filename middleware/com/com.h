@@ -115,8 +115,7 @@ namespace com {
          return MPI_Wait ( request, &status );
       }
 
-      static int Barrier(
-            MPI_Comm comm )
+      static int Barrier( MPI_Comm comm )
       {
          return MPI_Barrier( comm );
       }
