@@ -1,12 +1,15 @@
-#CC      = mpic++
-CC      = /home/euler/user_libs/openmpi_3p0p0/bin/mpic++
-CL    = ar rcs
-FLAGS = -O3 -Wall -g
+baseDir = ..
+
+# load defines
+include $(baseDir)/defines.mk
+
+FLAGS = -Wall -g
 LIBS  = -pthread
 
-INC   = -I/usr/local/include \
-        -I../middleware/com/ \
-        -I../pm/             \
+INC   = -I/usr/local/include         \
+        -I$(baseDir)/middleware/com/ \
+        -I$(baseDir)/pm/             \
+        $(PROC_INC)                  \
 #
 
 OBJ   = extract_data.o
@@ -20,4 +23,4 @@ clean:
 	rm $(OBJ) $(LIBEXE)
 
 extract_data.o: extract_data.cpp
-	$(CC) $^ -c $(INC) $(LIBS)
+	$(CPP) $^ -c $(INC) $(LIBS)

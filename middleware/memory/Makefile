@@ -1,5 +1,8 @@
-#CC      = mpic++
-CC      = /home/euler/user_libs/openmpi_3p0p0/bin/mpic++
+baseDir = ../..
+
+# load defines
+include $(baseDir)/defines.mk
+
 CL = ar rcs
 FLAGS = -O3 -Wall -g
 INC = -I/usr/local/include
@@ -16,4 +19,4 @@ clean:
 	rm $(OBJ) $(LIBEXE)
 
 memory.o: memory.cpp
-	$(CC) $^ -c $(INC) $(LIBS)
+	$(CPP) $^ -c $(INC) $(LIBS)

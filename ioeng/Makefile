@@ -1,5 +1,7 @@
-#CC      = mpic++
-CC      = /home/euler/user_libs/openmpi_3p0p0/bin/mpic++
+baseDir = ..
+
+# load defines
+include $(baseDir)/defines.mk
 
 FLAGS   = -g -Wall
 
@@ -13,6 +15,7 @@ INC     = -I../middleware/com/    \
           -I../middleware/memory/ \
           -I../pm/                \
           -I../transfer/          \
+          -I$(PROC_INC)                   \
 #
 
 LIBPATH = -L../middleware/fio/    \
@@ -25,16 +28,16 @@ LIBS    = -lfio -ltrans -lmem
 EXE = ioexe
 
 all: $(OBJ)
-	$(CC) $^ -o $(EXE) $(INC) $(FLAGS) $(LIBPATH) $(LIBS)
+	$(MPI_CPP) $^ -o $(EXE) $(INC) $(FLAGS) $(LIBPATH) $(LIBS)
 
 clean:
 	rm $(OBJ) $(EXE)
 
 data_extraction.o: data_extraction.cpp
-	$(CC) $(INC) $(LIBS) $(LIBPATH) $(LIBS) $^ -c
+	$(MPI_CPP) $(INC) $(LIBS) $(LIBPATH) $(LIBS) $^ -c
 
 master_dex.o: master_dex.cpp
-	$(CC) $(INC) $(LIBS) $(LIBPATH) $(LIBS) $^ -c
+	$(MPI_CPP) $(INC) $(LIBS) $(LIBPATH) $(LIBS) $^ -c
 
 slave_dex.o: slave_dex.cpp
-	$(CC) $(INC) $(LIBS) $(LIBPATH) $(LIBS) $^ -c
+	$(MPI_CPP) $(INC) $(LIBS) $(LIBPATH) $(LIBS) $^ -c

@@ -1,5 +1,7 @@
-CC = g++
-CL = ar rcs
+baseDir = ../..
+
+# load defines
+include $(baseDir)/defines.mk
 
 OBJ = fio.o string_utils.o
 
@@ -12,7 +14,7 @@ clean:
 	rm $(OBJ) $(LIBEXE)
 
 fio.o: fio.cpp
-	$(CC) $^ -c $(INC)
+	$(CPP) $^ -c $(INC)
 
 string_utils.o: string_utils.cpp
-	$(CC) $^ -c $(INC)
+	$(CPP) $^ -c $(INC)
