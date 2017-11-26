@@ -31,12 +31,14 @@ void* master_task( void* task_args )
    data[2] = 1;
    data[3] = 8;
 
+#if 0
    // extract data
    extract_data(
          data,       // source
          "filename", // filename
          4,          // count
          master_task_params->master_comm->get_dex_comm() );
+#endif
 
    /*
    ** End master-task processing

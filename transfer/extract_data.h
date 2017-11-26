@@ -74,12 +74,15 @@ namespace slave {
 
       com::proc::Request request;
 
+      int meta_tag = SLAVE_META + task_id;
+      int data_tag = SLAVE_DATA + task_id;
+
       // send meta data
       com::proc::Isend(
             &meta_data,  // buffer
             1,           // count
             0,           // destination id
-            SLAVE_META + 1000 + task_id,  // tag
+            meta_tag,    // tag
             dex_comm,    // comm handle
             &request );
 
@@ -91,7 +94,7 @@ namespace slave {
             src,         // buffer
             count,       // count
             0,           // destination id
-            SLAVE_DATA + 2000 + task_id,  // tag
+            data_tag,    // tag
             dex_comm,    // comm handle
             &request );
 

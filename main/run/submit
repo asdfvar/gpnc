@@ -18,6 +18,8 @@ export GPNC_NUM_SLAVE_TASKS=$num_slave_tasks
 
 basename=$1
 
+# xterm -e gdb -q -tui 
+
 mpirun -n 1 $basename/ioeng/ioexe : \
        -n 1 $basename/main/master : \
        -n $num_slave_procs $basename/main/slave

@@ -19,9 +19,9 @@ namespace slave {
       {
 
          // unique tag for sending data
-         int send_tag = SLAVE_DATA                              +
-                        SLAVE_TAG_POOL * num_procs * num_tasks  +
-                        proc_id_dst * num_tasks                 +
+         int send_tag = SLAVE_DATA_EXCHANGE      +
+                        num_procs * num_tasks    +
+                        proc_id_dst * num_tasks  +
                         task_id_dst;
 
          com::proc::Request request;
@@ -51,9 +51,9 @@ namespace slave {
       {
 
          // unique tag for receiving data
-         int recv_tag = SLAVE_DATA                              +
-                        SLAVE_TAG_POOL * num_procs * num_tasks  +
-                        proc_id_dst * num_tasks                 +
+         int recv_tag = SLAVE_DATA_EXCHANGE      +
+                        num_procs * num_tasks    +
+                        proc_id_dst * num_tasks  +
                         task_id_dst;
 
          com::proc::Request request;

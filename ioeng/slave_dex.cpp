@@ -11,9 +11,6 @@ void* slave_dex_task( void* task_args )
    // cast task arguments as Slave_dex_params type
    Slave_dex_params* slave_dex_params = (Slave_dex_params*)task_args;
 
-   // announce ourselves
-   std::cout << "slave DEX task processing start" << std::endl;
-
    int proc_id = slave_dex_params->proc_id;
    int task_id = slave_dex_params->task_id;
 
@@ -24,6 +21,10 @@ void* slave_dex_task( void* task_args )
    com::proc::Request request_meta;
    com::proc::Request request_data;
 
+   int meta_tag = SLAVE_META + task_id;
+   int data_tag = SLAVE_DATA + task_id;
+
+std::cout << "data_tag = " << data_tag << std::endl;
    bool terminate = false;
 
    do {
@@ -33,7 +34,7 @@ void* slave_dex_task( void* task_args )
             &slave_meta,
             1,           // count
             proc_id,     // proc id
-            SLAVE_META + 1000 + task_id,  // tag
+            meta_tag,    // tag
             com::proc::Comm_world,
             &request_meta );
 
@@ -53,8 +54,8 @@ void* slave_dex_task( void* task_args )
          com::proc::Irecv(
                dst,                // data destination
                count * type_size,  // count
-               proc_id,                  // proc id
-               SLAVE_DATA + 2000 + task_id,        // tag
+               proc_id,            // proc id
+               data_tag,           // tag
                com::proc::Comm_world,
                &request_data );
 

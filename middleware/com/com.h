@@ -89,7 +89,7 @@ namespace com {
 
       template <class Type>
          static int Irecv(
-               Type*         buf,
+               Type*        buf,
                int          count,
                int          src_id,
                int          tag,

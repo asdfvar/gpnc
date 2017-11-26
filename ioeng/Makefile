@@ -1,5 +1,7 @@
 CC      = mpic++
 
+FLAGS   = -g -Wall
+
 OBJ     = data_extraction.o    \
           master_dex.o         \
           slave_dex.o          \
@@ -19,7 +21,7 @@ LIBS    = -lfio -ltrans
 EXE = ioexe
 
 all: $(OBJ)
-	$(CC) $^ -o $(EXE) $(INC) $(LIBPATH) $(LIBS)
+	$(CC) $^ -o $(EXE) $(INC) $(FLAGS) $(LIBPATH) $(LIBS)
 
 clean:
 	rm $(OBJ) $(EXE)

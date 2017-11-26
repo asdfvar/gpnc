@@ -1,5 +1,7 @@
 CC      = mpic++
 
+FLAGS   = -g -Wall -ulimit
+
 INC     = -I../middleware/com/    \
           -I../middleware/fio/    \
           -I../middleware/memory/ \
@@ -40,8 +42,8 @@ all: $(OBJ)
 	cd $(MIDDLEWARE)/memory && $(MAKE)
 	cd ../transfer && $(MAKE)
 	cd ../ioeng && $(MAKE)
-	$(CC) $(masterOBJ) $(INC) $(LIBS) $(LIBPATH) -o $(masterEXE)
-	$(CC) $(slaveOBJ) $(INC) $(LIBS) $(LIBPATH) -o $(slaveEXE)
+	$(CC) $(masterOBJ) $(INC) $(FLAGS) $(LIBS) $(LIBPATH) -o $(masterEXE)
+	$(CC) $(slaveOBJ) $(INC) $(FLAGS) $(LIBS) $(LIBPATH) -o $(slaveEXE)
 
 clean:
 	make -C $(MIDDLEWARE)/fio    clean

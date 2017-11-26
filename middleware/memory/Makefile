@@ -1,6 +1,6 @@
 CC = mpic++
 CL = ar rcs
-FLAGS = -O3 -Wall
+FLAGS = -O3 -Wall -g
 INC = -I/usr/local/include
 LIBS = -pthread
 

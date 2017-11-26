@@ -41,12 +41,14 @@ namespace slave {
       // to let it know it can finish
       meta_data.terminate = true;
 
+      int meta_tag = SLAVE_META + task_id;
+
       // send meta data
       com::proc::Isend(
             &meta_data,  // buf
             1,           // count
             0,           // dest_id
-            SLAVE_META + 1000 + task_id,  // tag
+            meta_tag,    // tag
             dex_comm,    // comm handle
             &request );
 

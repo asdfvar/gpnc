@@ -13,8 +13,6 @@ void* slave_task( void* task_args )
 {
    Slave_tsk_params* slave_tsk_parameters = (Slave_tsk_params*)task_args;
 
-   std::cout << "slave task start" << std::endl;
-
    int proc_id   = slave_tsk_parameters->proc_id;
    int task_id   = slave_tsk_parameters->task_id;
    int num_procs = slave_tsk_parameters->num_slave_procs;
@@ -30,6 +28,7 @@ void* slave_task( void* task_args )
    data[3] = 180 + task_id;
 
 
+#if 1
 // TODO:
 //      slave_tsk_parameters.task_id = task_num;
    // extract data
@@ -40,7 +39,9 @@ void* slave_task( void* task_args )
          proc_id,
          task_id,
          com::proc::Comm_world );
+#endif
 
+#if 1
 if (proc_id == 2 && task_id == 0) {
 
    data[0] = 314;
@@ -70,6 +71,7 @@ if (proc_id == 2 && task_id == 0) {
 
 std::cout << "data = " << data[0] << ", " << data[1] << ", " << data[2] << ", " << data[3] << std::endl;
 }
+#endif
 
    /*
    ** End master-task processing

@@ -1,6 +1,5 @@
 CC = g++
 CL = ar rcs
-FLAGS = -O3 -Wall
 
 OBJ = fio.o string_utils.o
 

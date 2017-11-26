@@ -15,17 +15,6 @@ Slave_comm::Slave_comm( int argc, char* argv[] ) : Comm_parent( argc, argv )
 
    // get local rank
    com::proc::rank( my_comm, &local_rank );
-
-#if 0
-std::cout << __FILE__ << ":" << __LINE__ << ":got here" << std::endl;
-   // inter-communicator to data extraction
-   com::proc::intercomm_create(
-         my_comm,
-         DATA_EXTRACTION_GROUP,
-         SLAVE_DATA_EXT,
-         &dex_comm );
-std::cout << __FILE__ << ":" << __LINE__ << ":got here" << std::endl;
-#endif
 }
 
 com::proc::Comm Slave_comm::get_dex_comm( void )
