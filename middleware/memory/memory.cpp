@@ -17,12 +17,6 @@ namespace mem {
       ptr        = buffer;
    }
 
-   // Memory destructor
-   Memory::~Memory( void )
-   {
-      // Null
-   }
-
    // reserve function from Memory class
    float* Memory::reserve( size_t num_words )
    {
@@ -44,6 +38,12 @@ namespace mem {
    {
       std::cout << "clearing memory buffer object at " << buffer << std::endl;
       delete[] buffer;
+   }
+
+   // Memory destructor
+   Memory::~Memory( void )
+   {
+      // Null
    }
 
 }

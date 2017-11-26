@@ -39,12 +39,12 @@ typedef struct
 {
    int                proc_id;
    int                task_id;
-   mem::Memory        workspace;
+   mem::Memory*       workspace;
    fio::Parameter*    parameters;
    com::tsk::barrier* barrier;
    Slave_comm*        slave_comm;
-   int                num_slave_procs;
-   int                num_slave_tasks;
+   int                num_procs;
+   int                num_tasks;
 } Slave_tsk_params;
 
 #endif

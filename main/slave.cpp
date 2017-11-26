@@ -17,41 +17,45 @@ int main( int argc, char* argv[] )
    // read parameter file
    fio::Parameter parameters( getenv( "GPNC_PARAMS" ) );
 
+   // get the number of slave tasks
+   int num_procs = atoi(getenv( "GPNC_NUM_SLAVE_PROCS" ));
+
+   // get the number of slave tasks
+   int num_tasks = atoi(getenv( "GPNC_NUM_SLAVE_TASKS" ));
+
+   com::tsk::handler slave_tsk_handle;
+   com::tsk::barrier slave_barrier;
+   com::tsk::barrier_init( &slave_barrier, num_tasks + 1 );
+
+   // declare the slave-task parameters
+   Slave_tsk_params* slave_tsk_parameters = new Slave_tsk_params[num_tasks];
+
    // define memory size for slave-task processing
    size_t mem_size = parameters.get_int( "memory_size_slave" );
 
    // declare and define workspace
-   mem::Memory workspace( mem_size );
+   mem::Memory* workspace;
 
-   // get the number of slave tasks
-   int num_slave_procs = atoi(getenv( "GPNC_NUM_SLAVE_PROCS" ));
-
-   // get the number of slave tasks
-   int num_slave_tasks = atoi(getenv( "GPNC_NUM_SLAVE_TASKS" ));
-
-   com::tsk::handler slave_tsk_handle;
-   com::tsk::barrier slave_barrier;
-   com::tsk::barrier_init( &slave_barrier, num_slave_tasks + 1 );
-
-   // declare the slave-task parameters
-   Slave_tsk_params* slave_tsk_parameters = new Slave_tsk_params[num_slave_tasks];
-
-   for (int task_num = 0; task_num < num_slave_tasks; task_num++)
+   for (int task = 0; task < num_tasks; task++)
    {
+
+      workspace = new mem::Memory( mem_size );
+
       // populate the slave-task parameters
-      slave_tsk_parameters[task_num].proc_id         = slave_comm.get_global_rank();
-      slave_tsk_parameters[task_num].task_id         = task_num;
-      slave_tsk_parameters[task_num].parameters      = &parameters;
-      slave_tsk_parameters[task_num].barrier         = &slave_barrier;
-      slave_tsk_parameters[task_num].slave_comm      = &slave_comm;
-      slave_tsk_parameters[task_num].num_slave_procs = num_slave_procs;
-      slave_tsk_parameters[task_num].num_slave_tasks = num_slave_tasks;
+      slave_tsk_parameters[task].proc_id     = slave_comm.get_global_rank();
+      slave_tsk_parameters[task].task_id     = task;
+      slave_tsk_parameters[task].parameters  = &parameters;
+      slave_tsk_parameters[task].barrier     = &slave_barrier;
+      slave_tsk_parameters[task].slave_comm  = &slave_comm;
+      slave_tsk_parameters[task].num_procs   = num_procs;
+      slave_tsk_parameters[task].num_tasks   = num_tasks;
+      slave_tsk_parameters[task].workspace   = workspace;
 
       // start the slave tasks
       com::tsk::create(
             &slave_tsk_handle,
             slave_task,
-            (void*)&slave_tsk_parameters[task_num] );
+            (void*)&slave_tsk_parameters[task] );
    }
 
    // wait for slave task to finish
@@ -76,8 +80,12 @@ int main( int argc, char* argv[] )
    // finalize process communication
    slave_comm.finalize();
 
-   // free workspace memory from heap
-   workspace.finalize();
+   // free workspace memory
+   for (int task = 0; task < num_tasks; task++)
+   {
+      slave_tsk_parameters[task].workspace->finalize();
+      delete slave_tsk_parameters[task].workspace;
+   }
 
    return 0;
 }

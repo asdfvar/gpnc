@@ -15,12 +15,10 @@ void* slave_task( void* task_args )
 
    int proc_id   = slave_tsk_parameters->proc_id;
    int task_id   = slave_tsk_parameters->task_id;
-   int num_procs = slave_tsk_parameters->num_slave_procs;
-   int num_tasks = slave_tsk_parameters->num_slave_tasks;
+   int num_procs = slave_tsk_parameters->num_procs;
+   int num_tasks = slave_tsk_parameters->num_tasks;
 
-// TODO:
-//   int* data = (int*)slave_tsk_parameters->workspace.reserve( 10 );
-   int* data = new int[10];
+   int* data = (int*)slave_tsk_parameters->workspace->reserve( 10 );
 
    data[0] = 120 + task_id;
    data[1] = 170 + task_id;
@@ -29,8 +27,6 @@ void* slave_task( void* task_args )
 
 
 #if 1
-// TODO:
-//      slave_tsk_parameters.task_id = task_num;
    // extract data
    extract_data(
          data,       // source
@@ -74,10 +70,8 @@ std::cout << "data = " << data[0] << ", " << data[1] << ", " << data[2] << ", " 
 #endif
 
    /*
-   ** End master-task processing
+   ** End slave-task processing
    */
-   // TODO:
-   delete[] data;
 
    // TODO:
    // terminate slave data extraction task

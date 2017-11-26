@@ -18,15 +18,6 @@ int main( int argc, char* argv[] )
    // read parameter file
    fio::Parameter parameters( getenv( "GPNC_PARAMS" ) );
 
-#if 0
-   std::cout << std::endl;
-   std::cout << "reading in parameter-file contents:" << std::endl;
-   std::cout << "###################################" << std::endl;
-   parameters.print_all();
-   std::cout << "###################################" << std::endl;
-   std::cout << std::endl;
-#endif
-
    size_t mem_size = parameters.get_int( "memory_size_master" );
 
    // declare and define workspace
