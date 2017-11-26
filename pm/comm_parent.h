@@ -18,6 +18,7 @@ class Comm_parent {
       {
          // initiate process
          com::proc::init( argc, argv );
+//         com::proc::init_thread_multiple( argc, argv );
 
          // get number of processors
          com::proc::size( com::proc::Comm_world, &numprocs );

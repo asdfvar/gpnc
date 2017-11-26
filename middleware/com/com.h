@@ -23,6 +23,18 @@ namespace com {
          MPI_Comm_rank( MPI_COMM_WORLD, myid );
       }
 
+      static void init_thread_multiple( int argc, char* argv[] )
+      {
+         int provided;
+         MPI_Init_thread( &argc, &argv, MPI_THREAD_MULTIPLE, &provided );
+         if (provided < MPI_THREAD_MULTIPLE)
+         {
+            std::cout << "Warning: The MPI library does not have full thread support"
+                      << std::endl;
+            MPI_Abort(MPI_COMM_WORLD, 1);
+         }
+      }
+
       static void init( int argc, char* argv[] )
       {
          MPI_Init( &argc, &argv );
