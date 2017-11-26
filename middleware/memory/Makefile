@@ -1,4 +1,5 @@
-CC = mpic++
+#CC      = mpic++
+CC      = /home/euler/user_libs/openmpi_3p0p0/bin/mpic++
 CL = ar rcs
 FLAGS = -O3 -Wall -g
 INC = -I/usr/local/include

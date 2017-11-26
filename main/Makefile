@@ -1,4 +1,5 @@
-CC      = mpic++
+#CC      = mpic++
+CC      = /home/euler/user_libs/openmpi_3p0p0/bin/mpic++
 
 FLAGS   = -g -Wall -ulimit
 

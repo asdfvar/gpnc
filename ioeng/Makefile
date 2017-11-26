@@ -1,4 +1,5 @@
-CC      = mpic++
+#CC      = mpic++
+CC      = /home/euler/user_libs/openmpi_3p0p0/bin/mpic++
 
 FLAGS   = -g -Wall
 
@@ -7,16 +8,19 @@ OBJ     = data_extraction.o    \
           slave_dex.o          \
 #
 
-INC     = -I../middleware/com/ \
-          -I../middleware/fio/ \
-          -I../pm/             \
-          -I../transfer/       \
+INC     = -I../middleware/com/    \
+          -I../middleware/fio/    \
+          -I../middleware/memory/ \
+          -I../pm/                \
+          -I../transfer/          \
 #
 
-LIBPATH = -L../middleware/fio/ \
-          -L../transfer/       \
+LIBPATH = -L../middleware/fio/    \
+          -L../middleware/memory/ \
+          -L../transfer/          \
+#
 
-LIBS    = -lfio -ltrans
+LIBS    = -lfio -ltrans -lmem
 
 EXE = ioexe
 

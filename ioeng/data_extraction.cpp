@@ -1,6 +1,8 @@
 // data_extraction.cpp
 
 #include "com.h"
+#include "fio.h"
+#include "memory.h"
 #include "proc_maps.h"
 #include <iostream>
 #include <stdlib.h>
@@ -13,7 +15,9 @@ int main( int argc, char* argv[] )
    // get global rank and number of procs
    int global_rank;
    int numprocs;
-   com::proc::init( argc, argv );
+
+   // initialize proc-to-proc communication with multi-threading capability enabled
+   com::proc::init_thread_multiple( argc, argv );
    com::proc::size( com::proc::Comm_world, &numprocs    );
    com::proc::rank( com::proc::Comm_world, &global_rank );
 
@@ -36,6 +40,13 @@ int main( int argc, char* argv[] )
          MASTER_DATA_EXT,
          &master_comm );
 
+   fio::Parameter parameters( getenv( "GPNC_PARAMS" ) );
+
+   size_t mem_size = parameters.get_int( "memory_size_dex" );
+
+   // declare workspace
+   mem::Memory* workspace;
+
    // declare the master DEX task handle
    com::tsk::handler master_dex_handle;
 
@@ -46,6 +57,7 @@ int main( int argc, char* argv[] )
    Master_dex_params master_dex_params;
 
    master_dex_params.master_comm = master_comm;
+   master_dex_params.workspace = new mem::Memory( mem_size );
 
    // initialize the master DEX barrier
    com::tsk::barrier_init( &master_dex_barrier, 2 );
@@ -82,10 +94,13 @@ int main( int argc, char* argv[] )
       for (int slave_task = 0; slave_task < num_slave_tasks; slave_task++)
       {
 
+         workspace = new mem::Memory( mem_size );
+
          int index = slave_task + slave_proc * num_slave_tasks;
-         slave_dex_params[index].barrier    = &slave_dex_barrier;
-         slave_dex_params[index].proc_id = slave_proc + SLAVE_GROUP;
-         slave_dex_params[index].task_id = slave_task;
+         slave_dex_params[index].barrier   = &slave_dex_barrier;
+         slave_dex_params[index].proc_id   = slave_proc + SLAVE_GROUP;
+         slave_dex_params[index].task_id   = slave_task;
+         slave_dex_params[index].workspace = workspace;
 
          // start slave data extraction task
          com::tsk::create(
@@ -110,8 +125,6 @@ int main( int argc, char* argv[] )
    // wait for all processes to sync before closing down
    com::proc::Barrier( com::proc::Comm_world );
 
-   delete[] slave_dex_params;
-
    // destroy master DEX barrier
    com::tsk::barrier_destroy( &master_dex_barrier );
 
@@ -120,6 +133,15 @@ int main( int argc, char* argv[] )
 
    // free master-group comm handle
    com::proc::free( &master_comm );
+
+   // free workspace memory
+   delete master_dex_params.workspace;
+
+   for (int task = 0; task < num_slave_procs * num_slave_tasks; task++)
+   {
+         slave_dex_params[task].workspace = workspace;
+   }
+   delete[] slave_dex_params;
 
    // finalize process communication
    com::proc::finalize();

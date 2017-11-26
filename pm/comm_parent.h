@@ -16,9 +16,8 @@ class Comm_parent {
       // constructor
       Comm_parent( int argc, char* argv[] )
       {
-         // initiate process
-         com::proc::init( argc, argv );
-//         com::proc::init_thread_multiple( argc, argv );
+         // initiate proc-to-proc communication with multi-threading capability enabled
+         com::proc::init_thread_multiple( argc, argv );
 
          // get number of processors
          com::proc::size( com::proc::Comm_world, &numprocs );

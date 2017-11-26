@@ -1,5 +1,6 @@
 // slave_dex.cpp
 
+#include "memory.h"
 #include "proc_maps.h"
 #include "slave_dex.h"
 #include "com.h"
@@ -14,8 +15,7 @@ void* slave_dex_task( void* task_args )
    int proc_id = slave_dex_params->proc_id;
    int task_id = slave_dex_params->task_id;
 
-   // TODO: use workbuffer
-   int* data = new int[1024];
+   int* data = (int*)slave_dex_params->workspace->reserve(100);
 
    Meta slave_meta;
    com::proc::Request request_meta;
@@ -24,7 +24,6 @@ void* slave_dex_task( void* task_args )
    int meta_tag = SLAVE_META + task_id;
    int data_tag = SLAVE_DATA + task_id;
 
-std::cout << "data_tag = " << data_tag << std::endl;
    bool terminate = false;
 
    do {
@@ -73,8 +72,6 @@ std::cout << "data_tag = " << data_tag << std::endl;
       }
 
    } while( !terminate );
-
-   delete[] data;
 
    // tell the main thread this task is complete
    com::tsk::barrier_wait( slave_dex_params->barrier );

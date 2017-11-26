@@ -60,7 +60,6 @@ int main( int argc, char* argv[] )
 
    // wait for slave task to finish
    com::tsk::barrier_wait( &slave_barrier );
-   std::cout << "AFTER barrier" << std::endl;
 
    /**************************************************************************
    * finish processing
@@ -69,16 +68,11 @@ int main( int argc, char* argv[] )
    // wait for all processes to sync before closing down
    com::proc::Barrier( com::proc::Comm_world );
 
-   delete[] slave_tsk_parameters;
-
    // destroy thread barrier
    com::tsk::barrier_destroy( &slave_barrier );
 
    // suspend execution of the slave task
    com::tsk::join( slave_tsk_handle );
-
-   // finalize process communication
-   slave_comm.finalize();
 
    // free workspace memory
    for (int task = 0; task < num_tasks; task++)
@@ -86,6 +80,12 @@ int main( int argc, char* argv[] )
       slave_tsk_parameters[task].workspace->finalize();
       delete slave_tsk_parameters[task].workspace;
    }
+
+   // free slave task parameters
+   delete[] slave_tsk_parameters;
+
+   // finalize process communication
+   slave_comm.finalize();
 
    return 0;
 }

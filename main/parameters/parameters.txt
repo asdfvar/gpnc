@@ -13,4 +13,5 @@ memory_size_master = 256
 # size in words to allocate for the slave processing work buffer
 memory_size_slave = 256
 
-# more to come
+# size in words to allocate for the data-extraction processing work buffer
+memory_size_dex = 256
