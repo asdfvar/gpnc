@@ -1,5 +1,27 @@
 #!/bin/bash
 
+######################################################
+
+num_slave_procs=2
+num_slave_tasks=2
+
+######################################################
+
+# export parameters file to the environment variables
 export GPNC_PARAMS=$1/main/parameters/parameters.txt
 
-mpirun -n 1 $1/ioeng/ioexe : -n 1 $1/main/master : -n 1 $1/main/slave
+# export number of slave processes to the environment variables
+export GPNC_NUM_SLAVE_PROCS=$num_slave_procs
+
+# export number of slave tasks to the environment variables
+export GPNC_NUM_SLAVE_TASKS=$num_slave_tasks
+
+basename=$1
+
+# xterm -e gdb -q -tui 
+
+# mpirun                              \
+$HOME/user_libs/openmpi_3p0p0/bin/mpirun   \
+       -n 1 $basename/ioeng/ioexe : \
+       -n 1 $basename/main/master : \
+       -n $num_slave_procs $basename/main/slave

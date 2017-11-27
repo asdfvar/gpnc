@@ -16,14 +16,24 @@ class Comm_parent {
       // constructor
       Comm_parent( int argc, char* argv[] )
       {
-         // initiate process
-         com::proc::init( argc, argv );
+         // initiate proc-to-proc communication with multi-threading capability enabled
+         com::proc::init_thread_multiple( argc, argv );
 
          // get number of processors
          com::proc::size( com::proc::Comm_world, &numprocs );
 
          // get global rank
          com::proc::rank( com::proc::Comm_world, &global_rank );
+      }
+
+      int get_local_rank( void )
+      {
+         return local_rank;
+      }
+
+      int get_global_rank( void )
+      {
+         return global_rank;
       }
 
       // finalize communication setup

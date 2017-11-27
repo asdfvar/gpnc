@@ -14,11 +14,9 @@ void* master_dex_task( void* task_args )
    int* data = new int[1024];
 
    // receive meta data
-   com::proc::Request request;
+   com::proc::Request request_meta;
+   com::proc::Request request_data;
    Meta master_meta;
-
-   // announce ourselves
-   std::cout << "master DEX task processing start" << std::endl;
 
    bool terminate = false;
 
@@ -31,10 +29,10 @@ void* master_dex_task( void* task_args )
             0,            // proc id
             MASTER_META,  // tag
             master_dex_params->master_comm,
-            &request );
+            &request_meta );
 
       // wait for meta data to be received
-      com::proc::wait( &request );
+      com::proc::wait( &request_meta );
 
       // check if this receive is a termination message
       terminate = master_meta.terminate;
@@ -55,10 +53,10 @@ void* master_dex_task( void* task_args )
                0,                  // proc id
                MASTER_DATA,        // tag
                master_dex_params->master_comm,
-               &request );
+               &request_data );
 
          // wait for data to be received
-         com::proc::wait( &request );
+         com::proc::wait( &request_data );
 
          int* data_int = static_cast<int*>(data);
 

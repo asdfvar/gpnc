@@ -12,16 +12,11 @@
 int main( int argc, char* argv[] )
 {
 
-   // setup processor communications
+   // setup process communications
    Master_comm master_comm( argc, argv );
 
    // read parameter file
-   fio::Text_file parameters( getenv( "GPNC_PARAMS" ) );
-
-   std::cout << std::endl;
-   std::cout << "reading in parameter-file contents:" << std::endl;
-   parameters.print_all();
-   std::cout << std::endl;
+   fio::Parameter parameters( getenv( "GPNC_PARAMS" ) );
 
    size_t mem_size = parameters.get_int( "memory_size_master" );
 
@@ -44,20 +39,20 @@ int main( int argc, char* argv[] )
    master_task_params.barrier     = &master_barrier;
    master_task_params.master_comm = &master_comm;
 
-   /*
-   ** start the master task
-   */
+   // start the master task
    com::tsk::create( &master_tsk_handle,
                      master_task,
                      (void*)&master_task_params );
 
    // wait for the master task to finish
    com::tsk::barrier_wait( &master_barrier );
-   std::cout << "master task processing complete" << std::endl;
 
-   /*
-   ** close down and finalize master processing
-   */
+   /**************************************************************************
+   * finish processing
+   ***************************************************************************/
+
+   // wait for all processes to sync before closing down
+   com::proc::Barrier( com::proc::Comm_world );
 
    // destroy thread barrier
    com::tsk::barrier_destroy( &master_barrier );

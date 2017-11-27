@@ -23,6 +23,18 @@ namespace com {
          MPI_Comm_rank( MPI_COMM_WORLD, myid );
       }
 
+      static void init_thread_multiple( int argc, char* argv[] )
+      {
+         int provided;
+         MPI_Init_thread( &argc, &argv, MPI_THREAD_MULTIPLE, &provided );
+         if (provided < MPI_THREAD_MULTIPLE)
+         {
+            std::cout << "Warning: The MPI library does not have full thread support"
+                      << std::endl;
+            MPI_Abort(MPI_COMM_WORLD, 1);
+         }
+      }
+
       static void init( int argc, char* argv[] )
       {
          MPI_Init( &argc, &argv );
@@ -49,11 +61,11 @@ namespace com {
       }
 
       static void split (
-            int       group_number,
+            int       color,
             int       rank,
             MPI_Comm* group_handle )
       {
-         MPI_Comm_split( MPI_COMM_WORLD, group_number, rank, group_handle );
+         MPI_Comm_split( MPI_COMM_WORLD, color, rank, group_handle );
       }
 
       static void intercomm_create(
@@ -89,7 +101,7 @@ namespace com {
 
       template <class Type>
          static int Irecv(
-               Type*         buf,
+               Type*        buf,
                int          count,
                int          src_id,
                int          tag,
@@ -113,6 +125,11 @@ namespace com {
       {
          MPI_Status status;
          return MPI_Wait ( request, &status );
+      }
+
+      static int Barrier( MPI_Comm comm )
+      {
+         return MPI_Barrier( comm );
       }
 
       typedef MPI_Request         Request;

@@ -3,17 +3,13 @@
 
 namespace mem {
 
-   /*
-    ** constructor name: Memory
-    */
+   // Memory constructor
    Memory::Memory( void )
    {
       // NULL
    }
 
-   /*
-    ** constructor name: Memory
-    */
+   // Memory constructor
    Memory::Memory( size_t num_words )
    {
       size_words = num_words;
@@ -21,17 +17,7 @@ namespace mem {
       ptr        = buffer;
    }
 
-   /*
-    ** destructor name: ~Memory
-    */
-   Memory::~Memory( void )
-   {
-      // Null
-   }
-
-   /*
-    ** float* reserve( size_t ) function from Memory class
-    */
+   // reserve function from Memory class
    float* Memory::reserve( size_t num_words )
    {
       float* r = ptr;
@@ -47,13 +33,17 @@ namespace mem {
       return r;
    }
 
-   /*
-    ** function name: finalize from: Memory
-    */
+   // finalize function from Memory class
    void Memory::finalize( void )
    {
       std::cout << "clearing memory buffer object at " << buffer << std::endl;
       delete[] buffer;
+   }
+
+   // Memory destructor
+   Memory::~Memory( void )
+   {
+      // Null
    }
 
 }

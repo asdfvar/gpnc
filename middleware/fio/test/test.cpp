@@ -4,7 +4,7 @@
 
 int main()
 {
-   fio::Text_file test_file( "file.txt" );
+   fio::Parameter test_file( "file.txt" );
    std::cout << "parameter is " << test_file.get_int( "parameter" ) << std::endl;
    std::cout << "pi is " << test_file.get_real( "pi" ) << std::endl;
 

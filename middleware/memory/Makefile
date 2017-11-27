@@ -1,6 +1,10 @@
-CC = mpic++
+baseDir = ../..
+
+# load defines
+include $(baseDir)/defines.mk
+
 CL = ar rcs
-FLAGS = -O3 -Wall
+FLAGS = -O3 -Wall -g
 INC = -I/usr/local/include
 LIBS = -pthread
 
@@ -15,4 +19,4 @@ clean:
 	rm $(OBJ) $(LIBEXE)
 
 memory.o: memory.cpp
-	$(CC) $^ -c $(INC) $(LIBS)
+	$(CPP) $^ -c $(INC) $(LIBS)
