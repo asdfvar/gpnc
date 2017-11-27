@@ -1,6 +1,6 @@
 # global defines used by the Makefiles
 
-# open MPI C++ compiler
+# locally-defined open-MPI C++ wrapper compiler
 MPI_CPP = $(HOME)/user_libs/openmpi_3p0p0/bin/mpic++
 
 # GNU C++ compiler

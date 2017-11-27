@@ -56,13 +56,12 @@ int main( int argc, char* argv[] )
    // declare the master DEX parameters
    Master_dex_params master_dex_params;
 
-   master_dex_params.master_comm = master_comm;
-   master_dex_params.workspace = new mem::Memory( mem_size );
-
    // initialize the master DEX barrier
    com::tsk::barrier_init( &master_dex_barrier, 2 );
 
-   master_dex_params.barrier = &master_dex_barrier;
+   master_dex_params.master_comm = master_comm;
+   master_dex_params.workspace   = new mem::Memory( mem_size );
+   master_dex_params.barrier     = &master_dex_barrier;
 
    // start master data extraction task
    com::tsk::create(
@@ -134,9 +133,10 @@ int main( int argc, char* argv[] )
    // free master-group comm handle
    com::proc::free( &master_comm );
 
-   // free workspace memory
+   // free workspace memory from master DEX processing
    delete master_dex_params.workspace;
 
+   // free workspace memory from slave DEX processing
    for (int task = 0; task < num_slave_procs * num_slave_tasks; task++)
    {
          slave_dex_params[task].workspace = workspace;
