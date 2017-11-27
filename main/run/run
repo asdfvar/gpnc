@@ -2,4 +2,9 @@
 
 basedir=$PWD/../../
 
-./submit $basedir
+./submit                                               \
+   -b $basedir                                         \
+   -num_procs 2                                        \
+   -num_tasks 3                                        \
+   -parameters $basedir/main/parameters/parameters.txt \
+#
