@@ -1,22 +1,69 @@
 #!/bin/bash
 
-######################################################
+# set defaults
+basename=$PWD/../../
+num_slave_procs=1
+num_slave_tasks=1
 
-num_slave_procs=2
-num_slave_tasks=2
-
-######################################################
+while test $# -gt 0; do
+   case "$1" in
+      -h|--help)
+         echo "help option specified"
+         ;;
+      -b)
+         shift
+         if test $# -gt 0; then
+            basename=$1
+         else
+            echo "no base directory specified"
+            exit 1
+         fi
+         shift
+         ;;
+      -num_procs)
+         shift
+         if test $# -gt 0; then
+            num_slave_procs=$1
+         else
+            echo "number of slave processes not specified"
+            exit 1
+         fi
+         shift
+         ;;
+      -num_tasks)
+         shift
+         if test $# -gt 0; then
+            num_slave_tasks=$1
+         else
+            echo "number of slave tasks not specified"
+            exit 1
+         fi
+         shift
+         ;;
+      -parameters)
+         shift
+         if test $# -gt 0; then
+            parameters=$1
+         else
+            echo ""
+            exit 1
+         fi
+         shift
+         ;;
+      *)
+         shift
+         ;;
+   esac
+done
 
 # export parameters file to the environment variables
-export GPNC_PARAMS=$1/main/parameters/parameters.txt
+export GPNC_PARAMS=$basename/main/parameters/parameters.txt
 
 # export number of slave processes to the environment variables
 export GPNC_NUM_SLAVE_PROCS=$num_slave_procs
 
 # export number of slave tasks to the environment variables
 export GPNC_NUM_SLAVE_TASKS=$num_slave_tasks
-
-basename=$1
 
 # xterm -e gdb -q -tui 
 
