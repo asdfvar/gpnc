@@ -11,11 +11,12 @@
 
 enum Proc_tags {
    MASTER_DATA_EXT, // inter-comm creation for master process
-   MASTER_META         = MASTER_DATA_EXT     + TAG_OFFSET, // meta data for master
-   MASTER_DATA         = MASTER_META         + TAG_OFFSET, // data for master
-   SLAVE_META          = MASTER_DATA         + TAG_OFFSET, // meta data for slave
-   SLAVE_DATA          = SLAVE_META          + TAG_OFFSET, // data for slave
-   SLAVE_DATA_EXCHANGE = SLAVE_DATA          + TAG_OFFSET,
+   MASTER_META          = MASTER_DATA_EXT     + TAG_OFFSET, // meta data for master
+   MASTER_DATA          = MASTER_META         + TAG_OFFSET, // data for master
+   SLAVE_META           = MASTER_DATA         + TAG_OFFSET, // meta data for slave
+   SLAVE_DATA           = SLAVE_META          + TAG_OFFSET, // data for slave
+   SLAVE_DATA_EXCHANGE  = SLAVE_DATA          + TAG_OFFSET,
+   MASTER_DATA_EXCHANGE = SLAVE_DATA_EXCHANGE + TAG_OFFSET,
 };
 
 typedef struct {

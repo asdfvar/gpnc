@@ -12,6 +12,33 @@ namespace master {
    class Message {
 
       public:
+
+         template<class Type>
+            void send_to_slave(
+                  Type* src,
+                  int   count,
+                  int   proc_id_dst,
+                  int   task_id_dst,
+                  int   num_slave_procs,
+                  int   num_tasks )
+            {
+
+               // unique tag for sending data
+               int send_tag =
+                  MASTER_DATA_EXCHANGE         +
+                  num_slave_procs * num_tasks  +
+                  proc_id_dst * num_tasks      +
+                  task_id_dst;
+
+               com::proc::Isend(
+                     src,                   // buffer
+                     count,                 // count
+                     proc_id_dst,           // destination id
+                     send_tag,              // tag
+                     com::proc::Comm_world,
+                     &request );
+            }
+
          // extract_data function from Message class in master namespace
          template<class Data_type>
             void extract_data(
@@ -29,7 +56,7 @@ namespace master {
                // data extraction does not terminate the data extraction task
                meta_data.terminate = false;
 
-               com::proc::Request request;
+               com::proc::Request l_request;
 
                // send meta data
                com::proc::Isend(
@@ -38,10 +65,10 @@ namespace master {
                      0,           // destination id
                      MASTER_META, // tag
                      dex_comm,    // comm handle
-                     &request );
+                     &l_request );
 
                // wait for meta data to be sent
-               com::proc::wait( &request );
+               com::proc::wait( &l_request );
 
                // send source data
                com::proc::Isend(
@@ -50,11 +77,14 @@ namespace master {
                      0,           // destination id
                      MASTER_DATA, // tag
                      dex_comm,    // comm handle
-                     &request );
+                     &l_request );
 
                // wait for data to be sent
-               com::proc::wait( &request );
+               com::proc::wait( &l_request );
             }
+
+      private:
+         com::proc::Request request;
    };
 
    void finalize_extraction( com::proc::Comm dex_comm );
@@ -64,6 +94,36 @@ namespace slave {
 
    class Message {
       public:
+
+         // receive_from_master function from Message class in slave namespace
+         template<class Type>
+            void receive_from_master(
+                  Type* dst,
+                  int   count,
+                  int   proc_id_src,
+                  int   task_id_src,
+                  int   proc_id_dst,
+                  int   task_id_dst,
+                  int   num_procs,
+                  int   num_tasks )
+            {
+
+               // unique tag for sending data
+               int recv_tag =
+                  MASTER_DATA_EXCHANGE     +
+                  num_procs * num_tasks    +
+                  proc_id_dst * num_tasks  +
+                  task_id_dst;
+
+               com::proc::Irecv(
+                     dst,                   // buffer
+                     count,                 // count
+                     proc_id_src,           // source id
+                     recv_tag,              // tag
+                     com::proc::Comm_world,
+                     &request );
+            }
+
          template<class Type>
             void send_to_slave(
                   Type* src,
