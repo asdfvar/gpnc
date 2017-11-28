@@ -3,7 +3,6 @@
 #include "com.h"
 #include "slave.h"
 #include <iostream>
-#include "extract_data.h"
 #include "data_exchange.h"
 
 // specify the scope used here
@@ -27,8 +26,9 @@ void* slave_task( void* task_args )
 
 
 #if 1
+   Message extracting;
    // extract data
-   extract_data(
+   extracting.extract_data(
          data,       // source
          "slave_filename", // filename
          4,          // count
@@ -38,14 +38,15 @@ void* slave_task( void* task_args )
 #endif
 
 #if 1
-if (proc_id == 2 && task_id == 0) {
+   if (proc_id == 2 && task_id == 0) {
 
-   data[0] = 314;
-   data[1] = 315;
-   data[2] = 316;
-   data[3] = 317;
+      data[0] = 314;
+      data[1] = 315;
+      data[2] = 316;
+      data[3] = 317;
 
-      send_to_slave(
+      Message sending;
+      sending.send_to_slave(
             data,
             4, //int   count,
             3, //int   proc_id_dst,
@@ -53,9 +54,12 @@ if (proc_id == 2 && task_id == 0) {
             num_procs, //int   num_procs,
             num_tasks ); //int   num_tasks )
 
-} else if (proc_id == 3 && task_id == 0) {
+      sending.wait();
 
-      receive_from_slave(
+   } else if (proc_id == 3 && task_id == 0) {
+
+      Message receiving;
+      receiving.receive_from_slave(
             data,
             4, //int   count,
             2, //int   proc_id_src,
@@ -65,8 +69,13 @@ if (proc_id == 2 && task_id == 0) {
             num_procs, //int   num_procs,
             num_tasks ); //int   num_tasks )
 
-std::cout << "data = " << data[0] << ", " << data[1] << ", " << data[2] << ", " << data[3] << std::endl;
-}
+      receiving.wait();
+
+      std::cout << "data = " << data[0] << ", "
+         << data[1] << ", "
+         << data[2] << ", "
+         << data[3] << std::endl;
+   }
 #endif
 
    /*

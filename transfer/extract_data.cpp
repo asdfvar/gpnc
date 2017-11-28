@@ -1,6 +1,6 @@
-// extract_data.cpp
+// finalize_extraction.cpp
 
-#include "extract_data.h"
+#include "data_exchange.h"
 #include <string>
 #include "com.h"
 #include "proc_maps.h"

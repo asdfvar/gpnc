@@ -2,7 +2,6 @@
 
 #include "com.h"
 #include "master.h"
-#include "extract_data.h"
 #include "fio.h"
 #include "memory.h"
 #include "proc_maps.h"

@@ -1,7 +1,6 @@
 // master_task.cpp
 
 #include "master.h"
-#include "extract_data.h"
 #include "data_exchange.h"
 #include "fio.h"
 #include <iostream>
@@ -31,9 +30,10 @@ void* master_task( void* task_args )
    data[2] = 1;
    data[3] = 8;
 
-#if 0
+#if 1
+   Message extracting;
    // extract data
-   extract_data(
+   extracting.extract_data(
          data,       // source
          "filename", // filename
          4,          // count
