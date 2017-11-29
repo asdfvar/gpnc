@@ -40,12 +40,9 @@ int main( int argc, char* argv[] )
          MASTER_DATA_EXT,
          &master_comm );
 
-   fio::Parameter parameters( getenv( "GPNC_PARAMS" ) );
-
-   size_t mem_size = parameters.get_int( "memory_size_dex" );
-
-   // declare workspace
-   mem::Memory* workspace;
+   std::string str_mem_size = getenv( "GPNC_IOENG_MEM" );
+   int mem_size = atoi( str_mem_size.c_str() );
+   int mem_size_words = (mem_size + 4) / 4;
 
    // declare the master DEX task handle
    com::tsk::handler master_dex_handle;
@@ -60,7 +57,7 @@ int main( int argc, char* argv[] )
    com::tsk::barrier_init( &master_dex_barrier, 2 );
 
    master_dex_params.master_comm = master_comm;
-   master_dex_params.workspace   = new mem::Memory( mem_size );
+   master_dex_params.workspace   = mem::Memory( mem_size_words, "IO engine" );
    master_dex_params.barrier     = &master_dex_barrier;
 
    // start master data extraction task
@@ -87,19 +84,18 @@ int main( int argc, char* argv[] )
    // initialize the slave DEX barrier
    com::tsk::barrier_init( &slave_dex_barrier, num_slave_procs * num_slave_tasks + 1 );
 
+   // create a new task to correspond to each slave task that exists
    for (int slave_proc = 0; slave_proc < num_slave_procs; slave_proc++)
    {
 
       for (int slave_task = 0; slave_task < num_slave_tasks; slave_task++)
       {
 
-         workspace = new mem::Memory( mem_size );
-
          int index = slave_task + slave_proc * num_slave_tasks;
          slave_dex_params[index].barrier   = &slave_dex_barrier;
          slave_dex_params[index].proc_id   = slave_proc + SLAVE_GROUP;
          slave_dex_params[index].task_id   = slave_task;
-         slave_dex_params[index].workspace = workspace;
+         slave_dex_params[index].workspace = mem::Memory( mem_size_words, "IO engine" );
 
          // start slave data extraction task
          com::tsk::create(
@@ -134,14 +130,13 @@ int main( int argc, char* argv[] )
    com::proc::free( &master_comm );
 
    // free workspace memory from master DEX processing
-   delete master_dex_params.workspace;
+   master_dex_params.workspace.finalize();
 
    // free workspace memory from slave DEX processing
    for (int task = 0; task < num_slave_procs * num_slave_tasks; task++)
    {
-         slave_dex_params[task].workspace = workspace;
+         slave_dex_params[task].workspace.finalize();
    }
-   delete[] slave_dex_params;
 
    // finalize process communication
    com::proc::finalize();

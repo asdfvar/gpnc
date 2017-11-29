@@ -14,7 +14,7 @@ typedef struct
    int                task_id;
    com::tsk::barrier* barrier;
    com::proc::Comm    slave_comm;
-   mem::Memory*       workspace;
+   mem::Memory        workspace;
 } Slave_dex_params;
 
 #endif

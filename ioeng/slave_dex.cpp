@@ -15,7 +15,7 @@ void* slave_dex_task( void* task_args )
    int proc_id = slave_dex_params->proc_id;
    int task_id = slave_dex_params->task_id;
 
-   int* data = (int*)slave_dex_params->workspace->reserve(100);
+   int* data = (int*)slave_dex_params->workspace.reserve(100);
 
    Meta slave_meta;
    com::proc::Request request_meta;
