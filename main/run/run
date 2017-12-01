@@ -2,12 +2,12 @@
 
 basedir=$PWD/../../
 
-../../gpnc_tools/submit_scripts/submit                 \
-   -b $basedir                                         \
-   -num_procs 2                                        \
-   -num_tasks 3                                        \
-   -ioeng_mem 1024                                     \
-   -master_mem 1024                                    \
-   -slave_mem 1024                                     \
-   -parameters $basedir/main/parameters/parameters.txt \
+../../gpnc_tools/submit_scripts/submit          \
+   -b $basedir                                  \
+   -num_procs 2                                 \
+   -num_tasks 3                                 \
+   -ioeng_mem 1024                              \
+   -master_mem 1024                             \
+   -slave_mem 1024                              \
+   -parameters $basedir/main/run/parameters.txt \
 #
