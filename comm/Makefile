@@ -8,13 +8,12 @@ LIBS  = -pthread
 
 INC   = -I/usr/local/include         \
         -I$(baseDir)/middleware/com/ \
-        -I$(baseDir)/pm/             \
         $(PROC_INC)                  \
 #
 
 OBJ   = extract_data.o
 
-LIBEXE = libtrans.a
+LIBEXE = libcomm.a
 
 all: $(OBJ)
 	$(CL) $(LIBEXE) $^
