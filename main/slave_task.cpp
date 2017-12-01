@@ -27,6 +27,7 @@ void* slave_task( void* task_args )
 
 #if 1
    Message extracting;
+
    // extract data
    extracting.extract_data(
          data,       // source

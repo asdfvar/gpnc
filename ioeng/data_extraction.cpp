@@ -40,6 +40,7 @@ int main( int argc, char* argv[] )
          MASTER_DATA_EXT,
          &master_comm );
 
+   // get the memory size allocation from the environment variables
    std::string str_mem_size = getenv( "GPNC_IOENG_MEM" );
    int mem_size = atoi( str_mem_size.c_str() );
    int mem_size_words = (mem_size + 4) / 4;
@@ -72,9 +73,11 @@ int main( int argc, char* argv[] )
    // declare the slave DEX barrier
    com::tsk::barrier slave_dex_barrier;
 
+   // get the number of slave processes from the environment variables
    std::string str_num_slave_procs = getenv( "GPNC_NUM_SLAVE_PROCS" );
    int num_slave_procs = atoi( str_num_slave_procs.c_str() );
 
+   // get the number of slave tasks per process from the environment variables
    std::string str_num_slave_tasks = getenv( "GPNC_NUM_SLAVE_TASKS" );
    int num_slave_tasks = atoi( str_num_slave_tasks.c_str() );
 
