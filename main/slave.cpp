@@ -35,13 +35,8 @@ int main( int argc, char* argv[] )
    int mem_size = atoi( str_mem_size.c_str() );
    int mem_size_words = (mem_size + 4) / 4;
 
-   // declare and define workspace
-   mem::Memory* workspace;
-
    for (int task = 0; task < num_tasks; task++)
    {
-
-      workspace = new mem::Memory( mem_size_words, "slave" );
 
       // populate the slave-task parameters
       slave_tsk_parameters[task].proc_id     = slave_comm.get_global_rank();
@@ -51,7 +46,7 @@ int main( int argc, char* argv[] )
       slave_tsk_parameters[task].slave_comm  = &slave_comm;
       slave_tsk_parameters[task].num_procs   = num_procs;
       slave_tsk_parameters[task].num_tasks   = num_tasks;
-      slave_tsk_parameters[task].workspace   = workspace;
+      slave_tsk_parameters[task].workspace   = mem::Memory( mem_size_words, "slave" );
 
       // start the slave tasks
       com::tsk::create(
@@ -79,8 +74,7 @@ int main( int argc, char* argv[] )
    // free workspace memory
    for (int task = 0; task < num_tasks; task++)
    {
-      slave_tsk_parameters[task].workspace->finalize();
-      delete slave_tsk_parameters[task].workspace;
+      slave_tsk_parameters[task].workspace.finalize();
    }
 
    // free slave task parameters

@@ -111,7 +111,7 @@ export GPNC_SLAVE_MEM=$slave_mem
 # xterm -e gdb -q -tui 
 
 # mpirun                              \
-$HOME/user_libs/openmpi_3p0p0/bin/mpirun   \
+$HOME/user_libs/openmpi_3p0p0/bin/mpirun -oversubscribe   \
        -n 1 $basename/ioeng/ioexe : \
        -n 1 $basename/main/master : \
        -n $num_slave_procs $basename/main/slave
