@@ -12,7 +12,7 @@ typedef struct
 {
    com::proc::Comm    master_comm;
    com::tsk::barrier* barrier;
-   mem::Memory*       workspace;
+   mem::Memory        workspace;
 } Master_dex_params;
 
 #endif

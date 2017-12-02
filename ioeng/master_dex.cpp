@@ -2,6 +2,7 @@
 
 #include "master_dex.h"
 #include "com.h"
+#include "memory.h"
 #include "proc_maps.h"
 #include <iostream>
 
@@ -10,8 +11,9 @@ void* master_dex_task( void* task_args )
    // cast task arguments as Master_dex_params type
    Master_dex_params* master_dex_params = (Master_dex_params*)task_args;
 
-   // TODO: use workbuffer
-   int* data = new int[1024];
+   mem::Memory workspace = master_dex_params->workspace;
+
+   int* data = (int*)workspace.reserve( 20 );
 
    // receive meta data
    com::proc::Request request_meta;
@@ -60,7 +62,7 @@ void* master_dex_task( void* task_args )
 
          int* data_int = static_cast<int*>(data);
 
-         std::cout << "data = ";
+         std::cout << "extraction data = ";
          std::cout << data_int[0] << ", ";
          std::cout << data_int[1] << ", ";
          std::cout << data_int[2] << ", ";
@@ -72,9 +74,6 @@ void* master_dex_task( void* task_args )
       }
 
    } while( !terminate );
-
-   // TODO: use workbuffer
-   delete[] data;
 
    // tell the main thread this task is complete
    com::tsk::barrier_wait( master_dex_params->barrier );

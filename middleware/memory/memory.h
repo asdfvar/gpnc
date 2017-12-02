@@ -2,13 +2,14 @@
 #define MEMORY_H
 
 #include <cstdlib>
+#include <string>
 
 namespace mem {
 
    class Memory {
       public:
          Memory( void );
-         Memory( size_t );
+         Memory( size_t, const std::string& name );
          ~Memory( void );
 
          float* reserve( size_t );
@@ -18,6 +19,7 @@ namespace mem {
          size_t size_words;
          float* buffer;
          float* ptr;
+         char   name[64];
    };
 
 }

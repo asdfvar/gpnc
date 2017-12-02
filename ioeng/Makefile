@@ -13,17 +13,16 @@ OBJ     = data_extraction.o    \
 INC     = -I../middleware/com/    \
           -I../middleware/fio/    \
           -I../middleware/memory/ \
-          -I../pm/                \
-          -I../transfer/          \
+          -I../comm/              \
           -I$(PROC_INC)                   \
 #
 
 LIBPATH = -L../middleware/fio/    \
           -L../middleware/memory/ \
-          -L../transfer/          \
+          -L../comm/              \
 #
 
-LIBS    = -lfio -ltrans -lmem
+LIBS    = -lfio -lcomm -lmem
 
 EXE = ioexe
 

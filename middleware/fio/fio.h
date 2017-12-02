@@ -11,6 +11,7 @@ namespace fio {
    class Parameter {
 
       public:
+         Parameter ( void );
          Parameter ( std::string in_file );
         ~Parameter ( void );
 

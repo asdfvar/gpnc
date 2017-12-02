@@ -31,15 +31,12 @@ int main( int argc, char* argv[] )
    Slave_tsk_params* slave_tsk_parameters = new Slave_tsk_params[num_tasks];
 
    // define memory size for slave-task processing
-   size_t mem_size = parameters.get_int( "memory_size_slave" );
-
-   // declare and define workspace
-   mem::Memory* workspace;
+   std::string str_mem_size = getenv( "GPNC_SLAVE_MEM" );
+   int mem_size = atoi( str_mem_size.c_str() );
+   int mem_size_words = (mem_size + 4) / 4;
 
    for (int task = 0; task < num_tasks; task++)
    {
-
-      workspace = new mem::Memory( mem_size );
 
       // populate the slave-task parameters
       slave_tsk_parameters[task].proc_id     = slave_comm.get_global_rank();
@@ -49,7 +46,7 @@ int main( int argc, char* argv[] )
       slave_tsk_parameters[task].slave_comm  = &slave_comm;
       slave_tsk_parameters[task].num_procs   = num_procs;
       slave_tsk_parameters[task].num_tasks   = num_tasks;
-      slave_tsk_parameters[task].workspace   = workspace;
+      slave_tsk_parameters[task].workspace   = mem::Memory( mem_size_words, "slave" );
 
       // start the slave tasks
       com::tsk::create(
@@ -77,8 +74,7 @@ int main( int argc, char* argv[] )
    // free workspace memory
    for (int task = 0; task < num_tasks; task++)
    {
-      slave_tsk_parameters[task].workspace->finalize();
-      delete slave_tsk_parameters[task].workspace;
+      slave_tsk_parameters[task].workspace.finalize();
    }
 
    // free slave task parameters

@@ -8,19 +8,17 @@ FLAGS   = -g -Wall -ulimit
 INC     = -I$(baseDir)/middleware/com/    \
           -I$(baseDir)/middleware/fio/    \
           -I$(baseDir)/middleware/memory/ \
-          -I$(baseDir)/transfer           \
-          -I$(baseDir)/pm/                \
+          -I$(baseDir)/comm/              \
           -I$(baseDir)/ioeng/             \
-          -I$(baseDir)/transfer/          \
           -I$(PROC_INC)                   \
 #
 
 LIBPATH = -L$(baseDir)/middleware/fio/    \
           -L$(baseDir)/middleware/memory/ \
-          -L$(baseDir)/transfer/          \
+          -L$(baseDir)/comm/              \
 #
 
-LIBS    = -lfio -lmem -ltrans -pthread
+LIBS    = -lfio -lmem -lcomm -pthread
 
 MIDDLEWARE = $(baseDir)/middleware/
 
@@ -43,7 +41,7 @@ EXE       = $(masterEXE) $(slaveEXE)
 all: $(OBJ) 
 	cd $(MIDDLEWARE)/fio    && $(MAKE)
 	cd $(MIDDLEWARE)/memory && $(MAKE)
-	cd $(baseDir)/transfer && $(MAKE)
+	cd $(baseDir)/comm && $(MAKE)
 	cd $(baseDir)/ioeng && $(MAKE)
 	$(MPI_CPP) $(masterOBJ) $(INC) $(FLAGS) $(LIBS) $(LIBPATH) -o $(masterEXE)
 	$(MPI_CPP) $(slaveOBJ) $(INC) $(FLAGS) $(LIBS) $(LIBPATH) -o $(slaveEXE)
@@ -52,7 +50,7 @@ clean:
 	make -C $(MIDDLEWARE)/fio    clean
 	make -C $(MIDDLEWARE)/memory clean
 	make -C $(baseDir)/ioeng clean
-	make -C $(baseDir)/transfer clean
+	make -C $(baseDir)/comm clean
 	rm $(OBJ) $(EXE)
 
 master.o: master.cpp

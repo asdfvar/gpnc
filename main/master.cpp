@@ -2,7 +2,6 @@
 
 #include "com.h"
 #include "master.h"
-#include "extract_data.h"
 #include "fio.h"
 #include "memory.h"
 #include "proc_maps.h"
@@ -18,10 +17,12 @@ int main( int argc, char* argv[] )
    // read parameter file
    fio::Parameter parameters( getenv( "GPNC_PARAMS" ) );
 
-   size_t mem_size = parameters.get_int( "memory_size_master" );
+   std::string str_mem_size = getenv( "GPNC_MASTER_MEM" );
+   int mem_size = atoi( str_mem_size.c_str() );
+   int mem_size_words = (mem_size + 4) / 4;
 
    // declare and define workspace
-   mem::Memory workspace( mem_size );
+   mem::Memory workspace( mem_size_words, "master" );
 
    // declare the master-task handle
    com::tsk::handler master_tsk_handle;

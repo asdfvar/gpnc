@@ -1,23 +1,26 @@
 #include "memory.h"
 #include <iostream>
+#include <stdio.h>
+#include <string.h>
 
 namespace mem {
 
-   // Memory constructor
+   // Memory constructor in mem namespace
    Memory::Memory( void )
    {
       // NULL
    }
 
-   // Memory constructor
-   Memory::Memory( size_t num_words )
+   // Memory constructor in mem namespace
+   Memory::Memory( size_t num_words, const std::string& input_name )
    {
-      size_words = num_words;
-      buffer     = new float[num_words];
-      ptr        = buffer;
+      size_words  = num_words;
+      buffer      = new float[num_words];
+      ptr         = buffer;
+      strncpy(name, input_name.c_str(), sizeof(name));
    }
 
-   // reserve function from Memory class
+   // reserve function from Memory class in mem namespace
    float* Memory::reserve( size_t num_words )
    {
       float* r = ptr;
@@ -26,21 +29,21 @@ namespace mem {
 
       if (ptr - buffer > size_words)
       {
-         std::cout << "out of memory" << std::endl;
+         std::cout << "out of memory for " << name << " process" << std::endl;
          return NULL;
       }
 
       return r;
    }
 
-   // finalize function from Memory class
+   // finalize function from Memory class in mem namespace
    void Memory::finalize( void )
    {
-      std::cout << "clearing memory buffer object at " << buffer << std::endl;
+      std::cout << "clearing " << name << " memory buffer object" << std::endl;
       delete[] buffer;
    }
 
-   // Memory destructor
+   // Memory destructor in mem namespace
    Memory::~Memory( void )
    {
       // Null
