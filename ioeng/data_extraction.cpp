@@ -4,6 +4,7 @@
 #include "fio.h"
 #include "memory.h"
 #include "proc_maps.h"
+#include "dex_comm.h"
 #include <iostream>
 #include <stdlib.h>
 #include "master_dex.h"
@@ -16,29 +17,8 @@ int main( int argc, char* argv[] )
    int global_rank;
    int numprocs;
 
-   // initialize proc-to-proc communication with multi-threading capability enabled
-   com::proc::init_thread_multiple( argc, argv );
-   com::proc::size( com::proc::Comm_world, &numprocs    );
-   com::proc::rank( com::proc::Comm_world, &global_rank );
-
-   // create output group
-   com::proc::Comm my_comm;
-   com::proc::split(
-         DATA_EXTRACTION_GROUP,
-         global_rank,
-         &my_comm );
-
-   // get local rank
-   int local_rank;
-   com::proc::rank( my_comm, &local_rank );
-
-   // inter-communicator to master
-   com::proc::Comm master_comm;
-   com::proc::intercomm_create(
-         my_comm,
-         MASTER_GROUP,
-         MASTER_DATA_EXT,
-         &master_comm );
+   // initialize proc-to-proc communication
+   Dex_comm dex_comm( argc, argv );
 
    // get the memory size allocation from the environment variables
    std::string str_mem_size = getenv( "GPNC_IOENG_MEM" );
@@ -57,7 +37,7 @@ int main( int argc, char* argv[] )
    // initialize the master DEX barrier
    com::tsk::barrier_init( &master_dex_barrier, 2 );
 
-   master_dex_params.master_comm = master_comm;
+   master_dex_params.master_comm = dex_comm.get_dex_comm();
    master_dex_params.workspace   = mem::Memory( mem_size_words, "IO engine" );
    master_dex_params.barrier     = &master_dex_barrier;
 
@@ -129,9 +109,6 @@ int main( int argc, char* argv[] )
    // destroy slave DEX barrier
    com::tsk::barrier_destroy( &slave_dex_barrier );
 
-   // free master-group comm handle
-   com::proc::free( &master_comm );
-
    // free workspace memory from master DEX processing
    master_dex_params.workspace.finalize();
 
@@ -142,7 +119,7 @@ int main( int argc, char* argv[] )
    }
 
    // finalize process communication
-   com::proc::finalize();
+   dex_comm.finalize();
 
    return 0;
 }

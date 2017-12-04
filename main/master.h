@@ -15,7 +15,7 @@ typedef struct {
    mem::Memory        workspace;
    fio::Parameter*    parameters;
    com::tsk::barrier* barrier;
-   Master_comm*       master_comm;
+   com::proc::Comm    dex_comm;
 } Master_task_params;
 
 #endif

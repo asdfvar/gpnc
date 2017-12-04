@@ -38,7 +38,7 @@ int main( int argc, char* argv[] )
    master_task_params.parameters  = &parameters;
    master_task_params.workspace   = workspace;
    master_task_params.barrier     = &master_barrier;
-   master_task_params.master_comm = &master_comm;
+   master_task_params.dex_comm    = master_comm.get_dex_comm();
 
    // start the master task
    com::tsk::create( &master_tsk_handle,

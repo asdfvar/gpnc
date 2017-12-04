@@ -14,6 +14,7 @@ INC   = -I/usr/local/include         \
 OBJ   = extract_data.o \
         master_comm.o  \
         slave_comm.o   \
+        dex_comm.o     \
 #
 
 LIBEXE = libcomm.a
@@ -31,4 +32,7 @@ master_comm.o: master_comm.cpp
 	$(CPP) $^ -c $(INC) $(LIBS)
 
 slave_comm.o: slave_comm.cpp
+	$(CPP) $^ -c $(INC) $(LIBS)
+
+dex_comm.o: dex_comm.cpp
 	$(CPP) $^ -c $(INC) $(LIBS)
