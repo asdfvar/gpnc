@@ -43,7 +43,6 @@ int main( int argc, char* argv[] )
       slave_tsk_parameters[task].task_id     = task;
       slave_tsk_parameters[task].parameters  = &parameters;
       slave_tsk_parameters[task].barrier     = &slave_barrier;
-      slave_tsk_parameters[task].slave_comm  = &slave_comm;
       slave_tsk_parameters[task].num_procs   = num_procs;
       slave_tsk_parameters[task].num_tasks   = num_tasks;
       slave_tsk_parameters[task].workspace   = mem::Memory( mem_size_words, "slave" );

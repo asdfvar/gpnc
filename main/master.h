@@ -4,34 +4,10 @@
 #define MASTER_H
 
 #include "communicator.h"
+#include "master_comm.h"
 #include "com.h"
 #include "fio.h"
 #include "memory.h"
-
-class Master_comm : public Communicator {
-
-   public:
-
-      // constructor
-      Master_comm( int argc, char* argv[] );
-
-      // get data extraction communicator handle
-      com::proc::Comm get_dex_comm( void );
-
-      // finalize communication setup
-      void finalize( void );
-
-      // destructor
-      ~Master_comm( void );
-
-   private:
-
-      // communication handle for local master
-      com::proc::Comm my_comm;
-
-      // communication handle to the data extraction driver
-      com::proc::Comm dex_comm;
-};
 
 void* master_task( void* task_args );
 

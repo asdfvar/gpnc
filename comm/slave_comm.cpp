@@ -1,7 +1,7 @@
 // slave_comm.cpp
 
 #include "communicator.h"
-#include "slave.h"
+#include "slave_comm.h"
 #include "com.h"
 #include "proc_maps.h"
 

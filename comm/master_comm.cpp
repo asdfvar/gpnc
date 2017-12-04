@@ -1,7 +1,7 @@
 // master_comm.cpp
 
 #include "communicator.h"
-#include "master.h"
+#include "master_comm.h"
 #include "com.h"
 #include "proc_maps.h"
 

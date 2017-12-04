@@ -24,12 +24,10 @@ MIDDLEWARE = $(baseDir)/middleware/
 
 masterOBJ = master.o       \
             master_task.o  \
-            master_comm.o  \
 #
 
 slaveOBJ  = slave.o        \
             slave_task.o   \
-            slave_comm.o   \
 #
 
 OBJ       = $(masterOBJ) $(slaveOBJ)
@@ -53,20 +51,6 @@ clean:
 	make -C $(baseDir)/comm clean
 	rm $(OBJ) $(EXE)
 
-master.o: master.cpp
-	$(MPI_CPP) $^ -c $(INC) $(LIBS)
-
-master_task.o: master_task.cpp
-	$(MPI_CPP) $^ -c $(INC) $(LIBS)
-
-master_comm.o: master_comm.cpp
-	$(MPI_CPP) $^ -c $(INC) $(LIBS)
-
-slave_comm.o: slave_comm.cpp
-	$(MPI_CPP) $^ -c $(INC) $(LIBS)
-
-slave.o: slave.cpp
-	$(MPI_CPP) $^ -c $(INC) $(LIBS)
-
-slave_task.o: slave_task.cpp
+# identify all object files from *.cpp files
+%.o: %.cpp
 	$(MPI_CPP) $^ -c $(INC) $(LIBS)
