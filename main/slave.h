@@ -3,14 +3,14 @@
 #ifndef SLAVE_H
 #define SLAVE_H
 
-#include "comm_parent.h"
+#include "communicator.h"
 #include "com.h"
 #include "fio.h"
 #include "memory.h"
 
 void* slave_task( void* task_args );
 
-class Slave_comm : public Comm_parent {
+class Slave_comm : public Communicator {
 
    public:
 

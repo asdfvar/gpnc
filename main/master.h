@@ -3,12 +3,12 @@
 #ifndef MASTER_H
 #define MASTER_H
 
-#include "comm_parent.h"
+#include "communicator.h"
 #include "com.h"
 #include "fio.h"
 #include "memory.h"
 
-class Master_comm : public Comm_parent {
+class Master_comm : public Communicator {
 
    public:
 

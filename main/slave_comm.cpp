@@ -1,11 +1,11 @@
 // slave_comm.cpp
 
-#include "comm_parent.h"
+#include "communicator.h"
 #include "slave.h"
 #include "com.h"
 #include "proc_maps.h"
 
-Slave_comm::Slave_comm( int argc, char* argv[] ) : Comm_parent( argc, argv )
+Slave_comm::Slave_comm( int argc, char* argv[] ) : Communicator( argc, argv )
 {
    // split comm world to generate local communication handle
    com::proc::split(
@@ -28,7 +28,7 @@ void Slave_comm::finalize( void )
 //   com::proc::free( &dex_comm );
 
    // finalize process communication
-   Comm_parent::finalize( "slave" );
+   Communicator::finalize( "slave" );
 }
 
 Slave_comm::~Slave_comm( void )

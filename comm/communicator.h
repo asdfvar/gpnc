@@ -1,20 +1,20 @@
-// comm_parent.h
+// communicator.h
 
 // abstract class to handle communication setup
 
-#ifndef COMM_PARENT_H
-#define COMM_PARENT_H
+#ifndef COMMUNICATOR_H
+#define COMMUNICATOR_H
 
 #include "com.h"
 #include "iostream"
 #include "string"
 
-class Comm_parent {
+class Communicator {
 
    public:
 
       // constructor
-      Comm_parent( int argc, char* argv[] )
+      Communicator( int argc, char* argv[] )
       {
          // initiate proc-to-proc communication with multi-threading capability enabled
          com::proc::init_thread_multiple( argc, argv );

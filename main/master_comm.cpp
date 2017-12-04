@@ -1,11 +1,11 @@
 // master_comm.cpp
 
-#include "comm_parent.h"
+#include "communicator.h"
 #include "master.h"
 #include "com.h"
 #include "proc_maps.h"
 
-Master_comm::Master_comm( int argc, char* argv[] ) : Comm_parent( argc, argv )
+Master_comm::Master_comm( int argc, char* argv[] ) : Communicator( argc, argv )
 {
    // split comm world to generate local communication handle
    com::proc::split(
@@ -35,7 +35,7 @@ void Master_comm::finalize( void )
    com::proc::free( &dex_comm );
 
    // finalize process communication
-   Comm_parent::finalize( "master" );
+   Communicator::finalize( "master" );
 }
 
 Master_comm::~Master_comm( void )
