@@ -1,4 +1,3 @@
 create mutex to handle threading std-outputs to standard out
 add preamble headers to things (functions, classes, etc...)
-create functions within the tasks with simplified interfaces
 update help option in submit file
