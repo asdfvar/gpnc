@@ -7,7 +7,7 @@
 #include "slave_comm.h"
 #include "com.h"
 #include "fio.h"
-#include "memory.h"
+#include "mem.h"
 
 void* slave_task( void* task_args );
 

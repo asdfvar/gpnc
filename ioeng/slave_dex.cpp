@@ -1,6 +1,6 @@
 // slave_dex.cpp
 
-#include "memory.h"
+#include "mem.h"
 #include "proc_maps.h"
 #include "slave_dex.h"
 #include "com.h"

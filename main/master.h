@@ -7,7 +7,7 @@
 #include "master_comm.h"
 #include "com.h"
 #include "fio.h"
-#include "memory.h"
+#include "mem.h"
 
 void* master_task( void* task_args );
 

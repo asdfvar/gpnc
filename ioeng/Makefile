@@ -10,16 +10,16 @@ OBJ     = data_extraction.o    \
           slave_dex.o          \
 #
 
-INC     = -I$(baseDir)/middleware/com/    \
-          -I$(baseDir)/middleware/fio/    \
-          -I$(baseDir)/middleware/memory/ \
-          -I$(baseDir)/comm/              \
-          -I$(PROC_INC)                   \
+INC     = -I$(baseDir)/middleware/com/  \
+          -I$(baseDir)/middleware/fio/  \
+          -I$(baseDir)/middleware/mem/  \
+          -I$(baseDir)/comm/            \
+          -I$(PROC_INC)                 \
 #
 
-LIBPATH = -L$(baseDir)/middleware/fio/    \
-          -L$(baseDir)/middleware/memory/ \
-          -L$(baseDir)/comm/              \
+LIBPATH = -L$(baseDir)/middleware/fio/  \
+          -L$(baseDir)/middleware/mem/  \
+          -L$(baseDir)/comm/            \
 #
 
 LIBS    = -lfio -lcomm -lmem

@@ -2,7 +2,7 @@
 
 #include "master_dex.h"
 #include "com.h"
-#include "memory.h"
+#include "mem.h"
 #include "proc_maps.h"
 #include <iostream>
 

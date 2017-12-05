@@ -5,7 +5,7 @@
 
 #include "communicator.h"
 #include "com.h"
-#include "memory.h"
+#include "mem.h"
 
 class Master_comm : public Communicator {
 

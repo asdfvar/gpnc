@@ -2,7 +2,7 @@
 
 #include "com.h"
 #include "fio.h"
-#include "memory.h"
+#include "mem.h"
 #include "proc_maps.h"
 #include "dex_comm.h"
 #include <iostream>

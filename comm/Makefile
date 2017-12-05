@@ -8,6 +8,7 @@ LIBS  = -pthread
 
 INC   = -I/usr/local/include         \
         -I$(baseDir)/middleware/com/ \
+        -I$(baseDir)/middleware/mem/ \
         $(PROC_INC)                  \
 #
 

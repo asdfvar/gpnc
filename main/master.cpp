@@ -3,7 +3,7 @@
 #include "com.h"
 #include "master.h"
 #include "fio.h"
-#include "memory.h"
+#include "mem.h"
 #include "proc_maps.h"
 #include <iostream>
 #include <stdlib.h>

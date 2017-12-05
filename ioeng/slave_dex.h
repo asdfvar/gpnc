@@ -4,7 +4,7 @@
 #define SLAVE_DEX_H
 
 #include "com.h"
-#include "memory.h"
+#include "mem.h"
 
 void* slave_dex_task( void* task_args );
 

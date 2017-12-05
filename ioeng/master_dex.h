@@ -4,7 +4,7 @@
 #define MASTER_DEX_H
 
 #include "com.h"
-#include "memory.h"
+#include "mem.h"
 
 void* master_dex_task( void* task_args );
 
