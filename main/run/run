@@ -1,13 +1,19 @@
 #!/bin/bash
 
 basedir=$PWD/../../
+ioexe=$basedir/ioeng/ioexe
+master=$basedir/main/master
+slave=$basedir/main/slave
+parameters=$basedir/main/run/parameters.txt
 
-../../gpnc_tools/submit_scripts/submit          \
-   -b $basedir                                  \
-   -num_procs 2                                 \
-   -num_tasks 3                                 \
-   -ioeng_mem 1024                              \
-   -master_mem 1024                             \
-   -slave_mem 1024                              \
-   -parameters $basedir/main/run/parameters.txt \
+../../gpnc_tools/submit_scripts/submit  \
+   -ioexe  $ioexe                       \
+   -master $master                      \
+   -slave  $slave                       \
+   -num_procs 2                         \
+   -num_tasks 3                         \
+   -ioeng_mem 1024                      \
+   -master_mem 1024                     \
+   -slave_mem 1024                      \
+   -parameters $parameters              \
 #
