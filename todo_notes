@@ -1,3 +1,2 @@
 create mutex to handle threading std-outputs to standard out
 add preamble headers to things (functions, classes, etc...)
-update help option in submit file
