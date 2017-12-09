@@ -5,40 +5,43 @@
 #include "com.h"
 #include "proc_maps.h"
 
-Master_comm::Master_comm( int argc, char* argv[] ) : Communicator( argc, argv )
-{
-   // split comm world to generate local communication handle
-   com::proc::split(
-         MASTER_GROUP,
-         global_rank,
-         &my_comm );
+namespace master {
 
-   // get local rank
-   com::proc::rank( my_comm, &local_rank );
+   Comm_setup::Comm_setup( int argc, char* argv[] ) : Communicator( argc, argv )
+   {
+      // split comm world to generate local communication handle
+      com::proc::split(
+            MASTER_GROUP,
+            global_rank,
+            &my_comm );
 
-   // inter-communicator to data extraction
-   com::proc::intercomm_create(
-         my_comm,
-         DATA_EXTRACTION_GROUP,
-         MASTER_DATA_EXT,
-         &dex_comm );
-}
+      // get local rank
+      com::proc::rank( my_comm, &local_rank );
 
-com::proc::Comm Master_comm::get_dex_comm( void )
-{
-   return dex_comm;
-}
+      // inter-communicator to data extraction
+      com::proc::intercomm_create(
+            my_comm,
+            DATA_EXTRACTION_GROUP,
+            MASTER_DATA_EXT,
+            &dex_comm );
+   }
 
-void Master_comm::finalize( void )
-{
-   // free data extraction communication handle
-   com::proc::free( &dex_comm );
+   com::proc::Comm Comm_setup::get_dex_comm( void )
+   {
+      return dex_comm;
+   }
 
-   // finalize process communication
-   Communicator::finalize( "master" );
-}
+   void Comm_setup::finalize( void )
+   {
+      // free data extraction communication handle
+      com::proc::free( &dex_comm );
 
-Master_comm::~Master_comm( void )
-{
-   // null
+      // finalize process communication
+      Communicator::finalize( "master" );
+   }
+
+   Comm_setup::~Comm_setup( void )
+   {
+      // null
+   }
 }

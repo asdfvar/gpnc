@@ -8,11 +8,13 @@
 #include <iostream>
 #include <stdlib.h>
 
+using namespace slave;
+
 int main( int argc, char* argv[] )
 {
 
    // setup process communications
-   Slave_comm slave_comm( argc, argv );
+   Comm_setup slave_comm( argc, argv );
 
    // read parameter file
    fio::Parameter parameters( getenv( "GPNC_PARAMS" ) );

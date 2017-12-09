@@ -8,11 +8,13 @@
 #include <iostream>
 #include <stdlib.h>
 
+using namespace master;
+
 int main( int argc, char* argv[] )
 {
 
    // setup process communications
-   Master_comm master_comm( argc, argv );
+   Comm_setup master_comm( argc, argv );
 
    // read parameter file
    fio::Parameter parameters( getenv( "GPNC_PARAMS" ) );
