@@ -10,6 +10,8 @@
 #include "master_dex.h"
 #include "slave_dex.h"
 
+using namespace dex;
+
 int main( int argc, char* argv[] )
 {
 
@@ -18,7 +20,7 @@ int main( int argc, char* argv[] )
    int numprocs;
 
    // initialize proc-to-proc communication
-   Dex_comm dex_comm( argc, argv );
+   Comm_setup dex_comm( argc, argv );
 
    // get the memory size allocation from the environment variables
    std::string str_mem_size = getenv( "GPNC_IOENG_MEM" );
