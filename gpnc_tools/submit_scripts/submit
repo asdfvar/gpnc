@@ -10,9 +10,10 @@ master=$basename/main/master
 slave=$basename/main/slave
 num_slave_procs=1
 num_slave_tasks=1
-ioeng_mem=1024
-master_mem=1024
-slave_mem=256
+ioeng_mem=2048
+master_mem=2048
+slave_mem=2048
+output_dir=.
 
 ###########################
 # help menu
@@ -29,6 +30,7 @@ disp_help() {
    echo "   -master_mem = number of bytes for the master process to allocate"
    echo "   -slave_mem  = number of bytes for the slave process to allocate"
    echo "   -parameters = path to the parameters file"
+   echo "   -output_dir = output directory path"
 }
 
 ###########################
@@ -131,6 +133,16 @@ while test $# -gt 0; do
          fi
          shift
          ;;
+      -output_dir)
+         shift
+         if test $# -gt 0; then
+            output_dir=$1
+         else
+            echo ""
+            exit 1
+         fi
+         shift
+         ;;
       *)
          echo "option $1 undefined"
          shift
@@ -159,6 +171,9 @@ export GPNC_MASTER_MEM=$master_mem
 
 # export slave process memory size
 export GPNC_SLAVE_MEM=$slave_mem
+
+# export the output directory path
+export GPNC_OUTPUT_DIR=$output_dir
 
 # xterm -e gdb -q -tui 
 

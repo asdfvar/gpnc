@@ -12,8 +12,8 @@ parameters=$basedir/main/run/parameters.txt
    -slave  $slave                       \
    -num_procs 2                         \
    -num_tasks 3                         \
-   -ioeng_mem 1024                      \
-   -master_mem 1024                     \
-   -slave_mem 1024                      \
+   -ioeng_mem 2048                      \
+   -master_mem 2048                     \
+   -slave_mem 2048                      \
    -parameters $parameters              \
 #
