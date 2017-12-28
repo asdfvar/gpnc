@@ -7,29 +7,32 @@
 #include "com.h"
 #include "mem.h"
 
-class Dex_comm : public Communicator {
+namespace dex {
 
-   public:
+   class Comm_setup : public Communicator {
 
-      // constructor
-      Dex_comm( int argc, char* argv[] );
+      public:
 
-      // get data extraction communicator handle
-      com::proc::Comm get_dex_comm( void );
+         // constructor
+         Comm_setup( int argc, char* argv[] );
 
-      // finalize communication setup
-      void finalize( void );
+         // get data extraction communicator handle
+         com::proc::Comm get_dex_comm( void );
 
-      // destructor
-      ~Dex_comm( void );
+         // finalize communication setup
+         void finalize( void );
 
-   private:
+         // destructor
+         ~Comm_setup( void );
 
-      // communication handle for local data extraction
-      com::proc::Comm my_comm;
+      private:
 
-      // communication handle to the data extraction driver
-      com::proc::Comm dex_comm;
-};
+         // communication handle for local data extraction
+         com::proc::Comm my_comm;
+
+         // communication handle to the data extraction driver
+         com::proc::Comm dex_comm;
+   };
+}
 
 #endif
