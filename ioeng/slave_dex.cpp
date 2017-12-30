@@ -5,6 +5,7 @@
 #include "slave_dex.h"
 #include "com.h"
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <stdlib.h>
 
@@ -32,7 +33,10 @@ void* slave_dex_task( void* task_args )
 
    do {
 
-      // receive meta data from slave process
+     /************************************
+      ** receive meta data from slave task
+      ************************************/
+
       com::proc::Irecv(
             &slave_meta,
             1,           // count
@@ -47,12 +51,12 @@ void* slave_dex_task( void* task_args )
       // get the termination message
       terminate = slave_meta.terminate;
 
-      // terminate if requested
+      // break when termination message is received
       if ( terminate ) break;
 
-      /*******************************************
-       ** begin receiving data from the slave task
-       *******************************************/
+      /***********************************
+       ** receive data from the slave task
+       ***********************************/
 
       char* dst       = (char*)data;
       int   count     = slave_meta.count;
@@ -70,15 +74,28 @@ void* slave_dex_task( void* task_args )
       // wait for data to be received
       com::proc::wait( &request_data );
 
-      /**************************************************
-       ** begin writing data received from the slave task
-       **************************************************/
+      /*********************
+       ** write data to disk
+       *********************/
 
       std::cout << "writing data for proc id " <<
          proc_id << " and task id " <<
          task_id << std::endl;
 
-      std::string output_filename = output_dir + "/slave_proc_data.dat";
+      std::string output_filename = output_dir + "/slave_proc_";
+
+      std::ostringstream str_id;
+
+      str_id << proc_id;
+
+      output_filename += str_id.str();
+
+      str_id.clear();
+      str_id.str("");
+      str_id << task_id;
+
+     output_filename += "_" + str_id.str();
+
       std::ofstream out_file;
       bool init = true;
       if (init) {
@@ -95,50 +112,3 @@ void* slave_dex_task( void* task_args )
    // tell the main thread this task is complete
    com::tsk::barrier_wait( slave_dex_params->barrier );
 }
-
-
-
-#if 0
-    std::ostringstream id_str;
- 22    if (chunk_x < 0)
- 23    {
- 24       id_str << -chunk_x;
- 25       filename += "n";
- 26    }
- 27    else
- 28    {
- 29       id_str << chunk_x;
- 30    }
- 31    filename += id_str.str();
- 32    filename += "_";
- 33 
- 34    id_str.clear();
- 35    id_str.str("");
- 36    if (chunk_y < 0)
- 37    {
- 38       id_str << -chunk_y;
- 39       filename += "n";
- 40    }
- 41    else
- 42    {
- 43       id_str << chunk_y;
- 44    }
- 45    filename += id_str.str();
- 46    filename += "_";
- 47 
- 48    id_str.clear();
- 49    id_str.str("");
- 50    if (chunk_z < 0)
- 51    {
- 52       id_str << -chunk_z;
- 53       filename += "n";
- 54    }
- 55    else
- 56    {
- 57       id_str << chunk_z;
- 58    }
- 59    filename += id_str.str();
- 60 
- 61    return filename;
-
-#endif

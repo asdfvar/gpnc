@@ -1,3 +1,4 @@
 create mutex to handle threading std-outputs to standard out
 add preamble headers to things (functions, classes, etc...)
 actually write data to file with the DEX process for master and slave tasks
+pass filename as an argument to the DEX extraction from master and slave tasks
