@@ -19,7 +19,10 @@ void* master_dex_task( void* task_args )
    // get the output storage location
    std::string output_dir = getenv( "GPNC_OUTPUT_DIR" );
 
-   int* buffer = (int*)workspace.reserve( 400 );
+   // reserve memory space based on how much was allocated
+   std::string str_mem_size_bytes = getenv( "GPNC_MASTER_MEM" );
+   int mem_size_words = atoi( str_mem_size_bytes.c_str() ) / 4;
+   int* buffer = (int*)workspace.reserve( mem_size_words );
 
    // persistent request handles for meta and data
    com::proc::Request request_meta;

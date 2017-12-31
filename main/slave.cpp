@@ -72,7 +72,7 @@ int main( int argc, char* argv[] )
    // suspend execution of the slave task
    com::tsk::join( slave_tsk_handle );
 
-   // free workspace memory
+   // free workspace memory from each task
    for (int task = 0; task < num_tasks; task++)
    {
       slave_tsk_parameters[task].workspace.finalize();

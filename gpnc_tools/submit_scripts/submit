@@ -20,7 +20,7 @@ output_dir=.
 ###########################
 
 disp_help() {
-   echo "   -h          = help menu (this)"
+   echo "   -h/--help   = help menu (this)"
    echo "   -ioexe      = path to ioexe executable"
    echo "   -master     = path to master executable"
    echo "   -slave      = path to slave executable"
@@ -28,7 +28,7 @@ disp_help() {
    echo "   -num_tasks  = number of tasks each slave processes will spawn"
    echo "   -ioeng_mem  = number of bytes for the ioexe extraction process to allocate"
    echo "   -master_mem = number of bytes for the master process to allocate"
-   echo "   -slave_mem  = number of bytes for the slave process to allocate"
+   echo "   -slave_mem  = number of bytes for each slave task within each slave process to allocate"
    echo "   -parameters = path to the parameters file"
    echo "   -output_dir = output directory path"
 }
@@ -137,6 +137,7 @@ while test $# -gt 0; do
          shift
          if test $# -gt 0; then
             output_dir=$1
+            mkdir -pv $output_dir
          else
             echo ""
             exit 1
