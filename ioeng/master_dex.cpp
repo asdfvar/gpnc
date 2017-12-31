@@ -5,76 +5,95 @@
 #include "mem.h"
 #include "proc_maps.h"
 #include <iostream>
+#include <fstream>
+#include <stdlib.h>
 
 void* master_dex_task( void* task_args )
 {
    // cast task arguments as Master_dex_params type
-   Master_dex_params* master_dex_params = (Master_dex_params*)task_args;
+   Master_dex_params* dex_params = (Master_dex_params*)task_args;
 
-   mem::Memory workspace = master_dex_params->workspace;
+   // alias to workspace
+   mem::Memory workspace = dex_params->workspace;
 
-   int* data = (int*)workspace.reserve( 20 );
+   // get the output storage location
+   std::string output_dir = getenv( "GPNC_OUTPUT_DIR" );
 
-   // receive meta data
+   int* buffer = (int*)workspace.reserve( 400 );
+
+   // persistent request handles for meta and data
    com::proc::Request request_meta;
    com::proc::Request request_data;
-   Meta master_meta;
+
+   // local object to hold meta data
+   Meta meta;
 
    bool terminate = false;
 
    do {
 
-      // receive meta data from master process
+     /****************************************
+      ** receive meta data from master process
+      ****************************************/
+
       com::proc::Irecv(
-           &master_meta,
+           &meta,
             1,            // count
             0,            // proc id
             MASTER_META,  // tag
-            master_dex_params->master_comm,
+            dex_params->master_comm,
             &request_meta );
 
       // wait for meta data to be received
       com::proc::wait( &request_meta );
 
       // check if this receive is a termination message
-      terminate = master_meta.terminate;
+      terminate = meta.terminate;
 
-      if ( !terminate )
-      {
+      // break when termination message is received
+      if ( terminate ) break;
 
-         // get data size
-         int count     = master_meta.count;
-         int type_size = master_meta.type_size;
+     /************************************
+      ** receive data from the master task
+      ************************************/
 
-         char* dst = (char*)data;
+      // get data size
+      int count     = meta.count;
+      int type_size = meta.type_size;
 
-         // receive data
-         com::proc::Irecv(
-               dst,                // data destination
-               count * type_size,  // count
-               0,                  // proc id
-               MASTER_DATA,        // tag
-               master_dex_params->master_comm,
-               &request_data );
+      char* dst = (char*)buffer;
 
-         // wait for data to be received
-         com::proc::wait( &request_data );
+      // receive data
+      com::proc::Irecv(
+            dst,                // data destination
+            count * type_size,  // count
+            0,                  // proc id
+            MASTER_DATA,        // tag
+            dex_params->master_comm,
+            &request_data );
 
-         int* data_int = static_cast<int*>(data);
+      // wait for data to be received
+      com::proc::wait( &request_data );
 
-         std::cout << "extraction data = ";
-         std::cout << data_int[0] << ", ";
-         std::cout << data_int[1] << ", ";
-         std::cout << data_int[2] << ", ";
-         std::cout << data_int[3] << std::endl;
+     /*********************
+      ** write data to disk
+      *********************/
 
-         // check if this data extraction exists
+      std::string output_filename = output_dir + "/master_data";
+      std::ofstream out_file;
 
-         // write it to file
+      bool init = true;
+      if (init) {
+         out_file.open (output_filename.c_str());
+         std::cout << "writing data to " << output_filename << std::endl;
+      } else {
+         out_file.open (output_filename.c_str(), std::ios::app);
       }
+      out_file << buffer[0] << "\n";
+      out_file.close();
 
    } while( !terminate );
 
    // tell the main thread this task is complete
-   com::tsk::barrier_wait( master_dex_params->barrier );
+   com::tsk::barrier_wait( dex_params->barrier );
 }

@@ -12,19 +12,25 @@
 void* slave_dex_task( void* task_args )
 {
    // cast task arguments as Slave_dex_params type
-   Slave_dex_params* slave_dex_params = (Slave_dex_params*)task_args;
+   Slave_dex_params* dex_params = (Slave_dex_params*)task_args;
+
+   // alias to workspace
+   mem::Memory workspace = dex_params->workspace;
 
    // get the output storage location
    std::string output_dir = getenv( "GPNC_OUTPUT_DIR" );
 
-   int proc_id = slave_dex_params->proc_id;
-   int task_id = slave_dex_params->task_id;
+   int proc_id = dex_params->proc_id;
+   int task_id = dex_params->task_id;
 
-   int* data = (int*)slave_dex_params->workspace.reserve( 400 );
+   int* buffer = (int*)workspace.reserve( 400 );
 
-   Meta slave_meta;
+   // persistent request handles for meta and data
    com::proc::Request request_meta;
    com::proc::Request request_data;
+
+   // local object to hold meta data
+   Meta meta;
 
    int meta_tag = SLAVE_META + task_id;
    int data_tag = SLAVE_DATA + task_id;
@@ -38,7 +44,7 @@ void* slave_dex_task( void* task_args )
       ************************************/
 
       com::proc::Irecv(
-            &slave_meta,
+            &meta,
             1,           // count
             proc_id,     // proc id
             meta_tag,    // tag
@@ -49,7 +55,7 @@ void* slave_dex_task( void* task_args )
       com::proc::wait( &request_meta );
 
       // get the termination message
-      terminate = slave_meta.terminate;
+      terminate = meta.terminate;
 
       // break when termination message is received
       if ( terminate ) break;
@@ -58,9 +64,9 @@ void* slave_dex_task( void* task_args )
        ** receive data from the slave task
        ***********************************/
 
-      char* dst       = (char*)data;
-      int   count     = slave_meta.count;
-      int   type_size = slave_meta.type_size;
+      char* dst       = (char*)buffer;
+      int   count     = meta.count;
+      int   type_size = meta.type_size;
 
       // receive data
       com::proc::Irecv(
@@ -78,25 +84,16 @@ void* slave_dex_task( void* task_args )
        ** write data to disk
        *********************/
 
-      std::cout << "writing data for proc id " <<
-         proc_id << " and task id " <<
-         task_id << std::endl;
-
-      std::string output_filename = output_dir + "/slave_proc_";
-
+      std::string        output_filename = output_dir + "/slave_proc_";
       std::ostringstream str_id;
-
       str_id << proc_id;
-
       output_filename += str_id.str();
-
       str_id.clear();
       str_id.str("");
       str_id << task_id;
-
-     output_filename += "_" + str_id.str();
-
+      output_filename += "_" + str_id.str();
       std::ofstream out_file;
+
       bool init = true;
       if (init) {
          out_file.open (output_filename.c_str());
@@ -104,11 +101,11 @@ void* slave_dex_task( void* task_args )
       } else {
          out_file.open (output_filename.c_str(), std::ios::app);
       }
-      out_file << data[0] << "\n";
+      out_file << buffer[0] << "\n";
       out_file.close();
 
    } while( !terminate );
 
    // tell the main thread this task is complete
-   com::tsk::barrier_wait( slave_dex_params->barrier );
+   com::tsk::barrier_wait( dex_params->barrier );
 }
