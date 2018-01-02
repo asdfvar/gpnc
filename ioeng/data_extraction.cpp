@@ -27,6 +27,10 @@ int main( int argc, char* argv[] )
    int mem_size = atoi( str_mem_size.c_str() );
    int mem_size_words = (mem_size + 4) / 4;
 
+  /*******************
+   ** master DEX tasks
+   *******************/
+
    // declare the master DEX task handle
    com::tsk::handler master_dex_handle;
 
@@ -48,6 +52,10 @@ int main( int argc, char* argv[] )
          &master_dex_handle,
          master_dex_task,
          (void*)&master_dex_params );
+
+  /******************
+   ** slave DEX tasks
+   ******************/
 
    // declare the slave DEX task handle
    com::tsk::handler slave_dex_handle;
@@ -76,6 +84,7 @@ int main( int argc, char* argv[] )
       for (int slave_task = 0; slave_task < num_slave_tasks; slave_task++)
       {
 
+         // populate slave parameters
          int index = slave_task + slave_proc * num_slave_tasks;
          slave_dex_params[index].barrier   = &slave_dex_barrier;
          slave_dex_params[index].proc_id   = slave_proc + SLAVE_GROUP;
@@ -90,6 +99,10 @@ int main( int argc, char* argv[] )
       }
    }
 
+  /*************************************
+   ** close down and finalize processing
+   *************************************/
+
    // wait for the master DEX task to finish
    com::tsk::barrier_wait( &master_dex_barrier );
    std::cout << "master DEX task processing complete" << std::endl;
@@ -97,10 +110,6 @@ int main( int argc, char* argv[] )
    // wait for the slave DEX task to finish
    com::tsk::barrier_wait( &slave_dex_barrier );
    std::cout << "slave DEX task processing complete" << std::endl;
-
-   /********************************************
-    ** close down and finalize DEX processing **
-    *******************************************/
 
    // wait for all processes to sync before closing down
    com::proc::Barrier( com::proc::Comm_world );
@@ -120,6 +129,7 @@ int main( int argc, char* argv[] )
          slave_dex_params[task].workspace.finalize();
    }
 
+   // free slave-DEX parameter objects
    delete[] slave_dex_params;
 
    // finalize process communication

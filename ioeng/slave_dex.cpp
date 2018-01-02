@@ -37,6 +37,9 @@ void* slave_dex_task( void* task_args )
 
    bool terminate = false;
 
+   unsigned int loop_count = 0;
+
+   // continue data extraction until termination message is received
    do {
 
      /************************************
@@ -84,7 +87,10 @@ void* slave_dex_task( void* task_args )
        ** write data to disk
        *********************/
 
-      std::string        output_filename = output_dir + "/slave_proc_";
+      std::string output_filename = output_dir                   +
+                                    "/"                          +
+                                    std::string( meta.filename ) +
+                                    "_";
       std::ostringstream str_id;
       str_id << proc_id;
       output_filename += str_id.str();
@@ -94,8 +100,7 @@ void* slave_dex_task( void* task_args )
       output_filename += "_" + str_id.str();
       std::ofstream out_file;
 
-      bool init = true;
-      if (init) {
+      if (loop_count++ == 0 || true) {
          out_file.open (output_filename.c_str());
          std::cout << "Writing data to " << output_filename << std::endl;
       } else {
