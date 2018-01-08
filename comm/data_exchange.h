@@ -57,6 +57,9 @@ namespace master {
                // data extraction does not terminate the data extraction task
                meta_data.terminate = false;
 
+               // copy the contents of the filename to the meta-data message
+               std::strcpy( meta_data.filename, filename.c_str() );
+
                com::proc::Request l_request;
 
                // send meta data

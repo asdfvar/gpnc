@@ -31,7 +31,7 @@ static void master_alg( fio::Parameter&  parameters,
    // extract data
    extracting.extract_data(
          data,       // source
-         "filename", // filename
+         "master_filename", // filename
          4,          // count
          communicator );
 #endif

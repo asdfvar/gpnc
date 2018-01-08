@@ -109,6 +109,14 @@ void* slave_dex_task( void* task_args )
       out_file << buffer[0] << "\n";
       out_file.close();
 
+      std::string meta_filename = output_filename + ".meta";
+      std::ofstream meta_file;
+
+      meta_file.open( meta_filename.c_str(), std::ios::binary);
+      meta_file.write( (char*)&meta, sizeof(meta));
+
+      meta_file.close();
+
    } while( !terminate );
 
    // tell the main thread this task is complete
