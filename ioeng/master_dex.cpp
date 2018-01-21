@@ -10,6 +10,10 @@
 
 void* master_dex_task( void* task_args )
 {
+
+   int num_files = 0;
+   std::string filenames[200];
+
    // cast task arguments as Master_dex_params type
    Master_dex_params* dex_params = (Master_dex_params*)task_args;
 
@@ -82,12 +86,31 @@ void* master_dex_task( void* task_args )
       ** write data to disk
       *********************/
 
+      bool initialized = false;
+
+      // determine if the filename is new
+      for (int ind = 0; ind < num_files; ind++)
+      {
+         if( filenames[ind] == std::string( meta.filename ))
+         {
+            initialized = true;
+         }
+      }
+
+      if ( !initialized )
+      {
+         filenames[num_files++] = std::string( meta.filename );
+      }
+
       std::string output_filename = output_dir + "/" +
                                     std::string( meta.filename );
       std::ofstream out_file;
 
-      bool init = true;
-      if (init) {
+      // a new file is created if this is the first instance of
+      // this data being written to disk. Otherwise, the data
+      // is appended to the existing file
+
+      if (!initialized) {
          out_file.open (output_filename.c_str(), std::ios::binary);
          std::cout << "writing data to " << output_filename << std::endl;
       } else {
