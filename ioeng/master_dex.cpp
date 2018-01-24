@@ -112,21 +112,25 @@ void* master_dex_task( void* task_args )
 
       if ( !initialized )
       {
+         // write meta-file contents to file
+         std::string meta_filename = output_filename + ".meta";
+         std::ofstream meta_file;
+
+         meta_file.open( meta_filename.c_str(), std::ios::binary);
+         meta_file.write( (char*)&meta, sizeof(meta));
+
+         meta_file.close();
+
          out_file.open (output_filename.c_str(), std::ios::binary);
          std::cout << "writing data to " << output_filename << std::endl;
+
       } else {
+
          out_file.open (output_filename.c_str(), std::ios::app);
       }
+
       out_file.write( (char*)buffer, meta.count * sizeof(int) );
       out_file.close();
-
-      std::string meta_filename = output_filename + ".meta";
-      std::ofstream meta_file;
-
-      meta_file.open( meta_filename.c_str(), std::ios::binary);
-      meta_file.write( (char*)&meta, sizeof(meta));
-
-      meta_file.close();
 
    } while( !terminate );
 
