@@ -110,7 +110,8 @@ void* master_dex_task( void* task_args )
       // this data being written to disk. Otherwise, the data
       // is appended to the existing file
 
-      if (!initialized) {
+      if ( !initialized )
+      {
          out_file.open (output_filename.c_str(), std::ios::binary);
          std::cout << "writing data to " << output_filename << std::endl;
       } else {
