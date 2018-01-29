@@ -2,4 +2,3 @@ create mutex to handle threading std-outputs to standard out
 add preamble headers to things (functions, classes, etc...)
 update master DEX to use the filename passed to it to generate the filename just like the slave tasks do
 create a record of filenames that include a count to keep track of which filenames are written to disk so that data can be appended if there is a request to write data to the same filename within the same execution
-write data to disk in binary format
