@@ -1,4 +1,11 @@
 // master_dex.cpp
+/*
+** Data extraction task for managing file output from the master task.
+** A continuous loop will wait for data and its associated meta data to
+** be received from the master task until a termination message is received.
+** Attributes about the data, specifically its size and type, is embedded
+** in the meta data.
+*/
 
 #include "master_dex.h"
 #include "com.h"
@@ -88,7 +95,7 @@ void* master_dex_task( void* task_args )
 
       bool initialized = false;
 
-      // determine if the filename is new
+      // determine if the file exists in history
       for (int ind = 0; ind < num_files; ind++)
       {
          if( filenames[ind] == std::string( meta.filename ))
@@ -102,8 +109,10 @@ void* master_dex_task( void* task_args )
          filenames[num_files++] = std::string( meta.filename );
       }
 
-      std::string output_filename = output_dir + "/" +
-                                    std::string( meta.filename );
+      // declare and define the filename
+      std::string output_filename = output_dir + "/" + std::string( meta.filename );
+
+      // declare the output file stream object
       std::ofstream out_file;
 
       // a new file is created if this is the first instance of
@@ -112,23 +121,29 @@ void* master_dex_task( void* task_args )
 
       if ( !initialized )
       {
-         // write meta-file contents to file
          std::string meta_filename = output_filename + ".meta";
          std::ofstream meta_file;
 
+         // open the meta file for writing
          meta_file.open( meta_filename.c_str(), std::ios::binary);
+
+         // write meta-file contents to file
          meta_file.write( (char*)&meta, sizeof(meta));
 
+         // close the meta file
          meta_file.close();
 
+         // open the data file for writing for the first time
          out_file.open (output_filename.c_str(), std::ios::binary);
          std::cout << "writing data to " << output_filename << std::endl;
 
       } else {
 
+         // open the existing data file for appending
          out_file.open (output_filename.c_str(), std::ios::app);
       }
 
+      // write data to file
       out_file.write( (char*)buffer, meta.count * sizeof(int) );
       out_file.close();
 
