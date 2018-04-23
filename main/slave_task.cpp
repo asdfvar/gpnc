@@ -27,9 +27,9 @@ static void slave_alg( fio::Parameter& parameters,
 
    // extract data
    extracting.extract_data(
-         data,       // source
+         data,             // source
          "slave_filename", // filename
-         4,          // count
+         4,                // count
          topology.proc_id,
          topology.task_id,
          communicator );
@@ -87,7 +87,7 @@ void* slave_task( void* task_args )
 
    TOPOLOGY topology;
 
-   topology.type      = 0;
+   topology.type      = NONE;
    topology.proc_id   = slave_tsk_parameters->proc_id;
    topology.task_id   = slave_tsk_parameters->task_id;
    topology.num_procs = slave_tsk_parameters->num_procs;

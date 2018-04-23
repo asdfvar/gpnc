@@ -3,16 +3,18 @@
 #include "com.h"
 #include "master.h"
 #include "fio.h"
-#include "memory.h"
+#include "mem.h"
 #include "proc_maps.h"
 #include <iostream>
 #include <stdlib.h>
+
+using namespace master;
 
 int main( int argc, char* argv[] )
 {
 
    // setup process communications
-   Master_comm master_comm( argc, argv );
+   Comm_setup master_comm( argc, argv );
 
    // read parameter file
    fio::Parameter parameters( getenv( "GPNC_PARAMS" ) );
@@ -38,7 +40,7 @@ int main( int argc, char* argv[] )
    master_task_params.parameters  = &parameters;
    master_task_params.workspace   = workspace;
    master_task_params.barrier     = &master_barrier;
-   master_task_params.master_comm = &master_comm;
+   master_task_params.dex_comm    = master_comm.get_dex_comm();
 
    // start the master task
    com::tsk::create( &master_tsk_handle,

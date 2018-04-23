@@ -1,0 +1,3 @@
+#!/bin/bash
+
+rm -v different_master_filename different_master_filename.meta master_filename master_filename.meta slave_filename_2_0 slave_filename_2_0.meta slave_filename_2_1 slave_filename_2_1.meta slave_filename_2_2 slave_filename_2_2.meta slave_filename_3_0 slave_filename_3_0.meta slave_filename_3_1 slave_filename_3_1.meta slave_filename_3_2 slave_filename_3_2.meta

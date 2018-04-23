@@ -1,25 +1,74 @@
 #!/bin/bash
 
-# set defaults
+###########################
+# defaults
+###########################
+
 basename=$PWD/../../
+ioexe=$basename/ioeng/ioexe
+master=$basename/main/master
+slave=$basename/main/slave
 num_slave_procs=1
 num_slave_tasks=1
-ioeng_mem=1024
-master_mem=1024
-slave_mem=256
+ioeng_mem=2048
+master_mem=2048
+slave_mem=2048
+output_dir=.
+
+###########################
+# help menu
+###########################
+
+disp_help() {
+   echo "   -h/--help   = help menu (this)"
+   echo "   -ioexe      = path to ioexe executable"
+   echo "   -master     = path to master executable"
+   echo "   -slave      = path to slave executable"
+   echo "   -num_procs  = number of slave processes to execute"
+   echo "   -num_tasks  = number of tasks each slave processes will spawn"
+   echo "   -ioeng_mem  = number of bytes for the ioexe extraction process to allocate"
+   echo "   -master_mem = number of bytes for the master process to allocate"
+   echo "   -slave_mem  = number of bytes for each slave task within each slave process to allocate"
+   echo "   -parameters = path to the parameters file"
+   echo "   -output_dir = output directory path"
+}
+
+###########################
+# argument parser
+###########################
 
 while test $# -gt 0; do
    case "$1" in
       -h|--help)
-         echo "help option specified"
+         disp_help
          exit 1
          ;;
-      -b)
+      -ioexe)
          shift
          if test $# -gt 0; then
-            basename=$1
+            ioexe=$1
          else
-            echo "no base directory specified"
+            echo "no path to ioexe executable defined"
+            exit 1
+         fi
+         shift
+         ;;
+      -master)
+         shift
+         if test $# -gt 0; then
+            master=$1
+         else
+            echo "no path to master executable defined"
+            exit 1
+         fi
+         shift
+         ;;
+      -slave)
+         shift
+         if test $# -gt 0; then
+            slave=$1
+         else
+            echo "no path to slave executable defined"
             exit 1
          fi
          shift
@@ -40,16 +89,6 @@ while test $# -gt 0; do
             num_slave_tasks=$1
          else
             echo "number of slave tasks not specified"
-            exit 1
-         fi
-         shift
-         ;;
-      -parameters)
-         shift
-         if test $# -gt 0; then
-            parameters=$1
-         else
-            echo ""
             exit 1
          fi
          shift
@@ -84,11 +123,37 @@ while test $# -gt 0; do
          fi
          shift
          ;;
+      -parameters)
+         shift
+         if test $# -gt 0; then
+            parameters=$1
+         else
+            echo ""
+            exit 1
+         fi
+         shift
+         ;;
+      -output_dir)
+         shift
+         if test $# -gt 0; then
+            output_dir=$1
+            mkdir -pv $output_dir
+         else
+            echo ""
+            exit 1
+         fi
+         shift
+         ;;
       *)
+         echo "option $1 undefined"
          shift
          ;;
    esac
 done
+
+###########################
+# environment variables
+###########################
 
 # export parameters file to the environment variables
 export GPNC_PARAMS=$parameters
@@ -108,10 +173,18 @@ export GPNC_MASTER_MEM=$master_mem
 # export slave process memory size
 export GPNC_SLAVE_MEM=$slave_mem
 
+# export the output directory path
+export GPNC_OUTPUT_DIR=$output_dir
+
 # xterm -e gdb -q -tui 
 
-# mpirun                              \
-$HOME/user_libs/openmpi_3p0p0/bin/mpirun -oversubscribe   \
-       -n 1 $basename/ioeng/ioexe : \
-       -n 1 $basename/main/master : \
-       -n $num_slave_procs $basename/main/slave
+###########################
+# execute GPNC
+###########################
+
+$HOME/user_libs/openmpi_3p0p0/bin/mpirun \
+       -oversubscribe                    \
+       -n 1 $ioexe :                     \
+       -n 1 $master :                    \
+       -n $num_slave_procs $slave        \
+#

@@ -2,17 +2,19 @@
 
 #include "com.h"
 #include "fio.h"
-#include "memory.h"
+#include "mem.h"
 #include "slave.h"
 #include "proc_maps.h"
 #include <iostream>
 #include <stdlib.h>
 
+using namespace slave;
+
 int main( int argc, char* argv[] )
 {
 
    // setup process communications
-   Slave_comm slave_comm( argc, argv );
+   Comm_setup slave_comm( argc, argv );
 
    // read parameter file
    fio::Parameter parameters( getenv( "GPNC_PARAMS" ) );
@@ -43,7 +45,6 @@ int main( int argc, char* argv[] )
       slave_tsk_parameters[task].task_id     = task;
       slave_tsk_parameters[task].parameters  = &parameters;
       slave_tsk_parameters[task].barrier     = &slave_barrier;
-      slave_tsk_parameters[task].slave_comm  = &slave_comm;
       slave_tsk_parameters[task].num_procs   = num_procs;
       slave_tsk_parameters[task].num_tasks   = num_tasks;
       slave_tsk_parameters[task].workspace   = mem::Memory( mem_size_words, "slave" );
@@ -71,7 +72,7 @@ int main( int argc, char* argv[] )
    // suspend execution of the slave task
    com::tsk::join( slave_tsk_handle );
 
-   // free workspace memory
+   // free workspace memory from each task
    for (int task = 0; task < num_tasks; task++)
    {
       slave_tsk_parameters[task].workspace.finalize();
