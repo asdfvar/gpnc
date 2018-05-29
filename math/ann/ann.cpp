@@ -9,23 +9,20 @@ namespace math {
          outputSize = in_outputSize;
 
          outputs = new float[outputSize];
-
-         numLayers = 0;
       }
 
       ANN::~ANN (void)
       {
+         // deallocate the outputs
          delete[] outputs;
 
-         for (int layer = 0; layer < numLayers; layer++)
-         {
-            delete layerType;
-         }
+         // clear contents of the layers
+         layers.clear();
       }
 
-      void ANN::addLayer (enum layerType, int layerSize)
+      void ANN::addLayer (int layerType, int layerInputSize, int layerOutputSize)
       {
-         layers[numLayers++] = new Layer (layerType, layerSize);
+         layers.push_back (Layer (layerType, layerInputSize, layerOutputSize));
       }
 
       void ANN::feedForward (float* inputs)
