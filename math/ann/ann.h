@@ -16,7 +16,10 @@ namespace math {
             Layer (int layerType, int inputSize, int outputSize);
             ~Layer (void);
 
+            // perform forward propagation on the inputs
             void operate (const float* input, float* output);
+
+            int getOutputSize (void);
 
          private:
             float* weights;
@@ -40,11 +43,12 @@ namespace math {
 
          private:
             std::list<Layer> layers;
-            float*  outputs;
+            float* outputs;
 
             int inputSize;
             int outputSize;
             int numLayers;
+            int maxLayerSize;
       };
 
    }

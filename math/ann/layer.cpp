@@ -1,5 +1,6 @@
 #include "ann.h"
 #include <cmath>
+#include <cstdlib>
 
 // function: sigmoid
 // returns the sigmoid function:
@@ -26,6 +27,12 @@ namespace math {
          outputSize = outputSize_in;
 
          weights = new float [inputSize * outputSize];
+
+         // randomize the weights to values within [0, 1)
+         for (int k = 0; k < inputSize * outputSize; k++)
+         {
+            weights[k] = static_cast<float> (rand() % 1000) / 1000.0f;
+         }
       }
 
       // destructor: Layer
@@ -61,6 +68,12 @@ namespace math {
          // pass through the activation layer. in this case,
          // it is a sigmoid function
          for (int k = 0; k < outputSize; k++) output[k] = sigmoid (output[k]);
+      }
+
+      // function: getOutputSize from Layer
+      int Layer::getOutputSize (void)
+      {
+         return outputSize;
       }
 
    }
