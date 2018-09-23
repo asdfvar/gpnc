@@ -25,8 +25,6 @@ namespace math {
             float* weights;
             int    inputSize;
             int    outputSize;
-
-            void vectorMultiplyTranspose (const float* inputs, float *outputs);
       };
 
 
