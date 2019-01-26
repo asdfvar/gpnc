@@ -183,6 +183,130 @@ COMM::~COMM (void) {
 ** perform a non-blocking send to the receiving stage
 */
 template <typename type>
-bool COMM:send_to_stage (type*
+bool COMM:send_to_stage (type* data, int dataSize, unsigned int recvStage, unsigned int recvStageRank, int tag)
+{
+   // exit if the tag used is invalid
+   if (tag == INVALID_TAG) {
+      std::cout << tag << " is designated as the invalid tag number" << std::endl;
+      return false;
+   }
+
+   // exit if there is no stage process associated with this receive
+   if (numStageProcs[recvStage] < 1) return false;
+
+   // search for this tag to identify if the communication handle exists
+   bool found = false;
+   int tagIndex
+   for (tagIndex = 0; tagIndex < numSendToStageHandles[recvStage] && !found-; tagIndex++)
+   {
+      if (tagsToStage[recvStage][tagIndex] == tag) {
+         found = true;
+         tagIndex--;
+      }
+   }
+
+   // manage the list of requests and get the appropriate request handle
+   MPI_Request* request;
+   if (found)
+   {
+      // create the new request if it doesn't already exist for this rank
+      while (recvStageRank >= sendToStageRequests[recvStage][tagIndex].size()) {
+         sendToStageRequests[recvStage][tagIndex].push_back (new MPI_Request);
+      }
+
+      // retrieve the new, or already existing, request handle
+      request = sendToStageRequests[recvStage][tagIndex][recvStageRank];
+   }
+   else
+   {
+      // add a new vector of ranks for this tag index
+      sendToStageRequests[recvStage].push_back (std::vector <MPI_Request*>());
+
+      // update the tags list
+      tagsToStage[recvStage][tagIndex] = tag;
+      numSendToStageHandles[recvStage]++;
+
+      // add a new request handle
+      for (unsigned int rank = 0; rank <= recvStageRank; rank++)
+      {
+         sendToStageRequests[recvStage][tagIndex].push_back (new MPI_Request);
+      }
+
+      // get the new request handle
+      request = sendToStageRequests[recvStage][tagIndex][recvStageRank];
+   }
+
+   // perform the non-blocking send
+   if (std::is_same <type, float>::value ) {
+      MPI_Issend (data, dataSize, MPI_FLOAT, recvStageRank, tag, interComms[recvStage], request);
+   }
+   else if (std::is_same <type, double>::value) {
+      MPI_Issend (data, dataSize, MPI_DOUBLE, recvStageRank, tag, interComms[recvStage], request);
+   }
+   else if (std::is_same <type, int>::value) {
+      MPI_Issend (data, dataSize, MPI_INT, recvStageRank, tag, interComms[recvStage], request);
+   }
+   else if (std::is_same <type, char>::value) {
+      MPI_Issend (data, dataSize, MPI_CHAR, recvStageRank, tag, interComms[recvStage], request);
+   }
+   else {
+      MPI_Issend (data, dataSize * sizeof (*data), MPI_BYTE, recvStageRank, tag, interComms[recvStage], request);
+   }
+
+   return true;
+} // send_to_stage
+
+// defined types for send
+template bool COMM::send_to_stage (float*  data, int dataSize, unsigned int recvStage, unsigned int recvStageRank, int tag);
+template bool COMM::send_to_stage (double* data, int dataSize, unsigned int recvStage, unsigned int recvStageRank, int tag);
+template bool COMM::send_to_stage (int*    data, int dataSize, unsigned int recvStage, unsigned int recvStageRank, int tag);
+template bool COMM::send_to_stage (char*   data, int dataSize, unsigned int recvStage, unsigned int recvStageRank, int tag);
+
+/*
+** function name: wait_for_send_to_stage from COMM
+*/
+bool COMM::wait_for_send_to_stage (unsigned int recvStage, unsigned int stageRank, int tag)
+{
+   // exit if the tag used is invalid
+   if (tag == INVALID_TAG) {
+      std::cout << tag << " is designated as the invalid tag number" << std::endl;
+      return false;
+   }
+
+   // exit if there is no stage process
+   if (numStageProcs[recvStage] < 1) return false;
+
+   // search for this tag to identify the associated communication handle
+   bool found = false;
+   int tagIndex;
+   for (tagIndex = 0; tagIndex < numSendToSageHandles[recvStage] && !found; tagIndex++)
+   {
+      if (tagsToStage[recvStage][tagIndex] == tag) {
+         found = true;
+         tagIndex--;
+      }
+   }
+
+   // ensure that the associated send call has been made
+   if (!found) {
+      std::count << "send to " << recvStage << " request not found" << std::endl;
+      return false;
+    }
+
+   // perform the blocking wait
+   MPI_Wait (sendToStageRequests[recvStage][tagIndex][stageRank], MPI_STATUS_IGNORE);
+
+   return true;
+}  // wait_for_send_to_stage
+
+/*
+** function name: receive_from_stage from COMM
+**
+** receive data from another stage at its local rank
+*/
+template <typename type>
+bool COMM::receive_from_stage (type* data, int dataSize, unsigned int sendStage, unsigned int sendStageRank, int tag)
+{
+}
 
 } // namespace comm
