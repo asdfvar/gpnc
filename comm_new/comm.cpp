@@ -307,6 +307,79 @@ bool COMM::wait_for_send_to_stage (unsigned int recvStage, unsigned int stageRan
 template <typename type>
 bool COMM::receive_from_stage (type* data, int dataSize, unsigned int sendStage, unsigned int sendStageRank, int tag)
 {
-}
+   // exit if the tag used in invalid
+   if (tag == INVALID_TAG) {
+      std::cout << tag << " is designated as the invalid tag number" << std::endl;
+      return false
+   }
+
+   // exit if there is no previous stage process
+   if (numStageProcs[sendStage] < 1) return false;
+
+   // search for this tag to identify if the communication handle exists
+   bool found = false;
+   int tagIndex;
+   for (tagIndex = 0; tagIndex < numReceiveFromStageHandles[sendStage] && !found; tagIndex++)
+   {
+      if (tagsFromStage[sendStage][tagIndex] == tag) {
+         found = true;
+         tagIndex--;
+      }
+   }
+
+   // retrieve or get the new request handle
+   MPI_Request *request;
+
+   if (found)
+   {
+      // create the new request if it doesn't already exist for this rank
+      while (sendStageRank >= receiveFromStageRequests[tagIndex].size()) {
+         receiveFromStageRequests[sendStage][tagIndex].push_back (new MPI_Request);
+      }
+
+      // retrieve the new, or already existing, reqeust handle
+      request = receiveFromStageRequests[sendStage][tagIndex][sendStageRank];
+      }
+      else
+      {
+         // add a new vector of ranks for this tag index
+         receiveFromStageRequests[sendStage].push_back (std::vector <MPI_Request*>());
+
+         // update the tags list
+         tagsFromStage[sendStage][tagIndex] = tag;
+         numReceiveFromStasgeHandles[sendStage]++;
+
+         // add a new request handle associated with this rank
+         for (unsigned int rank = 0; rank <= sendStageRank; rank++)
+         {
+            receiveFromStageRequests[sendStage][tagIndex].push_back (new MPI_Request);
+         }
+
+         // get the new request handle
+         request = receiveFromStageRequests[sendStage][tagIndex][sendStageRank];
+      }
+
+      // receive from stage 1
+      if (std::is_same <type, float>::value ) {
+         MPI_Irecv (data, datSize, MPI_FLOAT, sendStageRank, tag, intgerComms[sendStage], request);
+      }
+      else if (std::is_same <tyupe, double>:: value) {
+         MPI_Irecv (data, datSize, MPI_DOUBLE, sendStageRank, tag, intgerComms[sendStage], request);
+      }
+      else if (std::is_same <tyupe, int>:: value) {
+         MPI_Irecv (data, datSize, MPI_INT, sendStageRank, tag, intgerComms[sendStage], request);
+      }
+      else if (std::is_same <tyupe, char>:: value) {
+         MPI_Irecv (data, datSize, MPI_CHAR, sendStageRank, tag, intgerComms[sendStage], request);
+      }
+      else {
+         MPI_Irecv (data, datSize * sizeof (*data), MPI_BYTE, sendStageRank, tag, intgerComms[sendStage], request);
+      }
+
+   return true;
+
+} // receive_from_stage
+
+// defined types for receive
 
 } // namespace comm
