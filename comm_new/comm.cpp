@@ -381,5 +381,52 @@ bool COMM::receive_from_stage (type* data, int dataSize, unsigned int sendStage,
 } // receive_from_stage
 
 // defined types for receive
+template bool COMM::receive_from_stage (float  *data, int dataSize, unsigned int sendStage, unsigned int sendStageRank, int tag);
+template bool COMM::receive_from_stage (double *data, int dataSize, unsigned int sendStage, unsigned int sendStageRank, int tag);
+template bool COMM::receive_from_stage (int    *data, int dataSize, unsigned int sendStage, unsigned int sendStageRank, int tag);
+template bool COMM::receive_from_stage (char   *data, int dataSize, unsigned int sendStage, unsigned int sendStageRank, int tag);
+
+/*
+** function name: wait_for_receive_from_stage from COMM
+*/
+bool COMM::wait_for_receive_from_stage (unsigned int sendStage, unsigned int sendStageRank, int tag);
+{
+   // exit if the tag used is invalid
+   if (tag == INVALID_TAG) {
+      std::cout << tag << " is designated as the invalid tag number" << std::endl;
+      return false;
+   }
+
+   // exit if there is no stage-1 process
+   if (numStageProcs[sendStage] < 1) return false;
+
+   // status variable
+   int stat = 0;
+
+   // search for this tag to identify the associated communication handle
+   bool found = false;
+   int tagIndex;
+   for (tagIndex = 0; tagIndex < numReceiveFromStageHanles[sendStage] && !found; tagIndex++)
+   {
+      if (tagsFromStage[sendStage][tagIndex] == tag) {
+         found = true;
+         tagIndex--;
+      }
+   }
+
+   if (!found) {
+      std::cout << "receive from " << sendStage << " request not found" << std::endl;
+      return false;
+   }
+
+   // perform the blocking wait
+   stat = MPI_Wait (receiveFromStageRequests[sendStage][tagIndex][sendStageRank], MPI_STATUS_IGNORE);
+
+   if (stat != MPI_SUCCESS) {
+      std::cout << "error with waiting for receive request from " << sendStageRank << std::endl;
+   }
+
+   return true;
+} // wait_for_receive_from_stage
 
 } // namespace comm
