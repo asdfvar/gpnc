@@ -14,6 +14,7 @@ namespace comm {
 struct CONFIG {
    int processes[MAX_STAGES];
    int numStages;
+   int numProcs[MAX_STAGES];
 };
 
 /*

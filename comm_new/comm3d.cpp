@@ -38,6 +38,144 @@ namespace comm {
 
       // create the third dimension communicatrion handle
       MPI_Comm_create (stageComms[thisStageNum], tiles2Group, &dimension2Comm);
+
+      // get the rank for dimension 2 communicator
+      MPI_Comm_rank (dimension2Comm, &dimension2Rank);
+
+      // free no longer needed group handles
+      MPI_Group_free (&tiles2Group);
    }
 
-}
+   COMM3D::~COMM3D (void)
+   {
+      // pass
+   }
+
+   /*
+    ** function name: send_to_next_dim2 from COMM3D
+    */
+   template <typename type> bool COMM3D::send_to_next_dim2 (type *data, int src_size, int tag)
+   {
+      // exit if the tag used is invalid
+      if (tag == INVALID_TAG) {
+         std::cout << tag << " is designated as the invalid tag number" << std::endl;
+         return false;
+      }
+
+      // search for this tag to identify if the communication handle exists
+      bool found = false;
+      int index;
+      for (index = 0; index < numCommSendDim2Handles && !found; index++)
+      {
+         if (tagsDim2[index] == tag) {
+            found = true;
+            index--;
+         }
+      }
+
+      // set the status flag informing that data is in the process of being sent
+      sendingToDim2[index] = true;
+
+      MPI_Request *request;
+      if (found) {
+         request = localSendRequestsDim2[index];
+      }
+      else {
+         request = new MPI_Request;
+         localSendRequestsDim2.push_back (request);
+         tagsDim2[numCommSendDim2Handles++] = tag;
+      }
+
+      // send to next stage 1 in dimension 2 direction
+      int destinationRank = (dimension2Rank + 1) % numTilesDim2;
+
+      if (std::is_same <type, float>::value) {
+         MPI_Issend (data, src_size, MPI_FLOAT, destinationRank, tag, dimension2Comm, request);
+      }
+      else if (std::is_same <type, double>::value) {
+         MPI_Issend (data, src_size, MPI_DOUBLE, destinationRank, tag, dimension2Comm, request);
+      }
+      else if (std::is_same <type, int>::value) {
+         MPI_Issend (data, src_size, MPI_INT, destinationRank, tag, dimension2Comm, request);
+      }
+      else if (std::is_same <type, char>::value) {
+         MPI_Issend (data, src_size, MPI_CHAR, destinationRank, tag, dimension2Comm, request);
+      }
+      else {
+         MPI_Issend (data, src_size * sizeof (*data), MPI_BYTE, destinationRank, tag, dimension2Comm, request);
+      }
+
+      return true;
+   }
+
+   // defined types
+   template bool COMM3D::send_to_next_dim2 (float  *data, int src_size, int tag);
+   template bool COMM3D::send_to_next_dim2 (double *data, int src_size, int tag);
+   template bool COMM3D::send_to_next_dim2 (int    *data, int src_size, int tag);
+   template bool COMM3D::send_to_next_dim2 (char   *data, int src_size, int tag);
+
+   /*
+    ** function name: receive_from_previous_dim2 from COM3D
+    */
+   template <typename type> bool COMM3D::receive_from_previous_dim2 (type *data, int src_size, int tag)
+   {
+      // exit if the tag used is invalid
+      if (tag == INVALID_TAG) {
+         std::cout << tag << " is designated as the invalid tag number" << std::endl;
+         return false;
+      }
+
+      // search for this tag to identify if the communication handle exists
+      bool found = false;
+      int index;
+      for (index = 0; index < numCommSendDim2Handles && !found; index++)
+      {
+         if (tagsDim2[index] == tag) {
+            found = true;
+            index--;
+         }
+      }
+
+      // set the status flag informing that data is ikn the process of being sent
+      receivingFromDim2[index] = true;
+
+      MPI_Request *request;
+      if (foiund) {
+         request = localReceiveRequestsDim2[index];
+      }
+      else {
+         request = new MPI_Request;
+         localReceiveRequestsDim2.push_back (request);
+         tagsDim2[numCommSendDim2Handles++] = tag;
+      }
+
+      int sourceRank = dimension2Rank - 1;
+      if (sourceRank < 0) sourceRank += numTilesDim2;
+
+      if (std::is_same <type, float>::value) {
+         MPI_Irecv (data, src_size, MPI_FLOAT, sourceRank, tag, dimension2Comm, request);
+      }
+      else if (std::is_same <type, double>::value) {
+         MPI_Irecv (data, src_size, MPI_DOUBLE, sourceRank, tag, dimension2Comm, request);
+      }
+      else if (std::is_same <type, int>::value) {
+         MPI_Irecv (data, src_size, MPI_INT, sourceRank, tag, dimension2Comm, request);
+      }
+      else if (std::is_same <type, char>::value) {
+         MPI_Irecv (data, src_size, MPI_CHAR, sourceRank, tag, dimension2Comm, request);
+      }
+      else {
+         MPI_Irecv (data, src_size * sizeof (*data), MPI_CHAR, sourceRank, tag, dimension2Comm, request);
+      }
+
+      return true;
+
+   }
+
+// defined types
+template bool COMM3D::receive_from_previous_dim2 (float  *data, int src_size, int tag);
+template bool COMM3D::receive_from_previous_dim2 (double *data, int src_size, int tag);
+template bool COMM3D::receive_from_previous_dim2 (int    *data, int src_size, int tag);
+template bool COMM3D::receive_from_previous_dim2 (char   *data, int src_size, int tag);
+
+} // namespace comm

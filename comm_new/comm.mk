@@ -2,7 +2,10 @@ include ../defines.mk
 
 FLAGS = -Wall
 
-OBJS = comm.o
+OBJS = comm.o   \
+       comm2d.o \
+       comm3d.o \
+#
 
 LIB = libcomm.a
 
