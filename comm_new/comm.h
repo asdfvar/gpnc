@@ -15,6 +15,8 @@ struct CONFIG {
    int processes[MAX_STAGES];
    int numStages;
    int numProcs[MAX_STAGES];
+   int assocStages[MAX_STAGES];
+   unsigned int numAssocStages;
 };
 
 /*
@@ -27,7 +29,7 @@ class COMM {
 
      ~COMM (void);
 
-      template<typename type> bool send_to_stage (type* data, int size, int recvStage, int recvStageRank, int tag);
+      template<typename type> bool send_to_stage (type *data, int dataSize, unsigned int recvStage, unsigned int recvStageRank, int tag);
       bool wait_for_send_to_stage (unsigned int recvStage, unsigned int nextStageRank, int tag);
       template<typename type> bool send_to_stage (type* data, int size, int stage, int tag) {
          return send_to_stage (data, size, stage, 0, tag);

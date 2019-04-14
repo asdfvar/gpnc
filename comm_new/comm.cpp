@@ -74,7 +74,7 @@ COMM::COMM (int* argc, char*** argv, CONFIG& config, unsigned int numStages, con
       int worldStageRanks[MAX_STAGES];
       for (unsigned int rank = worldStageStartRank, ind = 0; ind < numStageProcs[stage]; ind++, rank++)
       {
-         int worldStageRanks[ind] = rank;
+         worldStageRanks[ind] = rank;
       }
 
       // create the group for the associated stage
@@ -83,13 +83,13 @@ COMM::COMM (int* argc, char*** argv, CONFIG& config, unsigned int numStages, con
       // create the intra communicator for the associated stage
       MPI_Comm_create (MPI_COMM_WORLD, stageGroups[stage], &stageComms[stage]);
 
-      worldStageStartRanks += numStageProcs[stage];
+      worldStageStartRank += numStageProcs[stage];
    }
 
    /*
    ** setup inter-communication configurations for all stages
    */
-   for (unsigned int index = 0; index < MAX_INTERCOMMS;l index++) interComms[index] = MPI_COMM_NULL;
+   for (unsigned int index = 0; index < MAX_INTERCOMMS; index++) interComms[index] = MPI_COMM_NULL;
 
    for (unsigned int stage = 0; stage < config.numAssocStages; stage++)
    {
@@ -100,8 +100,7 @@ COMM::COMM (int* argc, char*** argv, CONFIG& config, unsigned int numStages, con
       // union groups between associated stages
       MPI_Group_union (stageGroups[thisStageNum], stageGroups[assocStage], &unionStagesGroup);
 
-      MPI_Comm_unionStagesComm;
-
+      MPI_Comm unionStagesComm;
 
       // create the intra communicator between the associated stages
       MPI_Comm_create (MPI_COMM_WORLD, unionStagesGroup, &unionStagesComm);
@@ -113,7 +112,7 @@ COMM::COMM (int* argc, char*** argv, CONFIG& config, unsigned int numStages, con
          minNum = assocStage;
          maxNum = thisStageNum;
       }
-      int tagNum = minNum * coknfig.numAssocStages + maxNum;
+      int tagNum = minNum * config.numAssocStages + maxNum;
 
       // create intercommunicator to the associated stage
       unsigned int startRank  = numStageProcs[thisStageNum];
@@ -121,7 +120,7 @@ COMM::COMM (int* argc, char*** argv, CONFIG& config, unsigned int numStages, con
    }
 
    // freer no longer needed group handles
-   if (worldGroup != MPI_GROUP_NULL) MPI_Group_Free (&worldGroup);
+   if (worldGroup != MPI_GROUP_NULL) MPI_Group_free (&worldGroup);
 
    // ensure all processes get here before proceeding
    MPI_Barrier (MPI_COMM_WORLD);
@@ -183,7 +182,7 @@ COMM::~COMM (void) {
 ** perform a non-blocking send to the receiving stage
 */
 template <typename type>
-bool COMM:send_to_stage (type* data, int dataSize, unsigned int recvStage, unsigned int recvStageRank, int tag)
+bool COMM::send_to_stage (type *data, int dataSize, unsigned int recvStage, unsigned int recvStageRank, int tag)
 {
    // exit if the tag used is invalid
    if (tag == INVALID_TAG) {
@@ -196,8 +195,8 @@ bool COMM:send_to_stage (type* data, int dataSize, unsigned int recvStage, unsig
 
    // search for this tag to identify if the communication handle exists
    bool found = false;
-   int tagIndex
-   for (tagIndex = 0; tagIndex < numSendToStageHandles[recvStage] && !found-; tagIndex++)
+   int tagIndex;
+   for (tagIndex = 0; tagIndex < numSendToStageHandles[recvStage] && !found; tagIndex++)
    {
       if (tagsToStage[recvStage][tagIndex] == tag) {
          found = true;
@@ -279,7 +278,7 @@ bool COMM::wait_for_send_to_stage (unsigned int recvStage, unsigned int stageRan
    // search for this tag to identify the associated communication handle
    bool found = false;
    int tagIndex;
-   for (tagIndex = 0; tagIndex < numSendToSageHandles[recvStage] && !found; tagIndex++)
+   for (tagIndex = 0; tagIndex < numSendToStageHandles[recvStage] && !found; tagIndex++)
    {
       if (tagsToStage[recvStage][tagIndex] == tag) {
          found = true;
@@ -289,7 +288,7 @@ bool COMM::wait_for_send_to_stage (unsigned int recvStage, unsigned int stageRan
 
    // ensure that the associated send call has been made
    if (!found) {
-      std::count << "send to " << recvStage << " request not found" << std::endl;
+      std::cout << "send to " << recvStage << " request not found" << std::endl;
       return false;
     }
 
@@ -310,7 +309,7 @@ bool COMM::receive_from_stage (type* data, int dataSize, unsigned int sendStage,
    // exit if the tag used in invalid
    if (tag == INVALID_TAG) {
       std::cout << tag << " is designated as the invalid tag number" << std::endl;
-      return false
+      return false;
    }
 
    // exit if there is no previous stage process
@@ -347,7 +346,7 @@ bool COMM::receive_from_stage (type* data, int dataSize, unsigned int sendStage,
 
          // update the tags list
          tagsFromStage[sendStage][tagIndex] = tag;
-         numReceiveFromStasgeHandles[sendStage]++;
+         numReceiveFromStageHandles[sendStage]++;
 
          // add a new request handle associated with this rank
          for (unsigned int rank = 0; rank <= sendStageRank; rank++)
@@ -361,19 +360,19 @@ bool COMM::receive_from_stage (type* data, int dataSize, unsigned int sendStage,
 
       // receive from stage 1
       if (std::is_same <type, float>::value ) {
-         MPI_Irecv (data, datSize, MPI_FLOAT, sendStageRank, tag, intgerComms[sendStage], request);
+         MPI_Irecv (data, dataSize, MPI_FLOAT, sendStageRank, tag, interComms[sendStage], request);
       }
-      else if (std::is_same <tyupe, double>:: value) {
-         MPI_Irecv (data, datSize, MPI_DOUBLE, sendStageRank, tag, intgerComms[sendStage], request);
+      else if (std::is_same <type, double>:: value) {
+         MPI_Irecv (data, dataSize, MPI_DOUBLE, sendStageRank, tag, interComms[sendStage], request);
       }
-      else if (std::is_same <tyupe, int>:: value) {
-         MPI_Irecv (data, datSize, MPI_INT, sendStageRank, tag, intgerComms[sendStage], request);
+      else if (std::is_same <type, int>:: value) {
+         MPI_Irecv (data, dataSize, MPI_INT, sendStageRank, tag, interComms[sendStage], request);
       }
-      else if (std::is_same <tyupe, char>:: value) {
-         MPI_Irecv (data, datSize, MPI_CHAR, sendStageRank, tag, intgerComms[sendStage], request);
+      else if (std::is_same <type, char>:: value) {
+         MPI_Irecv (data, dataSize, MPI_CHAR, sendStageRank, tag, interComms[sendStage], request);
       }
       else {
-         MPI_Irecv (data, datSize * sizeof (*data), MPI_BYTE, sendStageRank, tag, intgerComms[sendStage], request);
+         MPI_Irecv (data, dataSize * sizeof (*data), MPI_BYTE, sendStageRank, tag, interComms[sendStage], request);
       }
 
    return true;
@@ -389,7 +388,7 @@ template bool COMM::receive_from_stage (char   *data, int dataSize, unsigned int
 /*
 ** function name: wait_for_receive_from_stage from COMM
 */
-bool COMM::wait_for_receive_from_stage (unsigned int sendStage, unsigned int sendStageRank, int tag);
+bool COMM::wait_for_receive_from_stage (unsigned int sendStage, unsigned int sendStageRank, int tag)
 {
    // exit if the tag used is invalid
    if (tag == INVALID_TAG) {
@@ -406,7 +405,7 @@ bool COMM::wait_for_receive_from_stage (unsigned int sendStage, unsigned int sen
    // search for this tag to identify the associated communication handle
    bool found = false;
    int tagIndex;
-   for (tagIndex = 0; tagIndex < numReceiveFromStageHanles[sendStage] && !found; tagIndex++)
+   for (tagIndex = 0; tagIndex < numReceiveFromStageHandles[sendStage] && !found; tagIndex++)
    {
       if (tagsFromStage[sendStage][tagIndex] == tag) {
          found = true;
