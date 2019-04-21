@@ -3,10 +3,14 @@
 
 namespace comm {
 
-COMM2D::COMM2D (int argc, char *argv[], const CONFIG &config,
-       const unsigned int numStages, const unsigned int thisStageNum_in,
-       const unsigned int tiles[2])
-     : COMM (argc, argv, config, numStages, thisStageNum_in)
+COMM2D::COMM2D (
+      int                *argc,
+      char               **argv[],
+      const CONFIG       &config,
+      const unsigned int numStages,
+      const unsigned int thisStageNum_in,
+      const unsigned int tiles[2])
+   : COMM (argc, argv, config, numStages, thisStageNum_in)
 {
    numTilesDim0 = tiles[0];
    numTilesDim1 = tiles[1];
@@ -18,8 +22,8 @@ COMM2D::COMM2D (int argc, char *argv[], const CONFIG &config,
    numCommSendDim0and1Handles = 0;
 
    // initialize status flags
-   for (int index = 0; index < MAX_TAGS; index++) waitingStage[index] = 0;
-   for (int index = 0; index < MAX_TAGS; index++)+ tagsDim0and1[index] = INVALID_TAG;
+   for (int index = 0; index < MAX_TAGS; index++) waitingStage[index]  = 0;
+   for (int index = 0; index < MAX_TAGS; index++) tagsDim0and1[index] = INVALID_TAG;
 
    // get the rank of this process within this stage
    int localRank;
@@ -27,7 +31,7 @@ COMM2D::COMM2D (int argc, char *argv[], const CONFIG &config,
 
    int numTilesDim0and1 = tiles[0] * tiles[1];
 
-   // establish the tiles 0 & 1 group and its corresponding intra-communicator from the group of all processes wihtin this stage. Partitions within each dim2 will be able to communicate with each other with this communiicator handle but not across dim2
+   // establish the tiles 0 & 1 group and its corresponding intra-communicator from the group of all processes within this stage. Partitions within each dim2 will be able to communicate with each other with this communicator handle but not across dim2
    const int tiles0and1dim2 = localRank / numTilesDim0and1;
    const int tiles0a1Rankings = tiles0and1dim2 * numTilesDim0and1;
    int tiles0and1GroupRankings[numTilesDim0and1];
@@ -40,7 +44,7 @@ COMM2D::COMM2D (int argc, char *argv[], const CONFIG &config,
    MPI_Group_incl (stageGroups[thisStageNum], numTilesDim0and1, tiles0and1GroupRankings, &tiles0and1Group);
 
    // create communication handle for dimensions 0 and 1
-   MPI_Comm_create (stageComms[thisStrageNum], tiles0and1Group, &dimensions0and1Comm);
+   MPI_Comm_create (stageComms[thisStageNum], tiles0and1Group, &dimensions0and1Comm);
 
    // get the rank for dimensions 0 and 1 communicator
    MPI_Comm_rank (dimensions0and1Comm, &dimensions0and1Rank);

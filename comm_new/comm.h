@@ -4,10 +4,10 @@
 #include <mpi.h>
 #include <vector>
 
-#define MAX_TAGS   200
-#define MAX_STAGES 20
+#define MAX_TAGS       200
+#define MAX_STAGES     20
 #define MAX_INTERCOMMS MAX_STAGES
-#define INVALID_TAG -1
+#define INVALID_TAG    -1
 
 namespace comm {
 
@@ -25,18 +25,49 @@ struct CONFIG {
 class COMM {
 
    public:
-      COMM (int* argc, char*** argv, CONFIG& config, const unsigned int numStages, const unsigned int thisStageNum);
+      COMM (int                *argc,
+            char               ***argv,
+            const CONFIG       &config,
+            const unsigned int numStages,
+            const unsigned int thisStageNum);
 
      ~COMM (void);
 
-      template<typename type> bool send_to_stage (type *data, int dataSize, unsigned int recvStage, unsigned int recvStageRank, int tag);
-      bool wait_for_send_to_stage (unsigned int recvStage, unsigned int nextStageRank, int tag);
-      template<typename type> bool send_to_stage (type* data, int size, int stage, int tag) {
-         return send_to_stage (data, size, stage, 0, tag);
-      }
+     template<typename type>
+        bool send_to_stage (
+              type *data,
+              int dataSize,
+              unsigned int recvStage,
+              unsigned int recvStageRank,
+              int tag);
 
-      template <typename type> bool receive_from_stage (type* data, int dataSize, unsigned int sendStage, unsigned int stageRank, int tag);
-      bool wait_for_receive_from_stage (unsigned int sendStage, unsigned int sendStageRank, int tag);
+      bool wait_for_send_to_stage (
+            unsigned int recvStage,
+            unsigned int nextStageRank,
+            int tag);
+
+      template<typename type>
+         bool send_to_stage (
+               type* data,
+               int size,
+               int stage,
+               int tag)
+         {
+            return send_to_stage (data, size, stage, 0, tag);
+         }
+
+      template <typename type>
+         bool receive_from_stage (
+               type* data,
+               int dataSize,
+               unsigned int sendStage,
+               unsigned int stageRank,
+               int tag);
+
+      bool wait_for_receive_from_stage
+         (unsigned int sendStage,
+          unsigned int sendStageRank,
+          int tag);
 
    protected:
 
@@ -68,8 +99,13 @@ class COMM2D : public COMM {
 
    public:
 
-      COMM2D (int argc, char* argv[], const CONFIG& config, const unsigned int numStages,
-              const unsigned int thisStageNum, const unsigned int tiles[2]);
+      COMM2D (
+            int                *argc,
+            char               **argv[],
+            const CONFIG       &config,
+            const unsigned int numStages,
+            const unsigned int thisStageNum,
+            const unsigned int tiles[2]);
 
       ~COMM2D (void);
 
@@ -97,8 +133,13 @@ class COMM3D : public COMM2D {
 
    public:
 
-      COMM3D (int argc, char* argv[], const CONFIG& config, const unsigned int numStages,
-              const unsigned int thisStageNum, const unsigned int tiles[3]);
+      COMM3D (
+            int                *argc,
+            char               **argv[],
+            const CONFIG       &config,
+            const unsigned int numStages,
+            const unsigned int thisStageNum,
+            const unsigned int tiles[3]);
 
       ~COMM3D (void);
 

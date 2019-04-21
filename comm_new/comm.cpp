@@ -9,7 +9,12 @@ namespace comm {
 ** parent communicator class. Establishes the MPI initialization, destruction,
 ** and configurations that all processes must call
 */
-COMM::COMM (int* argc, char*** argv, CONFIG& config, unsigned int numStages, const unsigned int thisStageNum_in)
+COMM::COMM (
+      int                *argc,
+      char               ***argv,
+      const CONFIG       &config,
+      const unsigned int numStages,
+      const unsigned int thisStageNum_in)
 {
 
    int requested = MPI_THREAD_MULTIPLE;
