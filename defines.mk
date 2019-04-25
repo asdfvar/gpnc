@@ -7,7 +7,7 @@ CPP     = g++
 CL      = ar rcs
 
 # locally-defined open-MPI C++ wrapper compiler
-MPI_CPP = $(HOME)/user_libs/openmpi_3p0p0/bin/mpic++
+MPI_CPP = $(HOME)/user_libs/openmpi/bin/mpic++
 
 # include path to open MPI header files
-PROC_INC = -I/$(HOME)/user_libs/openmpi_3p0p0/include
+PROC_INC = -I/$(HOME)/user_libs/openmpi/include
