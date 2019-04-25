@@ -10,4 +10,4 @@ CL      = ar rcs
 MPI_CPP = $(HOME)/user_libs/openmpi/bin/mpic++
 
 # include path to open MPI header files
-PROC_INC = -I/$(HOME)/user_libs/openmpi/include
+MPI_INC = /$(HOME)/user_libs/openmpi/include

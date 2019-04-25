@@ -10,7 +10,7 @@ OBJS = comm.o   \
 LIB = libcomm.a
 
 INC  = -I../middleware/com/ \
-       $(PROC_INC)          \
+       -I/$(MPI_INC)        \
 #
 
 all: $(OBJS)
@@ -20,4 +20,4 @@ clean:
 	rm -v $(OBJS) $(LIB)
 
 %.o: %.cpp
-	$(CPP) $(INC) $(FLAGS) -c $^
+	$(MPI_CPP) $(INC) $(FLAGS) -c $^

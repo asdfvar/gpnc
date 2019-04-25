@@ -12,7 +12,7 @@
 namespace comm {
 
 struct CONFIG {
-   int processes[MAX_STAGES];
+   int processes[MAX_STAGES]; // TODO: remove this?
    int numStages;
    int numProcs[MAX_STAGES];
    int assocStages[MAX_STAGES];
