@@ -21,8 +21,8 @@ namespace comm {
       // initialize the communication handles to null
       dimension2Comm = MPI_COMM_NULL;
 
-      for (int index = 0; index < MAX_TAGS; index++) tagsDim2[index] = INVALID_TAG;
-      for (int index = 0; index < MAX_TAGS; index++) sendingToDim2[index] = false;
+      for (int index = 0; index < MAX_TAGS; index++) tagsDim2[index]          = INVALID_TAG;
+      for (int index = 0; index < MAX_TAGS; index++) sendingToDim2[index]     = false;
       for (int index = 0; index < MAX_TAGS; index++) receivingFromDim2[index] = false;
 
       // get the rank of this process within this stage
@@ -113,13 +113,47 @@ namespace comm {
       }
 
       return true;
-   }
+   } // send_to_next_dim2 
 
    // defined types
    template bool COMM3D::send_to_next_dim2 (float  *data, int src_size, int tag);
    template bool COMM3D::send_to_next_dim2 (double *data, int src_size, int tag);
    template bool COMM3D::send_to_next_dim2 (int    *data, int src_size, int tag);
    template bool COMM3D::send_to_next_dim2 (char   *data, int src_size, int tag);
+
+   /*
+   ** function name: wait_for_send_to_next_dim2 from COMM3D
+   */
+   bool COMM3D::wait_for_send_to_next_dim2 (int tag)
+   {
+      // exit if the tag used is invalid
+      if (tag == INVALID_TAG) {
+         std::cout << tag << " is designated as the invalid tag number" << std::endl;
+         return false;
+      }
+   
+      // search for this tag to identify the associated communication handle
+      bool found = false;
+      int tagIndex;
+      for (tagIndex = 0; tagIndex < numCommSendDim2Handles && !found; tagIndex++)
+      {
+         if (tagsDim2[tagIndex] == tag) {
+            found = true;
+            tagIndex--;
+         }
+      }
+   
+      // ensure that the associated send call has been made
+      if (!found) {
+         std::cout << "send to next request not found" << std::endl;
+         return false;
+       }
+   
+      // perform the blocking wait
+      MPI_Wait (localSendRequestsDim2[tagIndex], MPI_STATUS_IGNORE);
+   
+      return true;
+   }  // wait_for_send_to_stage
 
    /*
     ** function name: receive_from_previous_dim2 from COM3D

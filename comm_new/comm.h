@@ -145,6 +145,7 @@ class COMM3D : public COMM2D {
 
       template <typename type> bool send_to_next_dim2 (type* data, int src_size, int tag);
       template <typename type> bool receive_from_previous_dim2 (type* data, int src_size, int tag);
+      bool wait_for_send_to_next_dim2 (int tag);
 
    protected:
 
