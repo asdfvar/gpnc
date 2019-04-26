@@ -74,6 +74,7 @@ COMM::COMM (
    ** setup intra-communication configurations for all stages
    */
    unsigned int worldStageStartRank = 0;
+std::cout << "numStages = " << numStages << std::endl;
    for (unsigned int stage = 0; stage < numStages; stage++)
    {
       int worldStageRanks[MAX_STAGES];
@@ -84,6 +85,9 @@ COMM::COMM (
 
       // create the group for the associated stage
       MPI_Group_incl (worldGroup, numStageProcs[stage], worldStageRanks, &stageGroups[stage]);
+std::cout << thisStageNum << ":created group for ranks ";
+for (unsigned int k = 0; k < numStageProcs[stage]; k++) std::cout << worldStageRanks[k] << ", ";
+std::cout << std::endl;
 
       // create the intra communicator for the associated stage
       MPI_Comm_create (MPI_COMM_WORLD, stageGroups[stage], &stageComms[stage]);
@@ -119,9 +123,19 @@ COMM::COMM (
       }
       int tagNum = minNum * config.numAssocStages + maxNum;
 
-      // create intercommunicator to the associated stage
+std::cout << "got_here:" << __FILE__ << ":" << __LINE__ << std::endl;
+      // create inter communicator to the associated stage
       unsigned int startRank  = numStageProcs[thisStageNum];
+
+      if (stageComms[thisStageNum] == MPI_COMM_NULL) std::cout << "stage " << thisStageNum << " is a null communicator" << std::endl;
+
+int unionStagesGroupRank;
+MPI_Group_rank (unionStagesGroup, &unionStagesGroupRank);
+
+std::cout << "creating inter communicator from world rank " << worldRank << " from communicator containing ranks starting from " << unionStagesGroupRank << " to starting world rank " << startRank << " at tag " << tagNum << std::endl;
+
       MPI_Intercomm_create (stageComms[thisStageNum], 0, unionStagesComm, startRank, tagNum, &interComms[assocStage]);
+std::cout << "got_here:" << __FILE__ << ":" << __LINE__ << std::endl;
    }
 
    // freer no longer needed group handles
