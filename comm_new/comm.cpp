@@ -337,7 +337,6 @@ bool COMM::receive_from_stage (type* data, int dataSize, unsigned int sendStage,
    // search for this tag to identify if the communication handle exists
    bool found = false;
    int tagIndex;
-std::cout << "numReceiveFromStageHandles[sendStage] = " << numReceiveFromStageHandles[sendStage] << std::endl;
    for (tagIndex = 0; tagIndex < numReceiveFromStageHandles[sendStage] && !found; tagIndex++)
    {
       if (tagsFromStage[sendStage][tagIndex] == tag) {

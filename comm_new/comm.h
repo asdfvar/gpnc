@@ -43,7 +43,7 @@ class COMM {
 
       bool wait_for_send_to_stage (
             unsigned int recvStage,
-            unsigned int nextStageRank,
+            unsigned int recvStageRank,
             int tag);
 
       template<typename type>
