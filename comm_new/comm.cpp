@@ -48,7 +48,8 @@ COMM::COMM (
    thisStageNum  = thisStageNum_in;
    numStageProcs = new unsigned int[numStages];
 
-   for (unsigned int stage = 0; stage < numStages; stage++) numSendToStageHandles[stage] = 0;
+   for (unsigned int stage = 0; stage < numStages; stage++) numSendToStageHandles[stage]      = 0;
+   for (unsigned int stage = 0; stage < numStages; stage++) numReceiveFromStageHandles[stage] = 0;
    for (unsigned int stage = 0; stage < numStages; stage++) numStageProcs[stage] = config.numProcs[stage];
    for (unsigned int stage = 0; stage < numStages; stage++) {
       sendToStageRequests.push_back (std::vector< std::vector<MPI_Request*> >());
@@ -74,7 +75,6 @@ COMM::COMM (
    ** setup intra-communication configurations for all stages
    */
    unsigned int worldStageStartRank = 0;
-std::cout << "numStages = " << numStages << std::endl;
    for (unsigned int stage = 0; stage < numStages; stage++)
    {
       int worldStageRanks[MAX_STAGES];
@@ -85,9 +85,6 @@ std::cout << "numStages = " << numStages << std::endl;
 
       // create the group for the associated stage
       MPI_Group_incl (worldGroup, numStageProcs[stage], worldStageRanks, &stageGroups[stage]);
-std::cout << thisStageNum << ":created group for ranks ";
-for (unsigned int k = 0; k < numStageProcs[stage]; k++) std::cout << worldStageRanks[k] << ", ";
-std::cout << std::endl;
 
       // create the intra communicator for the associated stage
       MPI_Comm_create (MPI_COMM_WORLD, stageGroups[stage], &stageComms[stage]);
@@ -104,38 +101,41 @@ std::cout << std::endl;
    {
       MPI_Group unionStagesGroup;
 
-      int assocStage = config.assocStages[stage];
+      unsigned int assocStage = config.assocStages[stage];
 
-      // union groups between associated stages
-      MPI_Group_union (stageGroups[thisStageNum], stageGroups[assocStage], &unionStagesGroup);
+      // union groups between associated stages in ascending order
+      if (thisStageNum < assocStage) {
+         MPI_Group_union (stageGroups[thisStageNum], stageGroups[assocStage], &unionStagesGroup);
+      } else {
+         MPI_Group_union (stageGroups[assocStage], stageGroups[thisStageNum], &unionStagesGroup);
+      }
 
       MPI_Comm unionStagesComm;
 
       // create the intra communicator between the associated stages
       MPI_Comm_create (MPI_COMM_WORLD, unionStagesGroup, &unionStagesComm);
 
+      // TODO: identify if a unique tag number is necessary
       // identify a unique tag number that is common only between this stage number and the -associated stage number
-      int maxNum = assocStage;
-      int minNum = thisStageNum;
+      unsigned int maxNum = assocStage;
+      unsigned int minNum = thisStageNum;
       if (minNum > assocStage) {
          minNum = assocStage;
          maxNum = thisStageNum;
       }
-      int tagNum = minNum * config.numAssocStages + maxNum;
+      unsigned int tagNum = minNum * config.numAssocStages + maxNum;
 
-std::cout << "got_here:" << __FILE__ << ":" << __LINE__ << std::endl;
-      // create inter communicator to the associated stage
-      unsigned int startRank  = numStageProcs[thisStageNum];
-
-      if (stageComms[thisStageNum] == MPI_COMM_NULL) std::cout << "stage " << thisStageNum << " is a null communicator" << std::endl;
-
-int unionStagesGroupRank;
-MPI_Group_rank (unionStagesGroup, &unionStagesGroupRank);
-
-std::cout << "creating inter communicator from world rank " << worldRank << " from communicator containing ranks starting from " << unionStagesGroupRank << " to starting world rank " << startRank << " at tag " << tagNum << std::endl;
+      // create inter communicator to the associated stage. the communicator is created from the unioned group
+      // between this stage and the associated stage in ascending numerical order hence the starting rank
+      // must be relative to where the assocated stage starting rank will be from this stage
+      unsigned int startRank;
+      if (thisStageNum < assocStage) {
+         startRank = numStageProcs[thisStageNum];
+      } else {
+         startRank = 0;
+      }
 
       MPI_Intercomm_create (stageComms[thisStageNum], 0, unionStagesComm, startRank, tagNum, &interComms[assocStage]);
-std::cout << "got_here:" << __FILE__ << ":" << __LINE__ << std::endl;
    }
 
    // freer no longer needed group handles
@@ -337,6 +337,7 @@ bool COMM::receive_from_stage (type* data, int dataSize, unsigned int sendStage,
    // search for this tag to identify if the communication handle exists
    bool found = false;
    int tagIndex;
+std::cout << "numReceiveFromStageHandles[sendStage] = " << numReceiveFromStageHandles[sendStage] << std::endl;
    for (tagIndex = 0; tagIndex < numReceiveFromStageHandles[sendStage] && !found; tagIndex++)
    {
       if (tagsFromStage[sendStage][tagIndex] == tag) {
@@ -357,42 +358,42 @@ bool COMM::receive_from_stage (type* data, int dataSize, unsigned int sendStage,
 
       // retrieve the new, or already existing, reqeust handle
       request = receiveFromStageRequests[sendStage][tagIndex][sendStageRank];
-      }
-      else
+   }
+   else
+   {
+      // add a new vector of ranks for this tag index
+      receiveFromStageRequests[sendStage].push_back (std::vector <MPI_Request*>());
+
+      // update the tags list
+      tagsFromStage[sendStage][tagIndex] = tag;
+      numReceiveFromStageHandles[sendStage]++;
+
+      // add a new request handle associated with this rank
+      for (unsigned int rank = 0; rank <= sendStageRank; rank++)
       {
-         // add a new vector of ranks for this tag index
-         receiveFromStageRequests[sendStage].push_back (std::vector <MPI_Request*>());
-
-         // update the tags list
-         tagsFromStage[sendStage][tagIndex] = tag;
-         numReceiveFromStageHandles[sendStage]++;
-
-         // add a new request handle associated with this rank
-         for (unsigned int rank = 0; rank <= sendStageRank; rank++)
-         {
-            receiveFromStageRequests[sendStage][tagIndex].push_back (new MPI_Request);
-         }
-
-         // get the new request handle
-         request = receiveFromStageRequests[sendStage][tagIndex][sendStageRank];
+         receiveFromStageRequests[sendStage][tagIndex].push_back (new MPI_Request);
       }
 
-      // receive from stage 1
-      if (std::is_same <type, float>::value ) {
-         MPI_Irecv (data, dataSize, MPI_FLOAT, sendStageRank, tag, interComms[sendStage], request);
-      }
-      else if (std::is_same <type, double>:: value) {
-         MPI_Irecv (data, dataSize, MPI_DOUBLE, sendStageRank, tag, interComms[sendStage], request);
-      }
-      else if (std::is_same <type, int>:: value) {
-         MPI_Irecv (data, dataSize, MPI_INT, sendStageRank, tag, interComms[sendStage], request);
-      }
-      else if (std::is_same <type, char>:: value) {
-         MPI_Irecv (data, dataSize, MPI_CHAR, sendStageRank, tag, interComms[sendStage], request);
-      }
-      else {
-         MPI_Irecv (data, dataSize * sizeof (*data), MPI_BYTE, sendStageRank, tag, interComms[sendStage], request);
-      }
+      // get the new request handle
+      request = receiveFromStageRequests[sendStage][tagIndex][sendStageRank];
+   }
+
+   // receive from stage 1
+   if (std::is_same <type, float>::value ) {
+      MPI_Irecv (data, dataSize, MPI_FLOAT, sendStageRank, tag, interComms[sendStage], request);
+   }
+   else if (std::is_same <type, double>:: value) {
+      MPI_Irecv (data, dataSize, MPI_DOUBLE, sendStageRank, tag, interComms[sendStage], request);
+   }
+   else if (std::is_same <type, int>:: value) {
+      MPI_Irecv (data, dataSize, MPI_INT, sendStageRank, tag, interComms[sendStage], request);
+   }
+   else if (std::is_same <type, char>:: value) {
+      MPI_Irecv (data, dataSize, MPI_CHAR, sendStageRank, tag, interComms[sendStage], request);
+   }
+   else {
+      MPI_Irecv (data, dataSize * sizeof (*data), MPI_BYTE, sendStageRank, tag, interComms[sendStage], request);
+   }
 
    return true;
 

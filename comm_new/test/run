@@ -2,6 +2,6 @@
 
 $HOME/user_libs/openmpi/bin/mpirun \
    -oversubscribe                    \
+   -n 1 module_0.exe :               \
    -n 1 module_1.exe :               \
-   -n 1 module_2.exe :               \
 #
