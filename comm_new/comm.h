@@ -34,6 +34,8 @@ class COMM {
 
      ~COMM (void);
 
+     int rank (void);
+
      template<typename type>
         bool send_to_stage (
               type *data,

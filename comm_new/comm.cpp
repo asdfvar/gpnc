@@ -175,8 +175,8 @@ COMM::COMM (
 /*
 ** destructor name: COMM
 */
-COMM::~COMM (void) {
-
+COMM::~COMM (void)
+{
    // sync all communicators before cleanup
    MPI_Barrier (MPI_COMM_WORLD);
 
@@ -220,6 +220,15 @@ COMM::~COMM (void) {
    MPI_Finalize ();
 
 } // ~COMM
+
+/*
+** function name: rank from COMM
+*/
+int COMM::rank (void) {
+   int rank;
+   MPI_Group_rank (stageGroups[thisStageNum], &rank);
+   return rank;
+}
 
 /*
 ** function name: send_to_stage from COMM

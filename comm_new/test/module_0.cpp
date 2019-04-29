@@ -61,6 +61,25 @@ int main (int argc, char *argv[])
    }
    std::cout << std::endl;
 
+   Comm.send_to_stage (
+      array, // data
+      4,     // data size
+      2,     // receiving stage
+      0,     // receiving stage rank
+      2);    // tag
+
+   Comm.wait_for_send_to_stage (
+      2,     // receiving stage
+      0,     // receiving stage rank
+      2);    // tag
+
+   std::cout << __FILE__ << ":sent data to stage 2: ";
+   for (int ind = 0; ind < 4; ind++)
+   {
+      std::cout << array[ind] << ", ";
+   }
+   std::cout << std::endl;
+
    delete[] array;
 
    return 0;
