@@ -1,5 +1,6 @@
 #include "comm.h"
 #include <iostream>
+#include <cmath>
 
 namespace comm {
 
@@ -97,45 +98,70 @@ COMM::COMM (
    */
    for (unsigned int index = 0; index < MAX_INTERCOMMS; index++) interComms[index] = MPI_COMM_NULL;
 
-   for (unsigned int stage = 0; stage < config.numAssocStages; stage++)
+   // TODO: initialize these to null and handle them appropriately and instantiate off the stack
+   MPI_Comm unionStagesComms[MAX_STAGES][MAX_STAGES];
+
+   for (unsigned int fromStage = 0; fromStage < numStages; fromStage++) {
+      for (unsigned int toStage = 0; toStage < numStages; toStage++) {
+         unionStagesComms[fromStage][toStage] = MPI_COMM_NULL;
+      }
+   }
+
+   #define INTERCOMM_TAG 1
+
+   for (unsigned int fromStage = 0; fromStage < numStages; fromStage++)
    {
-      MPI_Group unionStagesGroup;
+      for (unsigned int toStage = 0; toStage < numStages; toStage++)
+      {
+         MPI_Group unionStagesGroup;
 
-      unsigned int assocStage = config.assocStages[stage];
+         // union groups between associated stages in ascending order
+         if (fromStage < toStage) {
+            MPI_Group_union (stageGroups[fromStage], stageGroups[toStage], &unionStagesGroup);
+         } else {
+            MPI_Group_union (stageGroups[toStage], stageGroups[fromStage], &unionStagesGroup);
+         }
 
-      // union groups between associated stages in ascending order
-      if (thisStageNum < assocStage) {
-         MPI_Group_union (stageGroups[thisStageNum], stageGroups[assocStage], &unionStagesGroup);
-      } else {
-         MPI_Group_union (stageGroups[assocStage], stageGroups[thisStageNum], &unionStagesGroup);
+         // create the intra communicator between the associated stages
+         MPI_Comm_create (MPI_COMM_WORLD, unionStagesGroup, &unionStagesComms[fromStage][toStage]);
       }
+   }
 
-      MPI_Comm unionStagesComm;
+   // setup intercommunicators between stages
+   for (unsigned int fromStage = 0; fromStage < numStages; fromStage++)
+   {
+      for (unsigned int toStage = 0; toStage < numStages; toStage++)
+      {
+         if (fromStage == toStage) continue;
+         if (fromStage != thisStageNum) continue;
 
-      // create the intra communicator between the associated stages
-      MPI_Comm_create (MPI_COMM_WORLD, unionStagesGroup, &unionStagesComm);
+         // TODO: identify if a unique tag number is necessary
+         // identify a unique tag number that is common only between this stage number and the -associated stage number
+         unsigned int maxNum = toStage;
+         unsigned int minNum = fromStage;
+         if (minNum > toStage) {
+            minNum = toStage;
+            maxNum = fromStage;
+         }
+         unsigned int tagNum = minNum * numStages + maxNum;
 
-      // TODO: identify if a unique tag number is necessary
-      // identify a unique tag number that is common only between this stage number and the -associated stage number
-      unsigned int maxNum = assocStage;
-      unsigned int minNum = thisStageNum;
-      if (minNum > assocStage) {
-         minNum = assocStage;
-         maxNum = thisStageNum;
+         // create inter communicator to the associated stage. the communicator is created from the unioned group
+         // between this stage and the associated stage in ascending numerical order hence the starting rank
+         // must be relative to where the assocated stage starting rank will be from this stage
+         unsigned int startRank;
+         int lowStage, highStage;
+         if (fromStage < toStage) {
+            startRank = numStageProcs[fromStage];
+            lowStage  = fromStage;
+            highStage = toStage;
+         } else {
+            startRank = 0;
+            lowStage  = toStage;
+            highStage = fromStage;
+         }
+
+         MPI_Intercomm_create (stageComms[fromStage], 0, unionStagesComms[lowStage][highStage], startRank, INTERCOMM_TAG, &interComms[toStage]);
       }
-      unsigned int tagNum = minNum * config.numAssocStages + maxNum;
-
-      // create inter communicator to the associated stage. the communicator is created from the unioned group
-      // between this stage and the associated stage in ascending numerical order hence the starting rank
-      // must be relative to where the assocated stage starting rank will be from this stage
-      unsigned int startRank;
-      if (thisStageNum < assocStage) {
-         startRank = numStageProcs[thisStageNum];
-      } else {
-         startRank = 0;
-      }
-
-      MPI_Intercomm_create (stageComms[thisStageNum], 0, unionStagesComm, startRank, tagNum, &interComms[assocStage]);
    }
 
    // freer no longer needed group handles

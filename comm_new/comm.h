@@ -13,10 +13,11 @@ namespace comm {
 
 // configuration used to identify how the communication scheme is setup for each stage
 struct CONFIG {
-   int numStages;                // total number of stages used in the application
-   int numProcs[MAX_STAGES];     // number of processes for each stage
-   int assocStages[MAX_STAGES];  // assocated stages for this stage
-   unsigned int numAssocStages;  // total number of assocated stages
+   // TODO: numStages is not necessary
+   unsigned int numStages;                // total number of stages used in the application
+   unsigned int numProcs[MAX_STAGES];     // number of processes for each stage
+   unsigned int assocStages[MAX_STAGES];  // assocated stages for this stage
+   unsigned int numAssocStages;           // total number of assocated stages
 };
 
 /*
