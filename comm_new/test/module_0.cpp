@@ -5,16 +5,9 @@
 int main (int argc, char *argv[])
 {
 
-   comm::CONFIG configuration;
+   #include "numStageProcs.i"
 
-   configuration.numStages      = NUM_STAGES;
-   configuration.numProcs[0]    = 1;
-   configuration.numProcs[1]    = 1;
-   configuration.numProcs[2]    = 2;
-   configuration.assocStages[0] = 1;
-   configuration.numAssocStages = 1;
-
-   comm::COMM Comm (&argc, &argv, configuration, NUM_STAGES, 0);
+   comm::COMM Comm (&argc, &argv, numStageProcs, NUM_STAGES, 0);
 
    float *array = new float[4];
 
@@ -65,12 +58,12 @@ int main (int argc, char *argv[])
       array, // data
       4,     // data size
       2,     // receiving stage
-      0,     // receiving stage rank
+      1,     // receiving stage rank
       2);    // tag
 
    Comm.wait_for_send_to_stage (
       2,     // receiving stage
-      0,     // receiving stage rank
+      1,     // receiving stage rank
       2);    // tag
 
    std::cout << __FILE__ << ":sent data to stage 2: ";

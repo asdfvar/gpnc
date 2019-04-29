@@ -11,15 +11,6 @@
 
 namespace comm {
 
-// configuration used to identify how the communication scheme is setup for each stage
-struct CONFIG {
-   // TODO: numStages is not necessary
-   unsigned int numStages;                // total number of stages used in the application
-   unsigned int numProcs[MAX_STAGES];     // number of processes for each stage
-   unsigned int assocStages[MAX_STAGES];  // assocated stages for this stage
-   unsigned int numAssocStages;           // total number of assocated stages
-};
-
 /*
 ** class name: COMM
 */
@@ -28,7 +19,7 @@ class COMM {
    public:
       COMM (int                *argc,
             char               ***argv,
-            const CONFIG       &config,
+            const unsigned int *numStageProcs,
             const unsigned int numStages,
             const unsigned int thisStageNum);
 
@@ -74,8 +65,7 @@ class COMM {
 
    protected:
 
-      // number of processes for each stage
-      unsigned int* numStageProcs;
+      unsigned int numStageProcs[MAX_STAGES];
 
       MPI_Group stageGroups[MAX_STAGES];
       MPI_Comm  stageComms[MAX_STAGES];
@@ -105,7 +95,7 @@ class COMM2D : public COMM {
       COMM2D (
             int                *argc,
             char               **argv[],
-            const CONFIG       &config,
+            const unsigned int *numStageProcs,
             const unsigned int numStages,
             const unsigned int thisStageNum,
             const unsigned int tiles[2]);
@@ -139,7 +129,7 @@ class COMM3D : public COMM2D {
       COMM3D (
             int                *argc,
             char               **argv[],
-            const CONFIG       &config,
+            const unsigned int *numStageProcs,
             const unsigned int numStages,
             const unsigned int thisStageNum,
             const unsigned int tiles[3]);

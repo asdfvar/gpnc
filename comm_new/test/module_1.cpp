@@ -5,16 +5,9 @@
 int main (int argc, char *argv[])
 {
 
-   comm::CONFIG configuration;
+   #include "numStageProcs.i"
 
-   configuration.numStages      = NUM_STAGES;
-   configuration.numProcs[0]    = 1;
-   configuration.numProcs[1]    = 1;
-   configuration.numProcs[2]    = 2;
-   configuration.assocStages[0] = 0;
-   configuration.numAssocStages = 1;
-
-   comm::COMM Comm (&argc, &argv, configuration, NUM_STAGES, 1);
+   comm::COMM Comm (&argc, &argv, numStageProcs, NUM_STAGES, 1);
 
    float *array = new float[4];
 

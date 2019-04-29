@@ -5,15 +5,9 @@
 int main (int argc, char *argv[])
 {
 
-   comm::CONFIG configuration;
+   #include "numStageProcs.i"
 
-   configuration.numStages      = NUM_STAGES;
-   configuration.numProcs[0]    = 1;
-   configuration.numProcs[1]    = 1;
-   configuration.numProcs[2]    = 2;
-   configuration.numAssocStages = 0;
-
-   comm::COMM Comm (&argc, &argv, configuration, NUM_STAGES, 2);
+   comm::COMM Comm (&argc, &argv, numStageProcs, NUM_STAGES, 2);
 
    float *array = new float[4];
 
@@ -22,7 +16,7 @@ int main (int argc, char *argv[])
    array[2] = 0.0f;
    array[3] = 0.0f;
 
-   if (Comm.rank() == 0) {
+   if (Comm.rank() == 1) {
       Comm.receive_from_stage (
             array, // data
             4,     // data size

@@ -7,11 +7,11 @@ namespace comm {
    COMM3D::COMM3D (
          int                *argc,
          char               **argv[],
-         const CONFIG       &config,
+         const unsigned int *numStageProcs,
          const unsigned int numStages,
          const unsigned int thisStageNum_in,
          const unsigned int tiles[3])
-      : COMM2D (argc, argv, config, numStages, thisStageNum_in, tiles)
+      : COMM2D (argc, argv, numStageProcs, numStages, thisStageNum_in, tiles)
    {
       numTilesDim2 = tiles[2];
 
