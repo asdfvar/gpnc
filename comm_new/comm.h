@@ -72,8 +72,8 @@ class COMM {
       MPI_Comm  interComms[MAX_INTERCOMMS];
 
       // accounting
-      int tagsToStage[MAX_STAGES][MAX_TAGS];
-      int tagsFromStage[MAX_STAGES][MAX_TAGS];
+      std::vector< std::vector<int> > tagsToStage; // [MAX_STAGES][MAX_TAGS]
+      std::vector< std::vector<int> > tagsFromStage; // [MAX_STAGES][MAX_TAGS]
       unsigned int thisStageNum;
       std::vector<int> numSendToStageHandles;
       std::vector<int> numReceiveFromStageHandles;

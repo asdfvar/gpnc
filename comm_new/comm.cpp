@@ -69,10 +69,8 @@ COMM::COMM (
 
    // set initial identifying tag numbers to invalid
    for (int stageIndex = 0; stageIndex < MAX_STAGES; stageIndex++) {
-      for (int tagIndex = 0; tagIndex < MAX_TAGS; tagIndex++) {
-         tagsToStage[stageIndex][tagIndex]   = INVALID_TAG;
-         tagsFromStage[stageIndex][tagIndex] = INVALID_TAG;
-      }
+      tagsToStage.push_back (std::vector<int>());
+      tagsFromStage.push_back (std::vector<int>());
    }
 
    for (unsigned int stage = 0; stage < MAX_STAGES; stage++) stageGroups[stage] = MPI_GROUP_NULL;
@@ -204,6 +202,20 @@ COMM::~COMM (void)
       receiveFromStageRequests.pop_back();
    }
 
+   while (!tagsToStage.empty()) {
+      while (!tagsToStage.back().empty()) {
+         tagsToStage.back().pop_back();
+      }
+      tagsToStage.pop_back();
+   }
+
+   while (!tagsFromStage.empty()) {
+      while (!tagsFromStage.back().empty()) {
+         tagsFromStage.back().pop_back();
+      }
+      tagsFromStage.pop_back();
+   }
+
    while (!numStageProcs.empty()) numStageProcs.pop_back();
 
    while (!numSendToStageHandles.empty()) numSendToStageHandles.pop_back();
@@ -270,7 +282,7 @@ bool COMM::send_to_stage (type *data, int dataSize, unsigned int recvStage, unsi
       sendToStageRequests[recvStage].push_back (std::vector <MPI_Request*>());
 
       // update the tags list
-      tagsToStage[recvStage][tagIndex] = tag;
+      tagsToStage[recvStage].push_back (tag);
       numSendToStageHandles[recvStage]++;
 
       // add a new request handle
@@ -393,7 +405,7 @@ bool COMM::receive_from_stage (type* data, int dataSize, unsigned int sendStage,
       receiveFromStageRequests[sendStage].push_back (std::vector <MPI_Request*>());
 
       // update the tags list
-      tagsFromStage[sendStage][tagIndex] = tag;
+      tagsFromStage[sendStage].push_back (tag);
       numReceiveFromStageHandles[sendStage]++;
 
       // add a new request handle associated with this rank
