@@ -92,13 +92,17 @@ COMM::COMM (
    MPI_Group worldGroup = MPI_GROUP_NULL;
    MPI_Comm_group (MPI_COMM_WORLD, &worldGroup);
 
+   unsigned int maxRanks = 0;
+   for (unsigned int stage = 0; stage < numStages; stage++) if (numStageProcs[stage] > maxRanks) maxRanks = numStageProcs[stage];
+
+   int *worldStageRanks = new int[maxRanks];
+
    /*
    ** setup intra-communication configurations for all stages
    */
    unsigned int worldStageStartRank = 0;
    for (unsigned int stage = 0; stage < numStages; stage++)
    {
-      int worldStageRanks[MAX_STAGES];
       for (unsigned int rank = worldStageStartRank, ind = 0; ind < numStageProcs[stage]; ind++, rank++)
       {
          worldStageRanks[ind] = rank;
@@ -113,6 +117,8 @@ COMM::COMM (
       worldStageStartRank += numStageProcs[stage];
    }
 
+   delete[] worldStageRanks;
+
    /*
    ** setup inter-communication configurations for all stages
    */
@@ -122,12 +128,12 @@ COMM::COMM (
       interComms.push_back (MPI_COMM_NULL);
    }
 
-   // TODO: instantiate off the stack
-   MPI_Comm unionStagesComms[MAX_STAGES][MAX_STAGES];
+   std::vector< std::vector<MPI_Comm> > unionStagesComms;
 
    for (unsigned int fromStage = 0; fromStage < numStages; fromStage++) {
+      unionStagesComms.push_back (std::vector<MPI_Comm>());
       for (unsigned int toStage = fromStage; toStage < numStages; toStage++) {
-         unionStagesComms[fromStage][toStage] = MPI_COMM_NULL;
+         unionStagesComms[fromStage].push_back (MPI_COMM_NULL);
       }
    }
 
@@ -168,7 +174,16 @@ COMM::COMM (
       MPI_Intercomm_create (stageComms[thisStageNum], 0, unionStagesComms[lowStage][highStage], startRank, INTERCOMM_TAG, &interComms[toStage]);
    }
 
-   // freer no longer needed group handles
+   // free no longer needed communication handles and free associated allocated space
+   while (!unionStagesComms.empty()) {
+      while (!unionStagesComms.back().empty()) {
+         if (unionStagesComms.back().back() != MPI_COMM_NULL) MPI_Comm_free (&unionStagesComms.back().back());
+         unionStagesComms.back().pop_back();
+      }
+      unionStagesComms.pop_back();
+   }
+
+   // free no longer needed group handles
    if (worldGroup != MPI_GROUP_NULL) MPI_Group_free (&worldGroup);
 
    // ensure all processes get here before proceeding

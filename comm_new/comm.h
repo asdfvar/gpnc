@@ -5,7 +5,6 @@
 #include <vector>
 
 #define MAX_TAGS       200
-#define MAX_STAGES     20
 #define INVALID_TAG    -1
 
 namespace comm {
