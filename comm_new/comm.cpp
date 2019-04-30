@@ -76,8 +76,17 @@ COMM::COMM (
       tagsFromStage.push_back (std::vector<int>());
    }
 
-   for (unsigned int stage = 0; stage < MAX_STAGES; stage++) stageGroups[stage] = MPI_GROUP_NULL;
-   for (unsigned int stage = 0; stage < MAX_STAGES; stage++) stageComms[stage]  = MPI_COMM_NULL;
+   stageGroups.reserve (numStages);
+
+   for (unsigned int stage = 0; stage < numStages; stage++) {
+      stageGroups.push_back (MPI_GROUP_NULL);
+   }
+
+   stageComms.reserve (numStages);
+
+   for (unsigned int stage = 0; stage < numStages; stage++) {
+      stageComms.push_back (MPI_COMM_NULL);
+   }
 
    // get the world group from the world communicator
    MPI_Group worldGroup = MPI_GROUP_NULL;
@@ -176,11 +185,6 @@ COMM::~COMM (void)
       if (interComms[index] != MPI_COMM_NULL) MPI_Comm_free (&interComms[index]);
    }
 
-   for (unsigned int stage = 0; stage < MAX_STAGES; stage++) {
-      if (stageGroups[stage] != MPI_GROUP_NULL) MPI_Group_free (&stageGroups[stage]);
-      if (stageComms[stage]  != MPI_COMM_NULL)  MPI_Comm_free  (&stageComms[stage] );
-   }
-
    // delete the sending request handles
    while (!sendToStageRequests.empty()) {
       while (!sendToStageRequests.back().empty()) {
@@ -210,6 +214,16 @@ COMM::~COMM (void)
          tagsToStage.back().pop_back();
       }
       tagsToStage.pop_back();
+   }
+
+   while (!stageGroups.empty()) {
+      if (stageGroups.back() != MPI_GROUP_NULL) MPI_Group_free (&stageGroups.back());
+      stageGroups.pop_back();
+   }
+
+   while (!stageComms.empty()) {
+      if (stageComms.back() != MPI_COMM_NULL) MPI_Comm_free (&stageComms.back());
+      stageComms.pop_back();
    }
 
    while (!tagsFromStage.empty()) {

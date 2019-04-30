@@ -67,9 +67,9 @@ class COMM {
 
       std::vector<unsigned int> numStageProcs;
 
-      MPI_Group stageGroups[MAX_STAGES];
-      MPI_Comm  stageComms[MAX_STAGES];
-      MPI_Comm  interComms[MAX_INTERCOMMS];
+      std::vector<MPI_Group> stageGroups;   // size is number of stages
+      std::vector<MPI_Comm>  stageComms;     // size is number of stages
+      MPI_Comm  interComms[MAX_INTERCOMMS]; // size is MAX_INTERCOMMS
 
       // accounting
       std::vector< std::vector<int> > tagsToStage; // [MAX_STAGES][MAX_TAGS]
