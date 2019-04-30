@@ -6,7 +6,6 @@
 
 #define MAX_TAGS       200
 #define MAX_STAGES     20
-#define MAX_INTERCOMMS MAX_STAGES
 #define INVALID_TAG    -1
 
 namespace comm {
@@ -67,13 +66,13 @@ class COMM {
 
       std::vector<unsigned int> numStageProcs;
 
-      std::vector<MPI_Group> stageGroups;   // size is number of stages
-      std::vector<MPI_Comm>  stageComms;     // size is number of stages
-      MPI_Comm  interComms[MAX_INTERCOMMS]; // size is MAX_INTERCOMMS
+      std::vector<MPI_Group> stageGroups;  // size is number of stages
+      std::vector<MPI_Comm>  stageComms;   // size is number of stages
+      std::vector<MPI_Comm>  interComms;   // size is number of stages
 
       // accounting
-      std::vector< std::vector<int> > tagsToStage; // [MAX_STAGES][MAX_TAGS]
-      std::vector< std::vector<int> > tagsFromStage; // [MAX_STAGES][MAX_TAGS]
+      std::vector< std::vector<int> > tagsToStage; // [stage][MAX_TAGS]
+      std::vector< std::vector<int> > tagsFromStage; // [stage][MAX_TAGS]
       unsigned int thisStageNum;
       std::vector<int> numSendToStageHandles;
       std::vector<int> numReceiveFromStageHandles;

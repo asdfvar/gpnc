@@ -116,7 +116,11 @@ COMM::COMM (
    /*
    ** setup inter-communication configurations for all stages
    */
-   for (unsigned int index = 0; index < MAX_INTERCOMMS; index++) interComms[index] = MPI_COMM_NULL;
+   interComms.reserve (numStages);
+
+   for (unsigned int index = 0; index < numStages; index++) {
+      interComms.push_back (MPI_COMM_NULL);
+   }
 
    // TODO: instantiate off the stack
    MPI_Comm unionStagesComms[MAX_STAGES][MAX_STAGES];
@@ -180,11 +184,6 @@ COMM::~COMM (void)
    // sync all communicators before cleanup
    MPI_Barrier (MPI_COMM_WORLD);
 
-   // free groups and communicators
-   for (unsigned int index = 0; index < MAX_INTERCOMMS; index++) {
-      if (interComms[index] != MPI_COMM_NULL) MPI_Comm_free (&interComms[index]);
-   }
-
    // delete the sending request handles
    while (!sendToStageRequests.empty()) {
       while (!sendToStageRequests.back().empty()) {
@@ -224,6 +223,11 @@ COMM::~COMM (void)
    while (!stageComms.empty()) {
       if (stageComms.back() != MPI_COMM_NULL) MPI_Comm_free (&stageComms.back());
       stageComms.pop_back();
+   }
+
+   while (!interComms.empty()) {
+      if (interComms.back() != MPI_COMM_NULL) MPI_Comm_free (&interComms.back());
+      interComms.pop_back();
    }
 
    while (!tagsFromStage.empty()) {
