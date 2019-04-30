@@ -50,9 +50,18 @@ COMM::COMM (
 
    thisStageNum  = thisStageNum_in;
 
-   for (unsigned int stage = 0; stage < numStages; stage++) numStageProcs[stage]              = numStageProcs_in[stage];
-   for (unsigned int stage = 0; stage < numStages; stage++) numSendToStageHandles[stage]      = 0;
-   for (unsigned int stage = 0; stage < numStages; stage++) numReceiveFromStageHandles[stage] = 0;
+   for (unsigned int stage = 0; stage < numStages; stage++) {
+      numStageProcs.push_back (numStageProcs_in[stage]);
+   }
+
+   for (unsigned int stage = 0; stage < numStages; stage++) {
+      numSendToStageHandles.push_back (0);
+   }
+
+   for (unsigned int stage = 0; stage < numStages; stage++) {
+      numReceiveFromStageHandles.push_back (0);
+   }
+
    for (unsigned int stage = 0; stage < numStages; stage++) {
       sendToStageRequests.push_back (std::vector< std::vector<MPI_Request*> >());
       receiveFromStageRequests.push_back (std::vector< std::vector<MPI_Request*> >());
@@ -194,6 +203,12 @@ COMM::~COMM (void)
       }
       receiveFromStageRequests.pop_back();
    }
+
+   while (!numStageProcs.empty()) numStageProcs.pop_back();
+
+   while (!numSendToStageHandles.empty()) numSendToStageHandles.pop_back();
+
+   while (!numReceiveFromStageHandles.empty()) numReceiveFromStageHandles.pop_back();
 
    // finalize MPI
    MPI_Finalize ();

@@ -65,7 +65,7 @@ class COMM {
 
    protected:
 
-      unsigned int numStageProcs[MAX_STAGES];
+      std::vector<unsigned int> numStageProcs;
 
       MPI_Group stageGroups[MAX_STAGES];
       MPI_Comm  stageComms[MAX_STAGES];
@@ -75,9 +75,8 @@ class COMM {
       int tagsToStage[MAX_STAGES][MAX_TAGS];
       int tagsFromStage[MAX_STAGES][MAX_TAGS];
       unsigned int thisStageNum;
-      int sendToStageHandles[MAX_STAGES];
-      int numSendToStageHandles[MAX_STAGES];
-      int numReceiveFromStageHandles[MAX_STAGES];
+      std::vector<int> numSendToStageHandles;
+      std::vector<int> numReceiveFromStageHandles;
 
       // request handles of dimension [stage][tag_index][rank]
       std::vector< std::vector< std::vector<MPI_Request*> > > sendToStageRequests;
