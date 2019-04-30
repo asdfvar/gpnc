@@ -67,8 +67,11 @@ COMM::COMM (
       receiveFromStageRequests.push_back (std::vector< std::vector<MPI_Request*> >());
    }
 
+   tagsFromStage.reserve (numStages);
+   tagsToStage.reserve (numStages);
+
    // set initial identifying tag numbers to invalid
-   for (int stageIndex = 0; stageIndex < MAX_STAGES; stageIndex++) {
+   for (unsigned int stageIndex = 0; stageIndex < numStages; stageIndex++) {
       tagsToStage.push_back (std::vector<int>());
       tagsFromStage.push_back (std::vector<int>());
    }
