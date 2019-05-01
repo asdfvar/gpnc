@@ -37,16 +37,6 @@ class COMM {
             unsigned int recvStageRank,
             int tag);
 
-      template<typename type>
-         bool send_to_stage (
-               type* data,
-               int size,
-               int stage,
-               int tag)
-         {
-            return send_to_stage (data, size, stage, 0, tag);
-         }
-
       template <typename type>
          bool receive_from_stage (
                type* data,
@@ -55,10 +45,46 @@ class COMM {
                unsigned int stageRank,
                int tag);
 
-      bool wait_for_receive_from_stage
-         (unsigned int sendStage,
+      bool wait_for_receive_from_stage (
+          unsigned int sendStage,
           unsigned int sendStageRank,
           int tag);
+
+      template<typename type>
+         bool send (
+               type* data,
+               int size,
+               unsigned int recvStageRank,
+               int tag)
+         {
+            return send_to_stage (data, size, thisStageNum, recvStageRank, tag);
+         }
+
+      bool wait_for_send (
+            unsigned int recvStageRank,
+            int tag)
+      {
+         return wait_for_send_to_stage (thisStageNum, recvStageRank, tag);
+      }
+
+      template <typename type>
+         bool receive (
+               type* data,
+               int dataSize,
+               unsigned int stageRank,
+               int tag)
+      {
+         return receive_from_stage (data, dataSize, thisStageNum, stageRank, tag);
+      }
+
+      bool wait_for_receive (
+          unsigned int sendStageRank,
+          int tag)
+      {
+         return wait_for_receive_from_stage (thisStageNum, sendStageRank, tag);
+      }
+
+
 
    protected:
 

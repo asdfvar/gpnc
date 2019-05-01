@@ -41,29 +41,25 @@ int main (int argc, char *argv[])
    for (int ind = 0; ind < 4; ind++) array0[ind] += 1.0f;
    std::cout << __FILE__ << ": incremented the data by 1" << std::endl;
 
-   Comm.send_to_stage (
-      array0,             // data
-      4,                  // data size
-      2,                  // receiving stage
-      1 - Comm.rank(),    // receiving stage rank
-      3);                 // tag
+   Comm.send (
+         array0,          // data
+         4,               // data size
+         1 - Comm.rank(), // receiving stage rank
+         3);              // tag
 
-   Comm.receive_from_stage (
+   Comm.receive (
          array1,          // data
          4,               // data size
-         2,               // sending stage
          1 - Comm.rank(), // sending stage rank
          3);              // tag
 
-   Comm.wait_for_receive_from_stage (
-         2,               // sending stage
+   Comm.wait_for_receive (
          1 - Comm.rank(), // sending stage rank
          3);              // tag
 
-   Comm.wait_for_send_to_stage (
-      2,                  // receiving stage
-      1 - Comm.rank(),    // receiving stage rank
-      3);                 // tag
+   Comm.wait_for_send (
+         1 - Comm.rank(), // receiving stage rank
+         3);              // tag
 
    std::cout << __FILE__ << ": local rank " << Comm.rank() << " received data from this stage: ";
    for (int ind = 0; ind < 4; ind++)
