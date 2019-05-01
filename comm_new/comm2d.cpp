@@ -15,6 +15,7 @@ COMM2D::COMM2D (
    numTilesDim0 = tiles[0];
    numTilesDim1 = tiles[1];
 
+#if 0
    // initialize the communication handles to null
    dimensions0and1Comm = MPI_COMM_NULL;
 
@@ -49,12 +50,38 @@ COMM2D::COMM2D (
 
    // free no longer needed group handles
    MPI_Group_free (&tiles0and1Group);
+#endif
 
 }
 
 COMM2D::~COMM2D (void)
 {
    // pass
+}
+
+template <typename type>
+bool COMM2D::send_up (type *data, int dataSize, int tag) {
+
+   bool stat = true;
+
+   int receiveRank = (localRank + numTilesDim0) % (numTilesDim0 * numTilesDim1);
+
+   stat |= send (data, dataSize, receiveRank, tag);
+
+   return stat;
+}
+
+template <typename type>
+bool COMM2D::receive_down (type *data, int dataSize, int tag) {
+
+   bool stat = true;
+
+   int sendRank = (localRank - numTilesDim0);
+   if (sendRank < 0) sendRank += numTilesDim0 * numTilesDim1;
+
+   stat |= receive (data, dataSize, sendRank, tag);
+
+   return stat;
 }
 
 } // namespace comm

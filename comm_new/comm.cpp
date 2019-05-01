@@ -76,17 +76,9 @@ COMM::COMM (
       tagsFromStage.push_back (std::vector<int>());
    }
 
-   stageGroups.reserve (numStages);
+   for (unsigned int stage = 0; stage < numStages; stage++) stageGroups[stage] = MPI_GROUP_NULL;
 
-   for (unsigned int stage = 0; stage < numStages; stage++) {
-      stageGroups.push_back (MPI_GROUP_NULL);
-   }
-
-   stageComms.reserve (numStages);
-
-   for (unsigned int stage = 0; stage < numStages; stage++) {
-      stageComms.push_back (MPI_COMM_NULL);
-   }
+   for (unsigned int stage = 0; stage < numStages; stage++) stageComms[stage] = MPI_COMM_NULL;
 
    // get the world group from the world communicator
    MPI_Group worldGroup = MPI_GROUP_NULL;
@@ -119,23 +111,14 @@ COMM::COMM (
 
    delete[] worldStageRanks;
 
+   MPI_Comm_rank (stageComms[thisStageNum], &localRank);
+
    /*
    ** setup inter-communication configurations for all stages
    */
-   interComms.reserve (numStages);
+   for (unsigned int index = 0; index < numStages; index++) interComms[index] = MPI_COMM_NULL;
 
-   for (unsigned int index = 0; index < numStages; index++) {
-      interComms.push_back (MPI_COMM_NULL);
-   }
-
-   std::vector< std::vector<MPI_Comm> > unionStagesComms;
-
-   for (unsigned int fromStage = 0; fromStage < numStages; fromStage++) {
-      unionStagesComms.push_back (std::vector<MPI_Comm>());
-      for (unsigned int toStage = fromStage; toStage < numStages; toStage++) {
-         unionStagesComms[fromStage].push_back (MPI_COMM_NULL);
-      }
-   }
+   MPI_Comm unionStagesComms[200][200];
 
    for (unsigned int fromStage = 0; fromStage < numStages; fromStage++)
    {
@@ -172,15 +155,6 @@ COMM::COMM (
       }
 
       MPI_Intercomm_create (stageComms[thisStageNum], 0, unionStagesComms[lowStage][highStage], startRank, INTERCOMM_TAG, &interComms[toStage]);
-   }
-
-   // free no longer needed communication handles and free associated allocated space
-   while (!unionStagesComms.empty()) {
-      while (!unionStagesComms.back().empty()) {
-         if (unionStagesComms.back().back() != MPI_COMM_NULL) MPI_Comm_free (&unionStagesComms.back().back());
-         unionStagesComms.back().pop_back();
-      }
-      unionStagesComms.pop_back();
    }
 
    // free no longer needed group handles
@@ -228,22 +202,6 @@ COMM::~COMM (void)
          tagsToStage.back().pop_back();
       }
       tagsToStage.pop_back();
-   }
-
-   while (!stageGroups.empty()) {
-      if (stageGroups.back() != MPI_GROUP_NULL) MPI_Group_free (&stageGroups.back());
-      stageGroups.pop_back();
-   }
-
-   while (!stageComms.empty()) {
-      if (stageComms.back() != MPI_COMM_NULL) MPI_Comm_free (&stageComms.back());
-      stageComms.pop_back();
-   }
-
-   // free the inter-communication handles
-   while (!interComms.empty()) {
-      if (interComms.back() != MPI_COMM_NULL) MPI_Comm_free (&interComms.back());
-      interComms.pop_back();
    }
 
    while (!tagsFromStage.empty()) {

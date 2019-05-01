@@ -4,7 +4,7 @@
 #include <mpi.h>
 #include <vector>
 
-#define INVALID_TAG    -1
+#define INVALID_TAG -1
 
 namespace comm {
 
@@ -88,11 +88,12 @@ class COMM {
 
    protected:
 
+      int localRank;
       std::vector<unsigned int> numStageProcs;
 
-      std::vector<MPI_Group> stageGroups;  // size is number of stages
-      std::vector<MPI_Comm>  stageComms;   // size is number of stages
-      std::vector<MPI_Comm>  interComms;   // size is number of stages
+      MPI_Group stageGroups[200];  // size is number of stages
+      MPI_Comm  stageComms[200];   // size is number of stages
+      MPI_Comm  interComms[200];   // size is number of stages
 
       // accounting
       std::vector< std::vector<int> > tagsToStage; // [stage][tag]
@@ -123,6 +124,18 @@ class COMM2D : public COMM {
             const unsigned int tiles[2]);
 
       ~COMM2D (void);
+
+      template<typename type>
+         bool send_up (
+               type *data,
+               int dataSize,
+               int tag);
+
+      template<typename type>
+         bool receive_down (
+               type *data,
+               int dataSize,
+               int tag);
 
    protected:
 
