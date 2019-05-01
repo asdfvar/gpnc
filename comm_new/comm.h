@@ -137,6 +137,10 @@ class COMM2D : public COMM {
                int dataSize,
                int tag);
 
+      bool wait_for_send_up (int tag);
+
+      bool wait_for_receive_down (int tag);
+
    protected:
 
       int                        numCommSendDim0and1Handles;
