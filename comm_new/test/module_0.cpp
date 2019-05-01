@@ -28,7 +28,7 @@ int main (int argc, char *argv[])
       0,     // receiving stage rank
       0);    // tag
 
-   std::cout << __FILE__ << ":sent data: ";
+   std::cout << __FILE__ << ": sent data: ";
    for (int ind = 0; ind < 4; ind++)
    {
       std::cout << array[ind] << ", ";
@@ -47,7 +47,7 @@ int main (int argc, char *argv[])
       0,     // sending stage rank
       1);    // tag
 
-   std::cout << __FILE__ << ":received data: ";
+   std::cout << __FILE__ << ": received data: ";
    for (int ind = 0; ind < 4; ind++)
    {
       std::cout << array[ind] << ", ";
@@ -66,7 +66,7 @@ int main (int argc, char *argv[])
       1,     // receiving stage rank
       2);    // tag
 
-   std::cout << __FILE__ << ":sent data to stage 2: ";
+   std::cout << __FILE__ << ": sent data to stage 2: ";
    for (int ind = 0; ind < 4; ind++)
    {
       std::cout << array[ind] << ", ";

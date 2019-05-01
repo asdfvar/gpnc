@@ -240,6 +240,7 @@ COMM::~COMM (void)
       stageComms.pop_back();
    }
 
+   // free the inter-communication handles
    while (!interComms.empty()) {
       if (interComms.back() != MPI_COMM_NULL) MPI_Comm_free (&interComms.back());
       interComms.pop_back();
@@ -331,21 +332,26 @@ bool COMM::send_to_stage (type *data, int dataSize, unsigned int recvStage, unsi
       request = sendToStageRequests[recvStage][tagIndex][recvStageRank];
    }
 
+   MPI_Comm *commHandle;
+
+   if (recvStage != thisStageNum) commHandle = &interComms[recvStage];
+   else                           commHandle = &stageComms[thisStageNum];
+
    // perform the non-blocking send
    if (std::is_same <type, float>::value ) {
-      MPI_Issend (data, dataSize, MPI_FLOAT, recvStageRank, tag, interComms[recvStage], request);
+      MPI_Issend (data, dataSize, MPI_FLOAT, recvStageRank, tag, *commHandle, request);
    }
    else if (std::is_same <type, double>::value) {
-      MPI_Issend (data, dataSize, MPI_DOUBLE, recvStageRank, tag, interComms[recvStage], request);
+      MPI_Issend (data, dataSize, MPI_DOUBLE, recvStageRank, tag, *commHandle, request);
    }
    else if (std::is_same <type, int>::value) {
-      MPI_Issend (data, dataSize, MPI_INT, recvStageRank, tag, interComms[recvStage], request);
+      MPI_Issend (data, dataSize, MPI_INT, recvStageRank, tag, *commHandle, request);
    }
    else if (std::is_same <type, char>::value) {
-      MPI_Issend (data, dataSize, MPI_CHAR, recvStageRank, tag, interComms[recvStage], request);
+      MPI_Issend (data, dataSize, MPI_CHAR, recvStageRank, tag, *commHandle, request);
    }
    else {
-      MPI_Issend (data, dataSize * sizeof (*data), MPI_BYTE, recvStageRank, tag, interComms[recvStage], request);
+      MPI_Issend (data, dataSize * sizeof (*data), MPI_BYTE, recvStageRank, tag, *commHandle, request);
    }
 
    return true;
@@ -384,7 +390,7 @@ bool COMM::wait_for_send_to_stage (unsigned int recvStage, unsigned int stageRan
 
    // ensure that the associated send call has been made
    if (!found) {
-      std::cout << "send to " << recvStage << " request not found" << std::endl;
+      std::cout << "send to module " << recvStage << " from module " << thisStageNum << " request not found" << std::endl;
       return false;
     }
 
@@ -454,21 +460,26 @@ bool COMM::receive_from_stage (type* data, int dataSize, unsigned int sendStage,
       request = receiveFromStageRequests[sendStage][tagIndex][sendStageRank];
    }
 
+   MPI_Comm *commHandle;
+
+   if (sendStage != thisStageNum) commHandle = &interComms[sendStage];
+   else                           commHandle = &stageComms[thisStageNum];
+
    // receive from stage 1
    if (std::is_same <type, float>::value ) {
-      MPI_Irecv (data, dataSize, MPI_FLOAT, sendStageRank, tag, interComms[sendStage], request);
+      MPI_Irecv (data, dataSize, MPI_FLOAT, sendStageRank, tag, *commHandle, request);
    }
    else if (std::is_same <type, double>:: value) {
-      MPI_Irecv (data, dataSize, MPI_DOUBLE, sendStageRank, tag, interComms[sendStage], request);
+      MPI_Irecv (data, dataSize, MPI_DOUBLE, sendStageRank, tag, *commHandle, request);
    }
    else if (std::is_same <type, int>:: value) {
-      MPI_Irecv (data, dataSize, MPI_INT, sendStageRank, tag, interComms[sendStage], request);
+      MPI_Irecv (data, dataSize, MPI_INT, sendStageRank, tag, *commHandle, request);
    }
    else if (std::is_same <type, char>:: value) {
-      MPI_Irecv (data, dataSize, MPI_CHAR, sendStageRank, tag, interComms[sendStage], request);
+      MPI_Irecv (data, dataSize, MPI_CHAR, sendStageRank, tag, *commHandle, request);
    }
    else {
-      MPI_Irecv (data, dataSize * sizeof (*data), MPI_BYTE, sendStageRank, tag, interComms[sendStage], request);
+      MPI_Irecv (data, dataSize * sizeof (*data), MPI_BYTE, sendStageRank, tag, *commHandle, request);
    }
 
    return true;

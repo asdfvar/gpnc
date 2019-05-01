@@ -9,16 +9,17 @@ int main (int argc, char *argv[])
 
    comm::COMM Comm (&argc, &argv, numStageProcs, NUM_STAGES, 2);
 
-   float *array = new float[4];
+   float *array0 = new float[4];
+   float *array1 = new float[4];
 
-   array[0] = 0.0f;
-   array[1] = 0.0f;
-   array[2] = 0.0f;
-   array[3] = 0.0f;
+   array0[0] = 0.0f;
+   array0[1] = 0.0f;
+   array0[2] = 0.0f;
+   array0[3] = 0.0f;
 
    if (Comm.rank() == 1) {
       Comm.receive_from_stage (
-            array, // data
+            array0, // data
             4,     // data size
             0,     // sending stage
             0,     // sending stage rank
@@ -29,41 +30,50 @@ int main (int argc, char *argv[])
             0,     // sending stage rank
             2);    // tag
 
-      std::cout << __FILE__ << ":received data from stage 0: ";
+      std::cout << __FILE__ << ": local rank " << Comm.rank() << " received data from stage 0: ";
       for (int ind = 0; ind < 4; ind++)
       {
-         std::cout << array[ind] << ", ";
+         std::cout << array0[ind] << ", ";
       }
       std::cout << std::endl;
    }
 
-#if 0
+   for (int ind = 0; ind < 4; ind++) array0[ind] += 1.0f;
+   std::cout << __FILE__ << ": incremented the data by 1" << std::endl;
+
    Comm.send_to_stage (
-      array, // data
+      array0, // data
       4,     // data size
       2,     // receiving stage
       (Comm.rank() + 1) % 2, // receiving stage rank
-      0);    // tag
+      3);    // tag
 
    Comm.receive_from_stage (
-         array, // data
+         array1, // data
          4,     // data size
          2,     // sending stage
          (Comm.rank() + 1) % 2, // receiving stage rank
-         2);    // tag
+         3);    // tag
 
    Comm.wait_for_receive_from_stage (
          2,     // sending stage
          (Comm.rank() + 1) % 2, // receiving stage rank
-         2);    // tag
+         3);    // tag
 
    Comm.wait_for_send_to_stage (
-      1,     // receiving stage
+      2,     // receiving stage
       (Comm.rank() + 1) % 2, // receiving stage rank
-      0);    // tag
-#endif
+      3);    // tag
 
-   delete[] array;
+   std::cout << __FILE__ << ": local rank " << Comm.rank() << " received data from this stage: ";
+   for (int ind = 0; ind < 4; ind++)
+   {
+      std::cout << array1[ind] << ", ";
+   }
+   std::cout << std::endl;
+
+   delete[] array0;
+   delete[] array1;
 
    return 0;
 }

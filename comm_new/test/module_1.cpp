@@ -23,7 +23,7 @@ int main (int argc, char *argv[])
       0,     // sending stage rank
       0);    // tag
 
-   std::cout << __FILE__ << ":received data: ";
+   std::cout << __FILE__ << ": received data: ";
    for (int ind = 0; ind < 4; ind++)
    {
       std::cout << array[ind] << ", ";
@@ -32,7 +32,7 @@ int main (int argc, char *argv[])
 
    for (int ind = 0; ind < 4; ind++) array[ind] += 1.0f;
 
-   std::cout << __FILE__ << ":incremented the data then sending it back " << std::endl;
+   std::cout << __FILE__ << ": incremented the data then sending it back " << std::endl;
 
    Comm.send_to_stage (
       array, // data
