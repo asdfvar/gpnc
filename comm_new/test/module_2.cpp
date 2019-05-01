@@ -42,28 +42,28 @@ int main (int argc, char *argv[])
    std::cout << __FILE__ << ": incremented the data by 1" << std::endl;
 
    Comm.send_to_stage (
-      array0, // data
-      4,     // data size
-      2,     // receiving stage
-      1 - Comm.rank(), // receiving stage rank
-      3);    // tag
+      array0,             // data
+      4,                  // data size
+      2,                  // receiving stage
+      1 - Comm.rank(),    // receiving stage rank
+      3);                 // tag
 
    Comm.receive_from_stage (
-         array1, // data
-         4,     // data size
-         2,     // sending stage
+         array1,          // data
+         4,               // data size
+         2,               // sending stage
          1 - Comm.rank(), // sending stage rank
-         3);    // tag
+         3);              // tag
 
    Comm.wait_for_receive_from_stage (
-         2,     // sending stage
+         2,               // sending stage
          1 - Comm.rank(), // sending stage rank
-         3);    // tag
+         3);              // tag
 
    Comm.wait_for_send_to_stage (
-      2,     // receiving stage
-      1 - Comm.rank(), // receiving stage rank
-      3);    // tag
+      2,                  // receiving stage
+      1 - Comm.rank(),    // receiving stage rank
+      3);                 // tag
 
    std::cout << __FILE__ << ": local rank " << Comm.rank() << " received data from this stage: ";
    for (int ind = 0; ind < 4; ind++)
