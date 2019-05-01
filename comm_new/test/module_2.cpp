@@ -45,24 +45,24 @@ int main (int argc, char *argv[])
       array0, // data
       4,     // data size
       2,     // receiving stage
-      (Comm.rank() + 1) % 2, // receiving stage rank
+      1 - Comm.rank(), // receiving stage rank
       3);    // tag
 
    Comm.receive_from_stage (
          array1, // data
          4,     // data size
          2,     // sending stage
-         (Comm.rank() + 1) % 2, // receiving stage rank
+         1 - Comm.rank(), // sending stage rank
          3);    // tag
 
    Comm.wait_for_receive_from_stage (
          2,     // sending stage
-         (Comm.rank() + 1) % 2, // receiving stage rank
+         1 - Comm.rank(), // sending stage rank
          3);    // tag
 
    Comm.wait_for_send_to_stage (
       2,     // receiving stage
-      (Comm.rank() + 1) % 2, // receiving stage rank
+      1 - Comm.rank(), // receiving stage rank
       3);    // tag
 
    std::cout << __FILE__ << ": local rank " << Comm.rank() << " received data from this stage: ";
