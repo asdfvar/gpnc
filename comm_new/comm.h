@@ -4,7 +4,6 @@
 #include <mpi.h>
 #include <vector>
 
-#define MAX_TAGS       200
 #define INVALID_TAG    -1
 
 namespace comm {
@@ -70,8 +69,8 @@ class COMM {
       std::vector<MPI_Comm>  interComms;   // size is number of stages
 
       // accounting
-      std::vector< std::vector<int> > tagsToStage; // [stage][MAX_TAGS]
-      std::vector< std::vector<int> > tagsFromStage; // [stage][MAX_TAGS]
+      std::vector< std::vector<int> > tagsToStage; // [stage][tag]
+      std::vector< std::vector<int> > tagsFromStage; // [stage][tag]
       unsigned int thisStageNum;
       std::vector<int> numSendToStageHandles;
       std::vector<int> numReceiveFromStageHandles;
@@ -101,9 +100,7 @@ class COMM2D : public COMM {
 
    protected:
 
-      int                        tagsDim0and1[MAX_TAGS];
       int                        numCommSendDim0and1Handles;
-      int                        waitingStage[MAX_TAGS];
       int                        numTilesDim0;
       int                        numTilesDim1;
       std::vector <MPI_Request*> localSendRequestsDim0and1;
@@ -139,13 +136,10 @@ class COMM3D : public COMM2D {
 
    protected:
 
-      int                        tagsDim2[MAX_TAGS];
       int                        numCommSendDim2Handles;
       int                        numTilesDim2;
       std::vector <MPI_Request*> localSendRequestsDim2;
       std::vector <MPI_Request*> localReceiveRequestsDim2;
-      bool                       sendingToDim2[MAX_TAGS];
-      bool                       receivingFromDim2[MAX_TAGS];
 
    private:
 

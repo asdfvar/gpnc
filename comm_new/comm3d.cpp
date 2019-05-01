@@ -21,10 +21,6 @@ namespace comm {
       // initialize the communication handles to null
       dimension2Comm = MPI_COMM_NULL;
 
-      for (int index = 0; index < MAX_TAGS; index++) tagsDim2[index]          = INVALID_TAG;
-      for (int index = 0; index < MAX_TAGS; index++) sendingToDim2[index]     = false;
-      for (int index = 0; index < MAX_TAGS; index++) receivingFromDim2[index] = false;
-
       // get the rank of this process within this stage
       int localRank;
       MPI_Comm_rank (stageComms[thisStageNum], &localRank);
@@ -63,6 +59,7 @@ namespace comm {
     */
    template <typename type> bool COMM3D::send_to_next_dim2 (type *data, int src_size, int tag)
    {
+#if 0
       // exit if the tag used is invalid
       if (tag == INVALID_TAG) {
          std::cout << tag << " is designated as the invalid tag number" << std::endl;
@@ -112,6 +109,7 @@ namespace comm {
          MPI_Issend (data, src_size * sizeof (*data), MPI_BYTE, destinationRank, tag, dimension2Comm, request);
       }
 
+#endif
       return true;
    } // send_to_next_dim2 
 
@@ -126,6 +124,7 @@ namespace comm {
    */
    bool COMM3D::wait_for_send_to_next_dim2 (int tag)
    {
+#if 0
       // exit if the tag used is invalid
       if (tag == INVALID_TAG) {
          std::cout << tag << " is designated as the invalid tag number" << std::endl;
@@ -152,6 +151,7 @@ namespace comm {
       // perform the blocking wait
       MPI_Wait (localSendRequestsDim2[tagIndex], MPI_STATUS_IGNORE);
    
+#endif
       return true;
    }  // wait_for_send_to_stage
 
@@ -160,6 +160,7 @@ namespace comm {
     */
    template <typename type> bool COMM3D::receive_from_previous_dim2 (type *data, int src_size, int tag)
    {
+#if 0
       // exit if the tag used is invalid
       if (tag == INVALID_TAG) {
          std::cout << tag << " is designated as the invalid tag number" << std::endl;
@@ -209,8 +210,8 @@ namespace comm {
          MPI_Irecv (data, src_size * sizeof (*data), MPI_CHAR, sourceRank, tag, dimension2Comm, request);
       }
 
+#endif
       return true;
-
    }
 
 // defined types

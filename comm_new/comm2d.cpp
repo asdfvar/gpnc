@@ -22,8 +22,6 @@ COMM2D::COMM2D (
    numCommSendDim0and1Handles = 0;
 
    // initialize status flags
-   for (int index = 0; index < MAX_TAGS; index++) waitingStage[index]  = 0;
-   for (int index = 0; index < MAX_TAGS; index++) tagsDim0and1[index] = INVALID_TAG;
 
    // get the rank of this process within this stage
    int localRank;
