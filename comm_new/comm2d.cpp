@@ -1,5 +1,4 @@
 #include "comm.h"
-//#include "special_tags.h"
 
 namespace comm {
 
@@ -103,7 +102,7 @@ bool COMM2D::wait_for_receive_down (int tag)
    int targetRank = localRank - numTilesDim0;
    if (targetRank < 0) targetRank += numTilesDim0 * numTilesDim1;
 
-   return wait_for_send (targetRank, tag);
+   return wait_for_receive (targetRank, tag);
 }
 
 } // namespace comm
