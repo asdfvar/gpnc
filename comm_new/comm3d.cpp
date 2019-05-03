@@ -7,12 +7,12 @@ namespace comm {
    COMM3D::COMM3D (
          int                *argc,
          char               **argv[],
-         const unsigned int *numStageProcs,
-         const unsigned int numStages,
-         const unsigned int thisStageNum_in,
-         const unsigned int tiles[3])
-      : COMM2D (argc, argv, numStageProcs, numStages, thisStageNum_in, tiles)
+         const int numStages,
+         const int thisStageNum_in,
+         const int tiles[3])
+      : COMM2D (argc, argv, numStages, thisStageNum_in, tiles)
    {
+#if 0
       numTilesDim2 = tiles[2];
 
       // initialize the number of communication handles to zero
@@ -47,6 +47,7 @@ namespace comm {
 
       // free no longer needed group handles
       MPI_Group_free (&tiles2Group);
+#endif
    }
 
    COMM3D::~COMM3D (void)

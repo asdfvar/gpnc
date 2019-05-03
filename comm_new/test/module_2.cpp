@@ -5,9 +5,7 @@
 int main (int argc, char *argv[])
 {
 
-   #include "numStageProcs.i"
-
-   comm::COMM Comm (&argc, &argv, numStageProcs, NUM_STAGES, 2);
+   comm::COMM Comm (&argc, &argv, NUM_STAGES, 2);
 
    float *array0 = new float[4];
    float *array1 = new float[4];

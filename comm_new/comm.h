@@ -16,9 +16,8 @@ class COMM {
    public:
       COMM (int                *argc,
             char               ***argv,
-            const unsigned int *numStageProcs,
-            const unsigned int numStages,
-            const unsigned int thisStageNum);
+            const int numStages,
+            const int thisStageNum);
 
      ~COMM (void);
 
@@ -28,12 +27,12 @@ class COMM {
         bool send_to_stage (
               type *data,
               int dataSize,
-              unsigned int recvStage,
+              int recvStage,
               unsigned int recvStageRank,
               int tag);
 
       bool wait_for_send_to_stage (
-            unsigned int recvStage,
+            int recvStage,
             unsigned int recvStageRank,
             int tag);
 
@@ -41,27 +40,27 @@ class COMM {
          bool receive_from_stage (
                type* data,
                int dataSize,
-               unsigned int sendStage,
+               int sendStage,
                unsigned int stageRank,
                int tag);
 
       bool wait_for_receive_from_stage (
-          unsigned int sendStage,
-          unsigned int sendStageRank,
+          int sendStage,
+          int sendStageRank,
           int tag);
 
       template<typename type>
          bool send (
                type* data,
                int size,
-               unsigned int recvStageRank,
+               int recvStageRank,
                int tag)
          {
             return send_to_stage (data, size, thisStageNum, recvStageRank, tag);
          }
 
       bool wait_for_send (
-            unsigned int recvStageRank,
+            int recvStageRank,
             int tag)
       {
          return wait_for_send_to_stage (thisStageNum, recvStageRank, tag);
@@ -71,14 +70,14 @@ class COMM {
          bool receive (
                type* data,
                int dataSize,
-               unsigned int stageRank,
+               int stageRank,
                int tag)
       {
          return receive_from_stage (data, dataSize, thisStageNum, stageRank, tag);
       }
 
       bool wait_for_receive (
-          unsigned int sendStageRank,
+          int sendStageRank,
           int tag)
       {
          return wait_for_receive_from_stage (thisStageNum, sendStageRank, tag);
@@ -90,7 +89,7 @@ class COMM {
 
       int localRank;
       int *worldStages;
-      std::vector<unsigned int> numStageProcs;
+      int *numStageProcs;
 
       MPI_Group stageGroups[200];  // size is number of stages
       MPI_Comm  stageComms[200];   // size is number of stages
@@ -102,7 +101,7 @@ class COMM {
       // accounting
       std::vector< std::vector<int> > tagsToStage; // [stage][tag]
       std::vector< std::vector<int> > tagsFromStage; // [stage][tag]
-      unsigned int thisStageNum;
+      int thisStageNum;
       std::vector<int> numSendToStageHandles;
       std::vector<int> numReceiveFromStageHandles;
 
@@ -122,10 +121,9 @@ class COMM2D : public COMM {
       COMM2D (
             int                *argc,
             char               **argv[],
-            const unsigned int *numStageProcs,
-            const unsigned int numStages,
-            const unsigned int thisStageNum,
-            const unsigned int tiles[2]);
+            const int numStages,
+            const int thisStageNum,
+            const int tiles[2]);
 
       ~COMM2D (void);
 
@@ -186,10 +184,9 @@ class COMM3D : public COMM2D {
       COMM3D (
             int                *argc,
             char               **argv[],
-            const unsigned int *numStageProcs,
-            const unsigned int numStages,
-            const unsigned int thisStageNum,
-            const unsigned int tiles[3]);
+            const int numStages,
+            const int thisStageNum,
+            const int tiles[3]);
 
       ~COMM3D (void);
 

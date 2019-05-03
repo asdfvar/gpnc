@@ -15,9 +15,8 @@ namespace comm {
 COMM::COMM (
       int                *argc,
       char               ***argv,
-      const unsigned int *numStageProcs_in,
-      const unsigned int numStages,
-      const unsigned int thisStageNum_in)
+      const int numStages,
+      const int thisStageNum_in)
 {
 
    int requested = MPI_THREAD_MULTIPLE;
@@ -50,19 +49,46 @@ COMM::COMM (
 
    thisStageNum  = thisStageNum_in;
 
-   for (unsigned int stage = 0; stage < numStages; stage++) {
-      numStageProcs.push_back (numStageProcs_in[stage]);
+   numStageProcs = new int[numStages];
+
+   // determine the hash mapping from the world rank to its associated stage number
+   int worldSize;
+   MPI_Comm_size (MPI_COMM_WORLD, &worldSize);
+   worldStages = new int[worldSize];
+
+   worldStages[worldRank] = thisStageNum;
+
+   for (int rank = 0; rank < worldSize; rank++)
+   {
+      if (rank == worldRank) continue;
+
+      MPI_Request sendRequest, recvRequest;
+
+      MPI_Issend (&worldStages[worldRank], 1, MPI_INT, rank, 1, MPI_COMM_WORLD, &sendRequest);
+      MPI_Irecv  (&worldStages[rank],      1, MPI_INT, rank, 1, MPI_COMM_WORLD, &recvRequest);
+      MPI_Wait   (&sendRequest, MPI_STATUS_IGNORE);
+      MPI_Wait   (&recvRequest, MPI_STATUS_IGNORE);
    }
 
-   for (unsigned int stage = 0; stage < numStages; stage++) {
+   // setup the number of stage processes hashing
+   for (int stage = 0; stage < numStages; stage++)
+   {
+      numStageProcs[stage] = 0;
+      for (int rank = 0; rank < worldSize; rank++)
+      {
+         if (worldStages[rank] == stage) numStageProcs[stage]++;
+      }
+   }
+
+   for (int stage = 0; stage < numStages; stage++) {
       numSendToStageHandles.push_back (0);
    }
 
-   for (unsigned int stage = 0; stage < numStages; stage++) {
+   for (int stage = 0; stage < numStages; stage++) {
       numReceiveFromStageHandles.push_back (0);
    }
 
-   for (unsigned int stage = 0; stage < numStages; stage++) {
+   for (int stage = 0; stage < numStages; stage++) {
       sendToStageRequests.push_back (std::vector< std::vector<MPI_Request*> >());
       receiveFromStageRequests.push_back (std::vector< std::vector<MPI_Request*> >());
    }
@@ -71,31 +97,31 @@ COMM::COMM (
    tagsToStage.reserve (numStages);
 
    // set initial identifying tag numbers to invalid
-   for (unsigned int stageIndex = 0; stageIndex < numStages; stageIndex++) {
+   for (int stageIndex = 0; stageIndex < numStages; stageIndex++) {
       tagsToStage.push_back (std::vector<int>());
       tagsFromStage.push_back (std::vector<int>());
    }
 
-   for (unsigned int stage = 0; stage < numStages; stage++) stageGroups[stage] = MPI_GROUP_NULL;
+   for (int stage = 0; stage < numStages; stage++) stageGroups[stage] = MPI_GROUP_NULL;
 
-   for (unsigned int stage = 0; stage < numStages; stage++) stageComms[stage] = MPI_COMM_NULL;
+   for (int stage = 0; stage < numStages; stage++) stageComms[stage] = MPI_COMM_NULL;
 
    // get the world group from the world communicator
    MPI_Group worldGroup = MPI_GROUP_NULL;
    MPI_Comm_group (MPI_COMM_WORLD, &worldGroup);
 
-   unsigned int maxRanks = 0;
-   for (unsigned int stage = 0; stage < numStages; stage++) if (numStageProcs[stage] > maxRanks) maxRanks = numStageProcs[stage];
+   int maxRanks = 0;
+   for (int stage = 0; stage < numStages; stage++) if (numStageProcs[stage] > maxRanks) maxRanks = numStageProcs[stage];
 
    int *worldStageRanks = new int[maxRanks];
 
    /*
    ** setup intra-communication configurations for all stages
    */
-   unsigned int worldStageStartRank = 0;
-   for (unsigned int stage = 0; stage < numStages; stage++)
+   int worldStageStartRank = 0;
+   for (int stage = 0; stage < numStages; stage++)
    {
-      for (unsigned int rank = worldStageStartRank, ind = 0; ind < numStageProcs[stage]; ind++, rank++)
+      for (int rank = worldStageStartRank, ind = 0; ind < numStageProcs[stage]; ind++, rank++)
       {
          worldStageRanks[ind] = rank;
       }
@@ -114,34 +140,16 @@ COMM::COMM (
    // define the local rank within this stage
    MPI_Comm_rank (stageComms[thisStageNum], &localRank);
 
-   // determine the hash mapping from the world rank to its associated stage number
-   int worldSize;
-   MPI_Comm_size (MPI_COMM_WORLD, &worldSize);
-   worldStages = new int[worldSize];
-
-   worldStages[worldRank] = thisStageNum;
-
-   for (int rank = 0; rank < worldSize; rank++)
-   {
-      if (rank == worldRank) continue;
-
-      MPI_Request sendRequest, recvRequest;
-      MPI_Issend (&worldStages[worldRank], 1, MPI_INT, rank, 1, MPI_COMM_WORLD, &sendRequest);
-      MPI_Irecv (&worldStages[rank],       1, MPI_INT, rank, 1, MPI_COMM_WORLD, &recvRequest);
-      MPI_Wait (&sendRequest, MPI_STATUS_IGNORE);
-      MPI_Wait (&recvRequest, MPI_STATUS_IGNORE);
-   }
-
    /*
    ** setup inter-communication configurations for all stages
    */
-   for (unsigned int index = 0; index < numStages; index++) interComms[index] = MPI_COMM_NULL;
+   for (int index = 0; index < numStages; index++) interComms[index] = MPI_COMM_NULL;
 
    MPI_Comm unionStagesComms[200][200];
 
-   for (unsigned int fromStage = 0; fromStage < numStages; fromStage++)
+   for (int fromStage = 0; fromStage < numStages; fromStage++)
    {
-      for (unsigned int toStage = 0; toStage < numStages; toStage++)
+      for (int toStage = 0; toStage < numStages; toStage++)
       {
          MPI_Group unionStagesGroup;
 
@@ -154,14 +162,14 @@ COMM::COMM (
    }
 
    // setup intercommunicators between stages
-   for (unsigned int toStage = 0; toStage < numStages; toStage++)
+   for (int toStage = 0; toStage < numStages; toStage++)
    {
       if (thisStageNum == toStage) continue;
 
       // create inter communicator to the associated stage. the communicator is created from the unioned group
       // between this stage and the associated stage in ascending numerical order hence the starting rank
       // must be relative to where the assocated stage starting rank will be from this stage
-      unsigned int startRank;
+      int startRank;
       int lowStage, highStage;
       if (thisStageNum < toStage) {
          startRank = numStageProcs[thisStageNum];
@@ -230,7 +238,7 @@ COMM::~COMM (void)
       tagsFromStage.pop_back();
    }
 
-   while (!numStageProcs.empty()) numStageProcs.pop_back();
+   delete[] numStageProcs;
 
    while (!numSendToStageHandles.empty()) numSendToStageHandles.pop_back();
 
@@ -258,7 +266,7 @@ int COMM::rank (void) {
 ** perform a non-blocking send to the receiving stage
 */
 template <typename type>
-bool COMM::send_to_stage (type *data, int dataSize, unsigned int recvStage, unsigned int recvStageRank, int tag)
+bool COMM::send_to_stage (type *data, int dataSize, int recvStage, unsigned int recvStageRank, int tag)
 {
    // exit if the tag used is invalid
    if (tag == INVALID_TAG) {
@@ -344,15 +352,15 @@ MPI_Intercomm_create (stageComms[thisStageNum], 0, unionStagesComms[lowStage][hi
 } // send_to_stage
 
 // defined types for send
-template bool COMM::send_to_stage (float*  data, int dataSize, unsigned int recvStage, unsigned int recvStageRank, int tag);
-template bool COMM::send_to_stage (double* data, int dataSize, unsigned int recvStage, unsigned int recvStageRank, int tag);
-template bool COMM::send_to_stage (int*    data, int dataSize, unsigned int recvStage, unsigned int recvStageRank, int tag);
-template bool COMM::send_to_stage (char*   data, int dataSize, unsigned int recvStage, unsigned int recvStageRank, int tag);
+template bool COMM::send_to_stage (float*  data, int dataSize, int recvStage, unsigned int recvStageRank, int tag);
+template bool COMM::send_to_stage (double* data, int dataSize, int recvStage, unsigned int recvStageRank, int tag);
+template bool COMM::send_to_stage (int*    data, int dataSize, int recvStage, unsigned int recvStageRank, int tag);
+template bool COMM::send_to_stage (char*   data, int dataSize, int recvStage, unsigned int recvStageRank, int tag);
 
 /*
 ** function name: wait_for_send_to_stage from COMM
 */
-bool COMM::wait_for_send_to_stage (unsigned int recvStage, unsigned int stageRank, int tag)
+bool COMM::wait_for_send_to_stage (int recvStage, unsigned int stageRank, int tag)
 {
    // exit if the tag used is invalid
    if (tag == INVALID_TAG) {
@@ -392,7 +400,7 @@ bool COMM::wait_for_send_to_stage (unsigned int recvStage, unsigned int stageRan
 ** receive data from another stage at its local rank
 */
 template <typename type>
-bool COMM::receive_from_stage (type* data, int dataSize, unsigned int sendStage, unsigned int sendStageRank, int tag)
+bool COMM::receive_from_stage (type* data, int dataSize, int sendStage, unsigned int sendStageRank, int tag)
 {
    // exit if the tag used in invalid
    if (tag == INVALID_TAG) {
@@ -473,15 +481,15 @@ bool COMM::receive_from_stage (type* data, int dataSize, unsigned int sendStage,
 } // receive_from_stage
 
 // defined types for receive
-template bool COMM::receive_from_stage (float  *data, int dataSize, unsigned int sendStage, unsigned int sendStageRank, int tag);
-template bool COMM::receive_from_stage (double *data, int dataSize, unsigned int sendStage, unsigned int sendStageRank, int tag);
-template bool COMM::receive_from_stage (int    *data, int dataSize, unsigned int sendStage, unsigned int sendStageRank, int tag);
-template bool COMM::receive_from_stage (char   *data, int dataSize, unsigned int sendStage, unsigned int sendStageRank, int tag);
+template bool COMM::receive_from_stage (float  *data, int dataSize, int sendStage, unsigned int sendStageRank, int tag);
+template bool COMM::receive_from_stage (double *data, int dataSize, int sendStage, unsigned int sendStageRank, int tag);
+template bool COMM::receive_from_stage (int    *data, int dataSize, int sendStage, unsigned int sendStageRank, int tag);
+template bool COMM::receive_from_stage (char   *data, int dataSize, int sendStage, unsigned int sendStageRank, int tag);
 
 /*
 ** function name: wait_for_receive_from_stage from COMM
 */
-bool COMM::wait_for_receive_from_stage (unsigned int sendStage, unsigned int sendStageRank, int tag)
+bool COMM::wait_for_receive_from_stage (int sendStage, int sendStageRank, int tag)
 {
    // exit if the tag used is invalid
    if (tag == INVALID_TAG) {
