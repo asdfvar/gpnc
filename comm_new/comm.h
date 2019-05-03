@@ -132,14 +132,30 @@ class COMM2D : public COMM {
                int tag);
 
       template<typename type>
+         bool send_right (
+               type *data,
+               int dataSize,
+               int tag);
+
+      template<typename type>
          bool receive_down (
+               type *data,
+               int dataSize,
+               int tag);
+
+      template<typename type>
+         bool receive_left (
                type *data,
                int dataSize,
                int tag);
 
       bool wait_for_send_up (int tag);
 
+      bool wait_for_send_right (int tag);
+
       bool wait_for_receive_down (int tag);
+
+      bool wait_for_receive_left (int tag);
 
    protected:
 

@@ -27,5 +27,19 @@ int main (int argc, char *argv[])
 
    Comm.wait_for_receive_down (0);
 
+   Comm.send_right (
+         array1, // data
+         4,      // data size
+         1);     // tag
+
+   Comm.receive_left (
+         array0, // data
+         4,      // data size
+         1);     // tag
+
+   Comm.wait_for_send_right (1);
+
+   Comm.wait_for_receive_left (1);
+
    return 0;
 }
