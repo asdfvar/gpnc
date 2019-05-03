@@ -89,11 +89,15 @@ class COMM {
    protected:
 
       int localRank;
+      int *worldStages;
       std::vector<unsigned int> numStageProcs;
 
       MPI_Group stageGroups[200];  // size is number of stages
       MPI_Comm  stageComms[200];   // size is number of stages
       MPI_Comm  interComms[200];   // size is number of stages
+
+      std::vector<int> toStageInterCommHash;
+      std::vector<MPI_Comm*> interComms_new;   // size is number of stages
 
       // accounting
       std::vector< std::vector<int> > tagsToStage; // [stage][tag]

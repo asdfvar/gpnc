@@ -111,7 +111,26 @@ COMM::COMM (
 
    delete[] worldStageRanks;
 
+   // define the local rank within this stage
    MPI_Comm_rank (stageComms[thisStageNum], &localRank);
+
+   // determine the hash mapping from the world rank to its associated stage number
+   int worldSize;
+   MPI_Comm_size (MPI_COMM_WORLD, &worldSize);
+   worldStages = new int[worldSize];
+
+   worldStages[worldRank] = thisStageNum;
+
+   for (int rank = 0; rank < worldSize; rank++)
+   {
+      if (rank == worldRank) continue;
+
+      MPI_Request sendRequest, recvRequest;
+      MPI_Issend (&worldStages[worldRank], 1, MPI_INT, rank, 1, MPI_COMM_WORLD, &sendRequest);
+      MPI_Irecv (&worldStages[rank],       1, MPI_INT, rank, 1, MPI_COMM_WORLD, &recvRequest);
+      MPI_Wait (&sendRequest, MPI_STATUS_IGNORE);
+      MPI_Wait (&recvRequest, MPI_STATUS_IGNORE);
+   }
 
    /*
    ** setup inter-communication configurations for all stages
@@ -217,6 +236,8 @@ COMM::~COMM (void)
 
    while (!numReceiveFromStageHandles.empty()) numReceiveFromStageHandles.pop_back();
 
+   delete[] worldStages;
+
    // finalize MPI
    MPI_Finalize ();
 
@@ -288,6 +309,13 @@ bool COMM::send_to_stage (type *data, int dataSize, unsigned int recvStage, unsi
 
       // get the new request handle
       request = sendToStageRequests[recvStage][tagIndex][recvStageRank];
+
+#if 0
+// create the intra communicator between the associated stages
+MPI_Group_union (stageGroups[fromStage], stageGroups[toStage], &unionStagesGroup);
+MPI_Comm_create (MPI_COMM_WORLD, unionStagesGroup, &unionStagesComms[fromStage][toStage]);
+MPI_Intercomm_create (stageComms[thisStageNum], 0, unionStagesComms[lowStage][highStage], startRank, INTERCOMM_TAG, &interComms[toStage]);
+#endif
    }
 
    MPI_Comm *commHandle;
