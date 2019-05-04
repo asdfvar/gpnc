@@ -313,12 +313,6 @@ int COMM::rank (void) {
 template <typename type>
 bool COMM::send_to_stage (type *data, int dataSize, int recvStage, unsigned int recvStageRank, int tag)
 {
-   // exit if the tag used is invalid
-   if (tag == INVALID_TAG) {
-      std::cout << tag << " is designated as the invalid tag number" << std::endl;
-      return false;
-   }
-
    // exit if there is no stage process associated with this receive
    if (numStageProcs[recvStage] < 1) return false;
 
@@ -400,12 +394,6 @@ template bool COMM::send_to_stage (char*   data, int dataSize, int recvStage, un
 */
 bool COMM::wait_for_send_to_stage (int recvStage, unsigned int stageRank, int tag)
 {
-   // exit if the tag used is invalid
-   if (tag == INVALID_TAG) {
-      std::cout << tag << " is designated as the invalid tag number" << std::endl;
-      return false;
-   }
-
    // exit if there is no stage process
    if (numStageProcs[recvStage] < 1) return false;
 
@@ -440,12 +428,6 @@ bool COMM::wait_for_send_to_stage (int recvStage, unsigned int stageRank, int ta
 template <typename type>
 bool COMM::receive_from_stage (type* data, int dataSize, int sendStage, unsigned int sendStageRank, int tag)
 {
-   // exit if the tag used in invalid
-   if (tag == INVALID_TAG) {
-      std::cout << tag << " is designated as the invalid tag number" << std::endl;
-      return false;
-   }
-
    // exit if there is no previous stage process
    if (numStageProcs[sendStage] < 1) return false;
 
@@ -529,12 +511,6 @@ template bool COMM::receive_from_stage (char   *data, int dataSize, int sendStag
 */
 bool COMM::wait_for_receive_from_stage (int sendStage, int sendStageRank, int tag)
 {
-   // exit if the tag used is invalid
-   if (tag == INVALID_TAG) {
-      std::cout << tag << " is designated as the invalid tag number" << std::endl;
-      return false;
-   }
-
    // exit if there is no stage-1 process
    if (numStageProcs[sendStage] < 1) return false;
 

@@ -4,8 +4,6 @@
 #include <mpi.h>
 #include <vector>
 
-#define INVALID_TAG -1
-
 namespace comm {
 
 /*
@@ -82,8 +80,6 @@ class COMM {
       {
          return wait_for_receive_from_stage (thisStageNum, sendStageRank, tag);
       }
-
-
 
    protected:
 
