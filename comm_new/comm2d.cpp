@@ -45,7 +45,6 @@ bool COMM2D::send_right (type *data, int dataSize, int tag) {
    int targetRank = localRank + 1;
    if (targetRank % numTilesDim0 == 0) targetRank -= numTilesDim0;
 
-std::cout << __FILE__ << __LINE__ << " local rank " << localRank << " sending to " << targetRank << std::endl;
    stat |= send (data, dataSize, targetRank, tag);
 
    return stat;
