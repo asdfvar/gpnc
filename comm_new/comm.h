@@ -12,8 +12,8 @@ namespace comm {
 class COMM {
 
    public:
-      COMM (int                *argc,
-            char               ***argv,
+      COMM (int       *argc,
+            char      ***argv,
             const int numStages,
             const int thisStageNum);
 
@@ -112,8 +112,8 @@ class COMM2D : public COMM {
    public:
 
       COMM2D (
-            int                *argc,
-            char               **argv[],
+            int       *argc,
+            char      **argv[],
             const int numStages,
             const int thisStageNum,
             const int tiles[2]);
@@ -175,8 +175,8 @@ class COMM3D : public COMM2D {
    public:
 
       COMM3D (
-            int                *argc,
-            char               **argv[],
+            int       *argc,
+            char      **argv[],
             const int numStages,
             const int thisStageNum,
             const int tiles[3]);

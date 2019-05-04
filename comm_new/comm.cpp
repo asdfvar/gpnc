@@ -13,8 +13,8 @@ namespace comm {
 ** and configurations that all processes must call
 */
 COMM::COMM (
-      int                *argc,
-      char               ***argv,
+      int       *argc,
+      char      ***argv,
       const int numStages,
       const int thisStageNum_in)
 {
@@ -311,7 +311,12 @@ int COMM::rank (void) {
 ** perform a non-blocking send to the receiving stage
 */
 template <typename type>
-bool COMM::send_to_stage (type *data, int dataSize, int recvStage, unsigned int recvStageRank, int tag)
+bool COMM::send_to_stage (
+      type *data,
+      int dataSize,
+      int recvStage,
+      unsigned int recvStageRank,
+      int tag)
 {
    // exit if there is no stage process associated with this receive
    if (numStageProcs[recvStage] < 1) return false;
@@ -392,7 +397,10 @@ template bool COMM::send_to_stage (char*   data, int dataSize, int recvStage, un
 /*
 ** function name: wait_for_send_to_stage from COMM
 */
-bool COMM::wait_for_send_to_stage (int recvStage, unsigned int stageRank, int tag)
+bool COMM::wait_for_send_to_stage (
+      int recvStage,
+      unsigned int stageRank,
+      int tag)
 {
    // exit if there is no stage process
    if (numStageProcs[recvStage] < 1) return false;
@@ -426,7 +434,12 @@ bool COMM::wait_for_send_to_stage (int recvStage, unsigned int stageRank, int ta
 ** receive data from another stage at its local rank
 */
 template <typename type>
-bool COMM::receive_from_stage (type* data, int dataSize, int sendStage, unsigned int sendStageRank, int tag)
+bool COMM::receive_from_stage (
+      type* data,
+      int dataSize,
+      int sendStage,
+      unsigned int sendStageRank,
+      int tag)
 {
    // exit if there is no previous stage process
    if (numStageProcs[sendStage] < 1) return false;
@@ -509,7 +522,10 @@ template bool COMM::receive_from_stage (char   *data, int dataSize, int sendStag
 /*
 ** function name: wait_for_receive_from_stage from COMM
 */
-bool COMM::wait_for_receive_from_stage (int sendStage, int sendStageRank, int tag)
+bool COMM::wait_for_receive_from_stage (
+      int sendStage,
+      int sendStageRank,
+      int tag)
 {
    // exit if there is no stage-1 process
    if (numStageProcs[sendStage] < 1) return false;
