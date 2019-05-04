@@ -40,5 +40,18 @@ int main (int argc, char *argv[])
 
    Comm.wait_for_receive_left (1);
 
+   int myRank = Comm.rank();
+
+   for (int rank = 0; rank < 6; rank++)
+   {
+      int rankValue = myRank;
+
+      Comm.broadcast (&rankValue, 1, rank);
+
+      std::cout << __FILE__ << __LINE__ <<
+         ": rank " << Comm.rank() << " broadcast from rank "
+         << rank << " and received " << rankValue << std::endl;
+   }
+
    return 0;
 }

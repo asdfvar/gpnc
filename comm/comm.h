@@ -49,7 +49,7 @@ class COMM {
 
       template<typename type>
          bool send (
-               type* data,
+               type *data,
                int size,
                int recvStageRank,
                int tag)
@@ -66,7 +66,7 @@ class COMM {
 
       template <typename type>
          bool receive (
-               type* data,
+               type *data,
                int dataSize,
                int stageRank,
                int tag)
@@ -80,6 +80,12 @@ class COMM {
       {
          return wait_for_receive_from_stage (thisStageNum, sendStageRank, tag);
       }
+
+      template<typename type>
+         bool broadcast (
+               type *data,
+               int  dataSize,
+               int  root);
 
    protected:
 

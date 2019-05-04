@@ -527,7 +527,7 @@ bool COMM::wait_for_receive_from_stage (
       int sendStageRank,
       int tag)
 {
-   // exit if there is no stage-1 process
+   // exit if there is no stage process
    if (numStageProcs[sendStage] < 1) return false;
 
    // status variable
@@ -558,5 +558,63 @@ bool COMM::wait_for_receive_from_stage (
 
    return true;
 } // wait_for_receive_from_stage
+
+/*
+ * function name: broadcast from COMM
+ *
+ * MPI return types:
+ * MPI_SUCCESS
+ *    No error; MPI routine completed successfully.
+ *
+ * MPI_ERR_COMM
+ *    Invalid communicator. A common error is to use a null communicator in a call (not even allowed in MPI_Comm_rank).
+ *
+ * MPI_ERR_COUNT
+ *    Invalid count argument. Count arguments must be non-negative; a count of zero is often valid.
+ *
+ * MPI_ERR_TYPE
+ *    Invalid datatype argument. May be an uncommitted MPI_Datatype (see MPI_Type_commit).
+ *
+ * MPI_ERR_BUFFER
+ *    Invalid buffer pointer. Usually a null buffer where one is not valid.
+ *
+ * MPI_ERR_ROOT
+ *    Invalid root. The root must be specified as a rank in the communicator. Ranks must be between zero and the size of the communicator minus one.
+ */
+
+template<typename type>
+bool COMM::broadcast (
+      type *data,
+      int  dataSize,
+      int  root)
+{
+   bool stat = true;
+   int mpi_stat = MPI_SUCCESS;
+
+   if (std::is_same <type, float>:: value) {
+      mpi_stat = MPI_Bcast (data, dataSize, MPI_FLOAT, root, *stageComms[thisStageNum]);
+   }
+   else if (std::is_same <type, double>:: value) {
+      mpi_stat = MPI_Bcast (data, dataSize, MPI_DOUBLE, root, *stageComms[thisStageNum]);
+   }
+   else if (std::is_same <type, int>:: value) {
+      mpi_stat = MPI_Bcast (data, dataSize, MPI_INT, root, *stageComms[thisStageNum]);
+   }
+   else if (std::is_same <type, char>:: value) {
+      mpi_stat = MPI_Bcast (data, dataSize, MPI_CHAR, root, *stageComms[thisStageNum]);
+   }
+   else {
+      mpi_stat = MPI_Bcast (data, dataSize * sizeof (*data), MPI_BYTE, root, *stageComms[thisStageNum]);
+   }
+
+   if (mpi_stat != MPI_SUCCESS) stat = false;
+
+   return stat;
+}
+
+template bool COMM::broadcast (float  *data, int dataSize, int root);
+template bool COMM::broadcast (double *data, int dataSize, int root);
+template bool COMM::broadcast (int    *data, int dataSize, int root);
+template bool COMM::broadcast (char   *data, int dataSize, int root);
 
 } // namespace comm
