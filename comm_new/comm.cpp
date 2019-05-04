@@ -104,10 +104,14 @@ COMM::COMM (
       tagsFromStage.push_back (std::vector<int>());
    }
 
-   for (int stage = 0; stage < numStages; stage++) stageGroups[stage] = MPI_GROUP_NULL;
+   stageGroups.reserve (numStages);
+   for (int stage = 0; stage < numStages; stage++) {
+      MPI_Group *group = new MPI_Group;
+      *group = MPI_GROUP_NULL;
+      stageGroups.push_back (group);
+   }
 
    stageComms.reserve (numStages);
-
    for (int stage = 0; stage < numStages; stage++) {
       MPI_Comm *comm = new MPI_Comm;
       *comm = MPI_COMM_NULL;
@@ -135,10 +139,10 @@ COMM::COMM (
       }
 
       // create the group for the associated stage
-      MPI_Group_incl (worldGroup, numStageProcs[stage], worldStageRanks, &stageGroups[stage]);
+      MPI_Group_incl (worldGroup, numStageProcs[stage], worldStageRanks, stageGroups[stage]);
 
       // create the intra communicator for the associated stage
-      MPI_Comm_create (MPI_COMM_WORLD, stageGroups[stage], stageComms[stage]);
+      MPI_Comm_create (MPI_COMM_WORLD, *stageGroups[stage], stageComms[stage]);
 
       worldStageStartRank += numStageProcs[stage];
    }
@@ -162,7 +166,7 @@ COMM::COMM (
          MPI_Group unionStagesGroup;
 
          // union groups between associated stages in ascending order
-         MPI_Group_union (stageGroups[fromStage], stageGroups[toStage], &unionStagesGroup);
+         MPI_Group_union (*stageGroups[fromStage], *stageGroups[toStage], &unionStagesGroup);
 
          // create the intra communicator between the associated stages
          MPI_Comm_create (MPI_COMM_WORLD, unionStagesGroup, &unionStagesComms[fromStage][toStage]);
@@ -246,10 +250,13 @@ COMM::~COMM (void)
       tagsFromStage.pop_back();
    }
 
+   while (!stageGroups.empty()) {
+      stageGroups.pop_back();
+   }
+
    while (!stageComms.empty()) {
       stageComms.pop_back();
    }
-
 
    delete[] numStageProcs;
 
@@ -269,7 +276,7 @@ COMM::~COMM (void)
 */
 int COMM::rank (void) {
    int rank;
-   MPI_Group_rank (stageGroups[thisStageNum], &rank);
+   MPI_Group_rank (*stageGroups[thisStageNum], &rank);
    return rank;
 }
 

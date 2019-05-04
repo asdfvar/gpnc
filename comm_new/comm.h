@@ -91,7 +91,7 @@ class COMM {
       int *worldStages;
       int *numStageProcs;
 
-      MPI_Group stageGroups[200];  // size is number of stages
+      std::vector<MPI_Group*> stageGroups;  // size is number of stages
       std::vector<MPI_Comm*>  stageComms;   // size is number of stages
       MPI_Comm  interComms[200];   // size is number of stages
 
