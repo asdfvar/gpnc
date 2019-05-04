@@ -3,12 +3,12 @@ baseDir = ../..
 # load defines
 include $(baseDir)/defines.mk
 
-CL = ar rcs
+CL    = ar rcs
 FLAGS = -O3 -Wall -g
-INC = -I/usr/local/include
-LIBS = -pthread
+INC   = -I/usr/local/include
+LIBS  = -pthread
 
-OBJ = memory.o
+OBJ = mem.o
 
 LIBEXE = libmem.a
 
@@ -18,5 +18,5 @@ all: $(OBJ)
 clean:
 	rm $(OBJ) $(LIBEXE)
 
-memory.o: memory.cpp
+mem.o: mem.cpp
 	$(CPP) $^ -c $(INC) $(LIBS)

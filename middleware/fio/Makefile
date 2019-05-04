@@ -5,13 +5,13 @@ include $(baseDir)/defines.mk
 
 OBJ = fio.o string_utils.o
 
-LIBEXE = libfio.a
+LIBAR = libfio.a
 
 all: $(OBJ)
-	$(CL) $(LIBEXE) $^
+	$(CL) $(LIBAR) $^
 
 clean:
-	rm $(OBJ) $(LIBEXE)
+	rm $(OBJ) $(LIBAR)
 
 fio.o: fio.cpp
 	$(CPP) $^ -c $(INC)

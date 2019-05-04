@@ -2,12 +2,15 @@
 
 #include "com.h"
 #include "fio.h"
-#include "memory.h"
+#include "mem.h"
 #include "proc_maps.h"
+#include "dex_comm.h"
 #include <iostream>
 #include <stdlib.h>
 #include "master_dex.h"
 #include "slave_dex.h"
+
+using namespace dex;
 
 int main( int argc, char* argv[] )
 {
@@ -16,34 +19,17 @@ int main( int argc, char* argv[] )
    int global_rank;
    int numprocs;
 
-   // initialize proc-to-proc communication with multi-threading capability enabled
-   com::proc::init_thread_multiple( argc, argv );
-   com::proc::size( com::proc::Comm_world, &numprocs    );
-   com::proc::rank( com::proc::Comm_world, &global_rank );
-
-   // create output group
-   com::proc::Comm my_comm;
-   com::proc::split(
-         DATA_EXTRACTION_GROUP,
-         global_rank,
-         &my_comm );
-
-   // get local rank
-   int local_rank;
-   com::proc::rank( my_comm, &local_rank );
-
-   // inter-communicator to master
-   com::proc::Comm master_comm;
-   com::proc::intercomm_create(
-         my_comm,
-         MASTER_GROUP,
-         MASTER_DATA_EXT,
-         &master_comm );
+   // initialize proc-to-proc communication
+   Comm_setup dex_comm( argc, argv );
 
    // get the memory size allocation from the environment variables
    std::string str_mem_size = getenv( "GPNC_IOENG_MEM" );
    int mem_size = atoi( str_mem_size.c_str() );
    int mem_size_words = (mem_size + 4) / 4;
+
+  /*******************
+   ** master DEX tasks
+   *******************/
 
    // declare the master DEX task handle
    com::tsk::handler master_dex_handle;
@@ -57,7 +43,7 @@ int main( int argc, char* argv[] )
    // initialize the master DEX barrier
    com::tsk::barrier_init( &master_dex_barrier, 2 );
 
-   master_dex_params.master_comm = master_comm;
+   master_dex_params.master_comm = dex_comm.get_dex_comm();
    master_dex_params.workspace   = mem::Memory( mem_size_words, "IO engine" );
    master_dex_params.barrier     = &master_dex_barrier;
 
@@ -66,6 +52,10 @@ int main( int argc, char* argv[] )
          &master_dex_handle,
          master_dex_task,
          (void*)&master_dex_params );
+
+  /******************
+   ** slave DEX tasks
+   ******************/
 
    // declare the slave DEX task handle
    com::tsk::handler slave_dex_handle;
@@ -94,6 +84,7 @@ int main( int argc, char* argv[] )
       for (int slave_task = 0; slave_task < num_slave_tasks; slave_task++)
       {
 
+         // populate slave parameters
          int index = slave_task + slave_proc * num_slave_tasks;
          slave_dex_params[index].barrier   = &slave_dex_barrier;
          slave_dex_params[index].proc_id   = slave_proc + SLAVE_GROUP;
@@ -108,6 +99,10 @@ int main( int argc, char* argv[] )
       }
    }
 
+  /*************************************
+   ** close down and finalize processing
+   *************************************/
+
    // wait for the master DEX task to finish
    com::tsk::barrier_wait( &master_dex_barrier );
    std::cout << "master DEX task processing complete" << std::endl;
@@ -115,10 +110,6 @@ int main( int argc, char* argv[] )
    // wait for the slave DEX task to finish
    com::tsk::barrier_wait( &slave_dex_barrier );
    std::cout << "slave DEX task processing complete" << std::endl;
-
-   /********************************************
-    ** close down and finalize DEX processing **
-    *******************************************/
 
    // wait for all processes to sync before closing down
    com::proc::Barrier( com::proc::Comm_world );
@@ -129,9 +120,6 @@ int main( int argc, char* argv[] )
    // destroy slave DEX barrier
    com::tsk::barrier_destroy( &slave_dex_barrier );
 
-   // free master-group comm handle
-   com::proc::free( &master_comm );
-
    // free workspace memory from master DEX processing
    master_dex_params.workspace.finalize();
 
@@ -141,28 +129,11 @@ int main( int argc, char* argv[] )
          slave_dex_params[task].workspace.finalize();
    }
 
+   // free slave-DEX parameter objects
+   delete[] slave_dex_params;
+
    // finalize process communication
-   com::proc::finalize();
+   dex_comm.finalize();
 
    return 0;
 }
-
-#if 0
-  /*
-   * Function NAME: write_val
-   */
-  void write_val(float val, std::string out_file_path, bool init)
-  {
-
-    std::ofstream out_file;
-    if (init) {
-       out_file.open (out_file_path.c_str());
-       std::cout << "Writing data to " << out_file_path << std::endl;
-    } else {
-       out_file.open (out_file_path.c_str(), std::ios::app);
-    }
-    out_file << val << "\n";
-    out_file.close();
-
-  }
-#endif

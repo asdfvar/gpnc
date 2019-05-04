@@ -1,5 +1,7 @@
 create mutex to handle threading std-outputs to standard out
 add preamble headers to things (functions, classes, etc...)
-create functions within the tasks with simplified interfaces
-rename memory.h to mem.h and all associations
-rename Comm_parent to Comm
+update master DEX to use the filename passed to it to generate the filename just like the slave tasks do
+create a record of filenames that include a count to keep track of which filenames are written to disk so that data can be appended if there is a request to write data to the same filename within the same execution
+make "defines.mk" smart. Let it use my special configurations when I'm using it but have any other user have the option to provide this. Otherwise, have it look in the default directories for third-party libraries (e.g. /usr/local).
+create python tools to read in the extraction files
+replace all Makefiles in subdirectories with their respective *.mk names
