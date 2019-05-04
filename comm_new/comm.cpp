@@ -149,7 +149,7 @@ COMM::COMM (
 
    for (int fromStage = 0; fromStage < numStages; fromStage++)
    {
-      for (int toStage = 0; toStage < numStages; toStage++)
+      for (int toStage = fromStage + 1; toStage < numStages; toStage++)
       {
          MPI_Group unionStagesGroup;
 
@@ -317,13 +317,6 @@ bool COMM::send_to_stage (type *data, int dataSize, int recvStage, unsigned int 
 
       // get the new request handle
       request = sendToStageRequests[recvStage][tagIndex][recvStageRank];
-
-#if 0
-// create the intra communicator between the associated stages
-MPI_Group_union (stageGroups[fromStage], stageGroups[toStage], &unionStagesGroup);
-MPI_Comm_create (MPI_COMM_WORLD, unionStagesGroup, &unionStagesComms[fromStage][toStage]);
-MPI_Intercomm_create (stageComms[thisStageNum], 0, unionStagesComms[lowStage][highStage], startRank, INTERCOMM_TAG, &interComms[toStage]);
-#endif
    }
 
    MPI_Comm *commHandle;
