@@ -155,7 +155,12 @@ COMM::COMM (
    /*
    ** setup inter-communication configurations for all stages
    */
-   for (int index = 0; index < numStages; index++) interComms[index] = MPI_COMM_NULL;
+   interComms.reserve (numStages);
+   for (int stage = 0; stage < numStages; stage++) {
+      MPI_Comm *comm = new MPI_Comm;
+      *comm = MPI_COMM_NULL;
+      interComms.push_back (comm);
+   }
 
    MPI_Comm unionStagesComms[200][200];
 
@@ -193,7 +198,7 @@ COMM::COMM (
          highStage = thisStageNum;
       }
 
-      MPI_Intercomm_create (*stageComms[thisStageNum], 0, unionStagesComms[lowStage][highStage], startRank, INTERCOMM_TAG, &interComms[toStage]);
+      MPI_Intercomm_create (*stageComms[thisStageNum], 0, unionStagesComms[lowStage][highStage], startRank, INTERCOMM_TAG, interComms[toStage]);
    }
 
    // free no longer needed group handles
@@ -252,6 +257,10 @@ COMM::~COMM (void)
 
    while (!stageGroups.empty()) {
       stageGroups.pop_back();
+   }
+
+   while (!interComms.empty()) {
+      interComms.pop_back();
    }
 
    while (!stageComms.empty()) {
@@ -341,7 +350,7 @@ bool COMM::send_to_stage (type *data, int dataSize, int recvStage, unsigned int 
 
    MPI_Comm *commHandle;
 
-   if (recvStage != thisStageNum) commHandle = &interComms[recvStage];
+   if (recvStage != thisStageNum) commHandle = interComms[recvStage];
    else                           commHandle = stageComms[thisStageNum];
 
    // perform the non-blocking send
@@ -469,7 +478,7 @@ bool COMM::receive_from_stage (type* data, int dataSize, int sendStage, unsigned
 
    MPI_Comm *commHandle;
 
-   if (sendStage != thisStageNum) commHandle = &interComms[sendStage];
+   if (sendStage != thisStageNum) commHandle = interComms[sendStage];
    else                           commHandle = stageComms[thisStageNum];
 
    // receive from stage 1
