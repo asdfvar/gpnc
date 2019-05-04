@@ -162,19 +162,24 @@ COMM::COMM (
       interComms.push_back (comm);
    }
 
-   MPI_Comm unionStagesComms[200][200];
-
+   std::vector< std::vector<MPI_Comm*> > unionStagesComms;
+   unionStagesComms.reserve (numStages);
    for (int fromStage = 0; fromStage < numStages; fromStage++)
    {
-      for (int toStage = fromStage + 1; toStage < numStages; toStage++)
+      unionStagesComms.push_back (std::vector<MPI_Comm*>());
+      unionStagesComms[fromStage].reserve (numStages - fromStage - 1);
+      for (int toStage = fromStage + 1, ind = 0; toStage < numStages; toStage++, ind++)
       {
+         MPI_Comm *comm = new MPI_Comm;
+         unionStagesComms[fromStage].push_back (comm);
+
          MPI_Group unionStagesGroup;
 
          // union groups between associated stages in ascending order
          MPI_Group_union (*stageGroups[fromStage], *stageGroups[toStage], &unionStagesGroup);
 
          // create the intra communicator between the associated stages
-         MPI_Comm_create (MPI_COMM_WORLD, unionStagesGroup, &unionStagesComms[fromStage][toStage]);
+         MPI_Comm_create (MPI_COMM_WORLD, unionStagesGroup, unionStagesComms[fromStage][ind]);
       }
    }
 
@@ -198,7 +203,15 @@ COMM::COMM (
          highStage = thisStageNum;
       }
 
-      MPI_Intercomm_create (*stageComms[thisStageNum], 0, unionStagesComms[lowStage][highStage], startRank, INTERCOMM_TAG, interComms[toStage]);
+      MPI_Intercomm_create (*stageComms[thisStageNum], 0, *unionStagesComms[lowStage][highStage - lowStage - 1], startRank, INTERCOMM_TAG, interComms[toStage]);
+   }
+
+   while (!unionStagesComms.empty()) {
+      while (!unionStagesComms.back().empty()) {
+         if (*unionStagesComms.back().back() != MPI_COMM_NULL) MPI_Comm_free (unionStagesComms.back().back());
+         unionStagesComms.back().pop_back();
+      }
+      unionStagesComms.pop_back();
    }
 
    // free no longer needed group handles
@@ -256,14 +269,17 @@ COMM::~COMM (void)
    }
 
    while (!stageGroups.empty()) {
+      if (*stageGroups.back() != MPI_GROUP_NULL) MPI_Group_free (stageGroups.back());
       stageGroups.pop_back();
    }
 
    while (!interComms.empty()) {
+      if (*interComms.back() != MPI_COMM_NULL) MPI_Comm_free (interComms.back());
       interComms.pop_back();
    }
 
    while (!stageComms.empty()) {
+      if (*stageComms.back() != MPI_COMM_NULL) MPI_Comm_free (stageComms.back());
       stageComms.pop_back();
    }
 
