@@ -56,8 +56,10 @@ COMM::COMM (
    MPI_Comm_size (MPI_COMM_WORLD, &worldSize);
    worldStages = new int[worldSize];
 
+   // set this stage number
    worldStages[worldRank] = thisStageNum;
 
+   // send this stage number to all other ranks and receive their stage numbers as well
    for (int rank = 0; rank < worldSize; rank++)
    {
       if (rank == worldRank) continue;
@@ -104,7 +106,13 @@ COMM::COMM (
 
    for (int stage = 0; stage < numStages; stage++) stageGroups[stage] = MPI_GROUP_NULL;
 
-   for (int stage = 0; stage < numStages; stage++) stageComms[stage] = MPI_COMM_NULL;
+   stageComms.reserve (numStages);
+
+   for (int stage = 0; stage < numStages; stage++) {
+      MPI_Comm *comm = new MPI_Comm;
+      *comm = MPI_COMM_NULL;
+      stageComms.push_back (comm);
+   }
 
    // get the world group from the world communicator
    MPI_Group worldGroup = MPI_GROUP_NULL;
@@ -130,7 +138,7 @@ COMM::COMM (
       MPI_Group_incl (worldGroup, numStageProcs[stage], worldStageRanks, &stageGroups[stage]);
 
       // create the intra communicator for the associated stage
-      MPI_Comm_create (MPI_COMM_WORLD, stageGroups[stage], &stageComms[stage]);
+      MPI_Comm_create (MPI_COMM_WORLD, stageGroups[stage], stageComms[stage]);
 
       worldStageStartRank += numStageProcs[stage];
    }
@@ -138,7 +146,7 @@ COMM::COMM (
    delete[] worldStageRanks;
 
    // define the local rank within this stage
-   MPI_Comm_rank (stageComms[thisStageNum], &localRank);
+   MPI_Comm_rank (*stageComms[thisStageNum], &localRank);
 
    /*
    ** setup inter-communication configurations for all stages
@@ -181,7 +189,7 @@ COMM::COMM (
          highStage = thisStageNum;
       }
 
-      MPI_Intercomm_create (stageComms[thisStageNum], 0, unionStagesComms[lowStage][highStage], startRank, INTERCOMM_TAG, &interComms[toStage]);
+      MPI_Intercomm_create (*stageComms[thisStageNum], 0, unionStagesComms[lowStage][highStage], startRank, INTERCOMM_TAG, &interComms[toStage]);
    }
 
    // free no longer needed group handles
@@ -237,6 +245,11 @@ COMM::~COMM (void)
       }
       tagsFromStage.pop_back();
    }
+
+   while (!stageComms.empty()) {
+      stageComms.pop_back();
+   }
+
 
    delete[] numStageProcs;
 
@@ -322,7 +335,7 @@ bool COMM::send_to_stage (type *data, int dataSize, int recvStage, unsigned int 
    MPI_Comm *commHandle;
 
    if (recvStage != thisStageNum) commHandle = &interComms[recvStage];
-   else                           commHandle = &stageComms[thisStageNum];
+   else                           commHandle = stageComms[thisStageNum];
 
    // perform the non-blocking send
    if (std::is_same <type, float>::value ) {
@@ -450,7 +463,7 @@ bool COMM::receive_from_stage (type* data, int dataSize, int sendStage, unsigned
    MPI_Comm *commHandle;
 
    if (sendStage != thisStageNum) commHandle = &interComms[sendStage];
-   else                           commHandle = &stageComms[thisStageNum];
+   else                           commHandle = stageComms[thisStageNum];
 
    // receive from stage 1
    if (std::is_same <type, float>::value ) {
