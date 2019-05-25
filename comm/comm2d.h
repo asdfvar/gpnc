@@ -98,6 +98,10 @@ class COMM2D : public COMM
 
       MPI_Comm dimensions0and1Comm;
       int      dimensions0and1Rank;
+      int      rankUp;
+      int      rankDown;
+      int      rankLeft;
+      int      rankRight;
 
 };
 

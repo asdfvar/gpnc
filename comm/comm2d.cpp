@@ -13,6 +13,18 @@ COMM2D::COMM2D (
 {
    numTilesDim0 = tiles[0];
    numTilesDim1 = tiles[1];
+
+   rankUp    = (localRank + numTilesDim0) % (numTilesDim0 * numTilesDim1);
+
+   rankDown  = localRank - numTilesDim0;
+   if (rankDown < 0) rankDown += numTilesDim0 * numTilesDim1;
+
+   rankLeft  = localRank - 1;
+   if (localRank % numTilesDim0 != 0) rankLeft = localRank - 1;
+   else                               rankLeft = localRank + numTilesDim0 - 1;
+
+   rankRight = localRank + 1;
+   if (rankRight % numTilesDim0 == 0) rankRight -= numTilesDim0;
 }
 
 COMM2D::~COMM2D (void)
