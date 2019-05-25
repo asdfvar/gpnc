@@ -18,8 +18,29 @@ COMM::COMM (
       const int numStages,
       const int thisStageNum_in)
 {
+   init (argc, argv, numStages, thisStageNum_in, MPI_THREAD_SINGLE);
+} // COMM
 
-   int requested = MPI_THREAD_MULTIPLE;
+COMM::COMM (
+      int       *argc,
+      char      ***argv,
+      const int numStages,
+      const int thisStageNum_in,
+      int       requested)
+{
+   init (argc, argv, numStages, thisStageNum_in, requested);
+} // COMM
+
+/*
+** function name: init from COMM
+*/
+void COMM::init (
+      int       *argc,
+      char      ***argv,
+      const int numStages,
+      const int thisStageNum_in,
+      int       requested)
+{
    int provided;
 
    MPI_Init_thread (argc, argv, requested, &provided);
@@ -219,8 +240,7 @@ COMM::COMM (
 
    // ensure all processes get here before proceeding
    MPI_Barrier (MPI_COMM_WORLD);
-
-} // COMM
+}
 
 /*
 ** destructor name: COMM

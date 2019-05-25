@@ -12,6 +12,8 @@ INC = -I../         \
       -I/$(MPI_INC) \
 #
 
+all: COMM_LIB MODULE_0 MODULE_1 MODULE_2 MODULE_3
+
 COMM_LIB:
 	cd ../ && $(MAKE) -f comm.mk
 
@@ -26,8 +28,6 @@ MODULE_2: $(OBJS_2)
 
 MODULE_3: $(OBJS_3)
 	$(MPI_CPP) $^ $(INC) $(LIBDIRS) $(LIBS) -o module_3.exe
-
-all: COMM_LIB MODULE_0 MODULE_1 MODULE_2 MODULE_3
 
 clean:
 	cd ../ && $(MAKE) -f comm.mk clean

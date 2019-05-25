@@ -17,6 +17,12 @@ class COMM {
             const int numStages,
             const int thisStageNum);
 
+      COMM (int       *argc,
+            char      ***argv,
+            const int numStages,
+            const int thisStageNum,
+            int       requested);
+
      ~COMM (void);
 
      int rank (void);
@@ -107,6 +113,15 @@ class COMM {
       // request handles of dimension [stage][tag_index][rank]
       std::vector< std::vector< std::vector<MPI_Request*> > > sendToStageRequests;
       std::vector< std::vector< std::vector<MPI_Request*> > > receiveFromStageRequests;
+
+   private:
+
+      void init (
+            int       *argc,
+            char      ***argv,
+            const int numStages,
+            const int thisStageNum,
+            int       requested);
 
 };
 
