@@ -154,6 +154,18 @@ class COMM2D : public COMM {
                int tag);
 
       template<typename type>
+         bool send_down (
+               type *data,
+               int dataSize,
+               int tag);
+
+      template<typename type>
+         bool send_left (
+               type *data,
+               int dataSize,
+               int tag);
+
+      template<typename type>
          bool receive_down (
                type *data,
                int dataSize,
@@ -165,13 +177,33 @@ class COMM2D : public COMM {
                int dataSize,
                int tag);
 
+      template<typename type>
+         bool receive_up (
+               type *data,
+               int dataSize,
+               int tag);
+
+      template<typename type>
+         bool receive_right (
+               type *data,
+               int dataSize,
+               int tag);
+
       bool wait_for_send_up (int tag);
 
       bool wait_for_send_right (int tag);
 
+      bool wait_for_send_down (int tag);
+
+      bool wait_for_send_left (int tag);
+
       bool wait_for_receive_down (int tag);
 
       bool wait_for_receive_left (int tag);
+
+      bool wait_for_receive_up (int tag);
+
+      bool wait_for_receive_right (int tag);
 
    protected:
 
