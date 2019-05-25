@@ -5,7 +5,7 @@
 int main (int argc, char *argv[])
 {
 
-   const int tiles[2] = {2, 3};
+   const int tiles[2] = {3, 4};
 
    comm::COMM2D Comm (&argc, &argv, NUM_STAGES, 3, tiles);
 
@@ -52,6 +52,25 @@ int main (int argc, char *argv[])
          ": rank " << Comm.rank() << " broadcast from rank "
          << rank << " and received " << rankValue << std::endl;
    }
+
+   int localRank = Comm.rank();
+   int receivedRank;
+
+   Comm.send_left (&localRank, 1, 2);
+   Comm.receive_right (&receivedRank, 1, 2);
+   Comm.wait_for_send_left (2);
+   Comm.wait_for_receive_right (2);
+   std::cout << __FILE__ << __LINE__ <<
+      ": rank " << Comm.rank() << " received rank " <<
+      receivedRank << " from the right" << std::endl;
+
+   Comm.send_up (&localRank, 1, 3);
+   Comm.receive_down (&receivedRank, 1, 3);
+   Comm.wait_for_send_up (3);
+   Comm.wait_for_receive_down (3);
+   std::cout << __FILE__ << __LINE__ <<
+      ": rank " << Comm.rank() << " received rank " <<
+      receivedRank << " from down" << std::endl;
 
    return 0;
 }

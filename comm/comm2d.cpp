@@ -37,9 +37,7 @@ bool COMM2D::send_up (type *data, int dataSize, int tag)
 {
    bool stat = true;
 
-   int receiveRank = (localRank + numTilesDim0) % (numTilesDim0 * numTilesDim1);
-
-   stat |= send (data, dataSize, receiveRank, tag);
+   stat |= send (data, dataSize, rankUp, tag);
 
    return stat;
 }
@@ -54,10 +52,7 @@ bool COMM2D::send_right (type *data, int dataSize, int tag)
 {
    bool stat = true;
 
-   int targetRank = localRank + 1;
-   if (targetRank % numTilesDim0 == 0) targetRank -= numTilesDim0;
-
-   stat |= send (data, dataSize, targetRank, tag);
+   stat |= send (data, dataSize, rankRight, tag);
 
    return stat;
 }
@@ -72,10 +67,7 @@ bool COMM2D::send_down (type *data, int dataSize, int tag)
 {
    bool stat = true;
 
-   int receiveRank = localRank - numTilesDim0;
-   if (receiveRank < 0) receiveRank += numTilesDim0 * numTilesDim1;
-
-   stat |= send (data, dataSize, receiveRank, tag);
+   stat |= send (data, dataSize, rankDown, tag);
 
    return stat;
 }
@@ -90,11 +82,7 @@ bool COMM2D::send_left (type *data, int dataSize, int tag)
 {
    bool stat = true;
 
-   int receiveRank = localRank - 1;
-   if (localRank % numTilesDim0 != 0) receiveRank = localRank - 1;
-   else                               receiveRank = localRank + numTilesDim0 - 1;
-
-   stat |= send (data, dataSize, receiveRank, tag);
+   stat |= send (data, dataSize, rankLeft, tag);
 
    return stat;
 }
@@ -109,10 +97,7 @@ bool COMM2D::receive_down (type *data, int dataSize, int tag) {
 
    bool stat = true;
 
-   int sendRank = localRank - numTilesDim0;
-   if (sendRank < 0) sendRank += numTilesDim0 * numTilesDim1;
-
-   stat |= receive (data, dataSize, sendRank, tag);
+   stat |= receive (data, dataSize, rankDown, tag);
 
    return stat;
 }
@@ -127,10 +112,7 @@ bool COMM2D::receive_left (type *data, int dataSize, int tag)
 {
    bool stat = true;
 
-   int targetRank = localRank - 1;
-   if (localRank % numTilesDim0 == 0) targetRank += numTilesDim0;
-
-   stat |= receive (data, dataSize, targetRank, tag);
+   stat |= receive (data, dataSize, rankLeft, tag);
 
    return stat;
 }
@@ -145,10 +127,7 @@ bool COMM2D::receive_up (type *data, int dataSize, int tag)
 {
    bool stat = true;
 
-   int receiveRank = localRank + numTilesDim0;
-   if (receiveRank > numTilesDim0 * numTilesDim1) receiveRank = localRank % numTilesDim0;
-
-   stat |= receive (data, dataSize, receiveRank, tag);
+   stat |= receive (data, dataSize, rankUp, tag);
 
    return stat;
 }
@@ -163,10 +142,7 @@ bool COMM2D::receive_right (type *data, int dataSize, int tag)
 {
    bool stat = true;
 
-   int targetRank = localRank + 1;
-   if (targetRank % numTilesDim0 == 0) targetRank -= numTilesDim0;
-
-   stat |= receive (data, dataSize, targetRank, tag);
+   stat |= receive (data, dataSize, rankRight, tag);
 
    return stat;
 }
@@ -178,34 +154,42 @@ template bool COMM2D::receive_right (char*   data, int dataSize, int tag);
 
 bool COMM2D::wait_for_send_up (int tag)
 {
-   int targetRank = (localRank + numTilesDim0) % (numTilesDim0 * numTilesDim1);
-
-   return wait_for_send (targetRank, tag);
+   return wait_for_send (rankUp, tag);
 }
 
 bool COMM2D::wait_for_send_right (int tag)
 {
-   int targetRank = localRank + 1;
-   if (targetRank % numTilesDim0 == 0) targetRank -= numTilesDim0;
+   return wait_for_send (rankRight, tag);
+}
 
-   return wait_for_send (targetRank, tag);
+bool COMM2D::wait_for_send_down (int tag)
+{
+   return wait_for_send (rankDown, tag);
+}
+
+bool COMM2D::wait_for_send_left (int tag)
+{
+   return wait_for_send (rankLeft, tag);
 }
 
 bool COMM2D::wait_for_receive_down (int tag)
 {
-   int targetRank = localRank - numTilesDim0;
-
-   if (targetRank < 0) targetRank += numTilesDim0 * numTilesDim1;
-
-   return wait_for_receive (targetRank, tag);
+   return wait_for_receive (rankDown, tag);
 }
 
 bool COMM2D::wait_for_receive_left (int tag)
 {
-   int targetRank = localRank - 1;
-   if (localRank % numTilesDim0 == 0) targetRank += numTilesDim0;
+   return wait_for_receive (rankLeft, tag);
+}
 
-   return wait_for_receive (targetRank, tag);
+bool COMM2D::wait_for_receive_up (int tag)
+{
+   return wait_for_receive (rankUp, tag);
+}
+
+bool COMM2D::wait_for_receive_right (int tag)
+{
+   return wait_for_receive (rankRight, tag);
 }
 
 } // namespace comm
