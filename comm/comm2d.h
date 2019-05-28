@@ -88,20 +88,16 @@ class COMM2D : public COMM
 
    protected:
 
-      int                        numCommSendDim0and1Handles;
-      int                        numTilesDim0;
-      int                        numTilesDim1;
-      std::vector <MPI_Request*> localSendRequestsDim0and1;
-      std::vector <MPI_Request*> localReceiveRequestsDim0and1;
+      int  numTilesDim0;
+      int  numTilesDim1;
+      bool circular;
 
    private:
 
-      MPI_Comm dimensions0and1Comm;
-      int      dimensions0and1Rank;
-      int      rankUp;
-      int      rankDown;
-      int      rankLeft;
-      int      rankRight;
+      int rankUp;
+      int rankDown;
+      int rankLeft;
+      int rankRight;
 
 };
 

@@ -6,5 +6,6 @@ $HOME/user_libs/openmpi/bin/mpirun   \
    -n 1 module_0.exe :               \
    -n 1 module_1.exe :               \
    -n 2 module_2.exe :               \
-   -n 12 module_3.exe :               \
+   -n 12 module_3.exe :              \
+   -n 1 module_4.exe :               \
 #

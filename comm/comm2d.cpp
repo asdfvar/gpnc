@@ -25,6 +25,8 @@ COMM2D::COMM2D (
 
    rankRight = localRank + 1;
    if (rankRight % numTilesDim0 == 0) rankRight -= numTilesDim0;
+
+   circular = true;
 }
 
 COMM2D::~COMM2D (void)

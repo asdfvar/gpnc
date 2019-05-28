@@ -204,14 +204,14 @@ void COMM::init (
       }
    }
 
-   // setup intercommunicators between stages
+   // setup inter communicators between stages
    for (int toStage = 0; toStage < numStages; toStage++)
    {
       if (thisStageNum == toStage) continue;
 
       // create inter communicator to the associated stage. the communicator is created from the unioned group
       // between this stage and the associated stage in ascending numerical order hence the starting rank
-      // must be relative to where the assocated stage starting rank will be from this stage
+      // must be relative to where the associated stage starting rank will be from this stage
       int startRank;
       int lowStage, highStage;
       if (thisStageNum < toStage) {
@@ -485,7 +485,7 @@ bool COMM::receive_from_stage (
          receiveFromStageRequests[sendStage][tagIndex].push_back (new MPI_Request);
       }
 
-      // retrieve the new, or already existing, reqeust handle
+      // retrieve the new, or already existing, request handle
       request = receiveFromStageRequests[sendStage][tagIndex][sendStageRank];
    }
    else
