@@ -12,19 +12,19 @@ int main (int argc, char *argv[])
    float array0[4] = {3.14159f, 2.71828f, -7.4325f, 923.5234f};
    float array1[4];
 
-   Comm.send_up (
+   Comm.send_forward (
          array0, // data
          4,      // data size
          0);     // tag
 
-   Comm.receive_down (
+   Comm.receive_backward (
          array1, // data
          4,      // data size
          0);     // tag
 
-   Comm.wait_for_send_up (0);
+   Comm.wait_for_send_forward (0);
 
-   Comm.wait_for_receive_down (0);
+   Comm.wait_for_receive_backward (0);
 
    Comm.send_right (
          array1, // data
@@ -64,13 +64,13 @@ int main (int argc, char *argv[])
       ": rank " << Comm.rank() << " received rank " <<
       receivedRank << " from the right" << std::endl;
 
-   Comm.send_up (&localRank, 1, 3);
-   Comm.receive_down (&receivedRank, 1, 3);
-   Comm.wait_for_send_up (3);
-   Comm.wait_for_receive_down (3);
+   Comm.send_forward (&localRank, 1, 3);
+   Comm.receive_backward (&receivedRank, 1, 3);
+   Comm.wait_for_send_forward (3);
+   Comm.wait_for_receive_backward (3);
    std::cout << __FILE__ << __LINE__ <<
       ": rank " << Comm.rank() << " received rank " <<
-      receivedRank << " from down" << std::endl;
+      receivedRank << " from backward" << std::endl;
 
    return 0;
 }

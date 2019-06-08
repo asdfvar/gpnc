@@ -23,7 +23,7 @@ class COMM2D : public COMM
       ~COMM2D (void);
 
       template<typename type>
-         bool send_up (
+         bool send_forward (
                type *data,
                int dataSize,
                int tag);
@@ -35,7 +35,7 @@ class COMM2D : public COMM
                int tag);
 
       template<typename type>
-         bool send_down (
+         bool send_backward (
                type *data,
                int dataSize,
                int tag);
@@ -47,7 +47,7 @@ class COMM2D : public COMM
                int tag);
 
       template<typename type>
-         bool receive_down (
+         bool receive_backward (
                type *data,
                int dataSize,
                int tag);
@@ -59,7 +59,7 @@ class COMM2D : public COMM
                int tag);
 
       template<typename type>
-         bool receive_up (
+         bool receive_forward (
                type *data,
                int dataSize,
                int tag);
@@ -70,19 +70,19 @@ class COMM2D : public COMM
                int dataSize,
                int tag);
 
-      bool wait_for_send_up (int tag);
+      bool wait_for_send_forward (int tag);
 
       bool wait_for_send_right (int tag);
 
-      bool wait_for_send_down (int tag);
+      bool wait_for_send_backward (int tag);
 
       bool wait_for_send_left (int tag);
 
-      bool wait_for_receive_down (int tag);
+      bool wait_for_receive_backward (int tag);
 
       bool wait_for_receive_left (int tag);
 
-      bool wait_for_receive_up (int tag);
+      bool wait_for_receive_forward (int tag);
 
       bool wait_for_receive_right (int tag);
 
@@ -94,8 +94,8 @@ class COMM2D : public COMM
 
    private:
 
-      int rankUp;
-      int rankDown;
+      int rankForward;
+      int rankBackward;
       int rankLeft;
       int rankRight;
 
