@@ -52,6 +52,18 @@ Then
 z_p = g(\psi_p^n)
 \end{equation}
 %
+where $g$ is the activation function typically defined as:
+%
+\begin{equation} \label{eq:g}
+g(x;\beta) := \frac{1}{1 + e^{-\beta x}}
+\end{equation}
+%
+and so it follows that the derivative of the activation function is
+%
+\begin{equation} \label{eq:gp}
+g'(x;\beta) = \beta \left( 1 - g(x;\beta) \right) g(x; \beta)
+\end{equation}
+%
 and
 %
 \begin{equation} \label{eq:z}
@@ -91,7 +103,13 @@ expanding \ref{eq:delta} with \ref{eq:last_layer_derror}:
 \end{equation}
 %
 \begin{equation} \label{eq:gamma}
-\gamma_{i,j}^{n+1} := (z_j - t_j) g'(\psi_j^n)
+\gamma_{i,j} := (z_j - t_j) g'(\psi_j^n)
+\end{equation}
+%
+or, equivalently,
+%
+\begin{equation} \label{eq:gamma_array}
+\gamma := (z_j - t_j) g'(\psi_j^n)
 \end{equation}
 %
 then
@@ -103,8 +121,28 @@ then
 %
 and
 %
-\begin{equation} \label{eq:weights}
-\omega_{new}^n = \omega_{old}^n - \eta \delta^n
+\begin{equation} \label{eq:end_weights}
+\omega_{new}^N = \omega_{old}^N - \eta \delta^N
+\end{equation}
+%
+interior weights, for $p < N$, are updated as follows:
+%
+\begin{equation} \label{eq:w_weights}
+\omega_{new}^p = \omega_{old}^p - \eta \delta_w^p
+\end{equation}
+%
+\begin{equation} \label{eq:u_weights}
+u_{new}^p = u_{old}^p - \eta \delta_u^p
+\end{equation}
+%
+where
+%
+\begin{equation} \label{eq:w_delta}
+\delta_w^{q} = g'(\psi^{q}) (y^{q})^T \odot (\omega^{q+1})^T (\delta ^{q+2})^T ... (\delta^n)^T (\gamma)^T
+\end{equation}
+%
+\begin{equation} \label{eq:u_delta}
+\delta_u^{q} = g'(\psi^{q}) (b^{q})^T \odot (\omega^{q+1})^T (\delta ^{q+2})^T ... (\delta^n)^T (\gamma)^T
 \end{equation}
 %
 \end{document}
