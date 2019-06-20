@@ -51,7 +51,7 @@ First define some shorthand:
 \psi^i_p = \sum_{k} y_k^i \omega_{p,k}^i + b^iu_p^i
 \end{equation}
 %
-The first, interior, and last layers are denoted with $x$, $y$, and $z$ respectively. Hence, \eqref{eq:psi} will differ with the respective layer.
+The first, interior, and last layers are denoted with $x$, $y$, and $z$ respectively. Hence, \eqref{eq:psi} will refer to the respective layer. Superscripts refer to which layer.
 %
 \begin{equation} \label{eq:z}
 z_p := g(\psi_p^N)
@@ -83,22 +83,21 @@ then
 \frac{\partial E}{\partial z_p} = z_p - t_p
 \end{equation}
 %
-at the last layer:
+notice that
+%
+\begin{equation} \label{eq:last_layer_derror_eq_0}
+\frac{\delta z_i}{\delta \omega_{p,j}} = 0, \ \ \ \forall i \neq p
+\end{equation}
+%
+so then, at the last layer,
 %
 \begin{equation} \label{eq:last_layer_derror}
 \frac{\partial E}{\partial \omega_{i,j}^N} =
 \left[ \frac{\partial E}{\partial z_i} \right] \left[ \frac{\partial z_i}{\partial \omega_{i, j}^N} \right] =
-\left[ z_i - t_i \right] \left[ y_j^N g' (\psi_i^N) \right] =
-\frac{\partial E}{\partial \omega_{i,j}^N}
+\left[ z_i - t_i \right] \left[ y_j^N g' (\psi_i^N) \right].
 \end{equation}
 %
-notice that
-%
-\begin{equation} \label{eq:last_layer_derror_eq_0}
-\frac{\delta z_i}{\delta \omega_{p,j}} = 0
-\end{equation}
-%
-$\forall i \neq p$. Defining
+Defining
 %
 \begin{equation} \label{eq:delta}
 \delta_{i,j}^N := \frac{\partial E}{\partial \omega_{i,j}^N}
@@ -107,25 +106,28 @@ $\forall i \neq p$. Defining
 expanding \eqref{eq:delta} with \eqref{eq:last_layer_derror}:
 %
 \begin{equation} \label{eq:delta_full}
-\delta_{i,j}^n = 
-\left ( z_i - t_i \right ) y_j^n g' (\psi_i^n)
+\delta_{i,j}^N = 
+\left ( z_i - t_i \right ) y_j^N g' (\psi_i^N)
 \end{equation}
 %
 \begin{equation} \label{eq:gamma}
 \gamma_{i,j} := (z_j - t_j) g'(\psi_j^N)
 \end{equation}
 %
-or, equivalently,
-%
 \begin{equation} \label{eq:gamma_array}
-\gamma_i := \sum_j (z_j - t_j) g'(\psi_j^n)
+\gamma_i := \sum_j \gamma_{i,j}
+\end{equation}
+%
+\begin{equation} \label{eq:derive_du_nm1}
+\frac{\partial E}{\partial u_i^{N-1}} =
+\sum_{k_{N+1}} \frac{\partial E}{\partial z_{k_{N+1}}} \frac{\partial z_{k_{N+1}}}{\partial g} \frac{\partial g}{\partial \psi_{k_{N+1}}^N} \sum_{k_N} \frac{\partial \psi_{k_{N+1}}^N}{\partial y_{k_N}^N} \frac{\partial y_{k_{N}}}{\partial g} \frac{\partial g}{\partial \psi_{k_N}^{N-1}} \sum_{k_{N-1}=i} \frac{\partial \psi_{k_N}^{N-1}}{\partial u_i^{N-1}}
 \end{equation}
 %
 then
 %
 \begin{equation} \label{eq:delta2}
-\delta_{i,j}^{n-1} =
-\sum_{k_{n+1}} \delta_{k_{n+1},j}^n \omega_{k_{n+1},i}^n
+\delta_{i,j}^{N-1} =
+\sum_{k_{N+1}} \delta_{k_{N+1},j}^N \omega_{k_{N+1},i}^N
 \end{equation}
 %
 and
@@ -147,11 +149,11 @@ u_{new}^p = u_{old}^p - \eta \delta_u^p
 where
 %
 \begin{equation} \label{eq:w_delta}
-\delta_w^{q} = g'(\psi^{q}) (y^{q})^T \odot (\omega^{q+1})^T (\zeta^{q+2})^T ... (\zeta^N)^T (\gamma)^T
+\delta_w^{q} = g'(\psi^{q}) (y^{q})^T \odot (\omega^{q+1})^T (\zeta^{q+2})^T ... (\zeta^N)^T \odot \gamma
 \end{equation}
 %
 \begin{equation} \label{eq:u_delta}
-\delta_u^{q} = g'(\psi^{q}) (b^{q})^T \odot (\omega^{q+1})^T (\zeta ^{q+2})^T ... (\zeta^N)^T (\gamma)^T
+\delta_u^{q} = g'(\psi^{q}) (b^{q})^T \odot (\omega^{q+1})^T (\zeta^{q+2})^T ... (\zeta^N)^T \odot \gamma
 \end{equation}
 %
 where
