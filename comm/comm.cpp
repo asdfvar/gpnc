@@ -389,7 +389,7 @@ bool COMM::send_to_stage (
    else                           commHandle = stageComms[thisStageNum];
 
    // perform the non-blocking send
-   if (std::is_same <type, float>::value ) {
+   if (std::is_same <type, float>::value) {
       MPI_Issend (data, dataSize, MPI_FLOAT, recvStageRank, tag, *commHandle, request);
    }
    else if (std::is_same <type, double>::value) {
@@ -513,7 +513,7 @@ bool COMM::receive_from_stage (
    else                           commHandle = stageComms[thisStageNum];
 
    // receive from stage 1
-   if (std::is_same <type, float>::value ) {
+   if (std::is_same <type, float>::value) {
       MPI_Irecv (data, dataSize, MPI_FLOAT, sendStageRank, tag, *commHandle, request);
    }
    else if (std::is_same <type, double>:: value) {
