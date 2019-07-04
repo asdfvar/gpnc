@@ -34,6 +34,7 @@ class CallPy {
             pyFunc = PyObject_GetAttrString (pyModule, function_name.c_str ());
          }
 
+         // python tuple to be passed as the argument list to the specified python function
          pyArgs = PyTuple_New (num_args);
          argument = 0;
       }
@@ -41,9 +42,6 @@ class CallPy {
       // destructor name: CallPy
       ~CallPy (void)
       {
-         // dereference the python type
-         Py_XDECREF (pyType);
-
          // dereference the python type
          Py_XDECREF (pyResult);
 
@@ -151,6 +149,46 @@ class CallPy {
             pyResult = PyObject_CallObject (pyFunc, pyArgs);
          }
       }
+
+      template <typename type>
+         type read_result (void)
+         {
+            if (PyTuple_Check (pyResult)) return 0;
+
+            type result;
+            if (PyInt_Check (pyResult))
+            {
+               result = static_cast<int>(PyInt_AsLong (pyResult));
+            }
+            else if (PyFloat_Check (pyResult))
+            {
+               result = static_cast<float>(PyFloat_AsDouble (pyResult));
+            }
+
+            return result;
+         }
+
+      template <typename type>
+         void read_result (type *dst)
+         {
+            if (!PyTuple_Check (pyResult)) return;
+
+            Py_ssize_t tuple_size = PyTuple_Size (pyResult);
+
+            for (int ind = 0; ind < tuple_size; ind++)
+            {
+               pyType = PyTuple_GetItem (pyResult, ind);
+
+               if (PyInt_Check (pyType))
+               {
+                  dst[ind] = static_cast<int>(PyInt_AsLong (pyType));
+               }
+               else if (PyFloat_Check (pyType))
+               {
+                  dst[ind] = static_cast<int>(PyFloat_AsDouble (pyType));
+               }
+            }
+         }
 
    private:
 

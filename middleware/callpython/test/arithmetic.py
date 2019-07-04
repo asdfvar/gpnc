@@ -14,3 +14,7 @@ def sub_summation (x, n):
    summ = sum (list (x[0:n]))
    print "sub summation of x:", summ
    return summ
+
+# return the argument
+def return_list (x):
+   return x

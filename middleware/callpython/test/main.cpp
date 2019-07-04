@@ -38,6 +38,10 @@ int main ()
    // execute the python function
    py_summation.execute ();
 
+   // read the result
+   int total_sum = py_summation.read_result<int> ();
+   std::cout << "summation: " << total_sum << std::endl;
+
    // instantiate an instance for specified python function
    CallPy py_sub_summation (
          ".",              // python path
@@ -52,6 +56,28 @@ int main ()
    // execute the python function
    py_sub_summation.execute ();
 
-   return 0;
+   // instantiate an interface to the "return_list" python function
+   CallPy return_list (
+         ".",           // python path
+         "arithmetic",  // module name
+         "return_list", // function name
+         1);            // number of arguments
 
+   // set the argument
+   return_list.set_arg (z, 4);
+
+   // execute the python function
+   return_list.execute();
+
+   int w[4];
+   return_list.read_result (w);
+
+   std::cout << "return list = ";
+   for (int ind = 0; ind < 4; ind++)
+   {
+      std::cout << w[ind] << ", ";
+   }
+   std::cout << std::endl;
+
+   return 0;
 }
