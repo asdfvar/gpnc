@@ -2,8 +2,8 @@
 #define CALLPY_H
 
 #include <Python.h>
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include <numpy/arrayobject.h>
+//#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+//#include <numpy/arrayobject.h>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -113,29 +113,6 @@ class CallPy {
 
             // dereference the python list
             if (pyList != nullptr) Py_DECREF (pyList);
-
-            return stat;
-         }
-
-      // function name: load from CallPy
-      template <typename type>
-         int set_numpy_arg (type *src, int num_el)
-         {
-            int stat = 0;
-
-            // instantiate a new numpy array
-            PyObject *pyArray;
-
-            npy_intp dims = num_el;
-
-            if (std::is_same <type, int>::value)
-            {
-               pyArray = PyArray_SimpleNewFromData (
-                  num_el,
-                  dims,
-                  NPY_FLOAT,
-                  reinterpret_cast<void*>(src));
-            }
 
             return stat;
          }
