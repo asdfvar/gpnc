@@ -19,29 +19,35 @@ class CallPy {
 
          // set the python path to the requested location
          setenv ("PYTHONPATH", py_path.c_str (), 1);
+std::cout << __FILE__ << __LINE__ << std::endl;
 
          // initialize the python interpreter
          Py_Initialize ();
+std::cout << __FILE__ << __LINE__ << std::endl;
 
          PyObject *pName = PyString_FromString (module_name.c_str ());
+std::cout << __FILE__ << __LINE__ << std::endl;
          pyModule         = PyImport_Import (pName);
+std::cout << __FILE__ << __LINE__ << std::endl;
          Py_DECREF (pName);
 
-         if (pyModule != NULL)
+std::cout << __FILE__ << __LINE__ << std::endl;
+         if (pyModule != nullptr)
          {
             pyFunc = PyObject_GetAttrString (pyModule, function_name.c_str ());
          }
+std::cout << __FILE__ << __LINE__ << std::endl;
 
          // python tuple to be passed as the argument list to the specified python function
-         pyArgs = PyTuple_New (num_args);
-         argument = 0;
+         pyArgs     = PyTuple_New (num_args);
+         argument   = 0;
       }
 
       // destructor name: CallPy
       ~CallPy (void)
       {
          // dereference the python type
-         Py_XDECREF (pyResult);
+         if (pyResult == Py_None) Py_XDECREF (pyResult);
 
          // dereference the python function
          Py_XDECREF (pyFunc);
@@ -160,7 +166,7 @@ class CallPy {
                }
                else if (PyFloat_Check (pyType))
                {
-                  dst[ind] = static_cast<int>(PyFloat_AsDouble (pyType));
+                  dst[ind] = static_cast<float>(PyFloat_AsDouble (pyType));
                }
             }
          }
