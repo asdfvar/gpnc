@@ -177,3 +177,11 @@ class CallPy {
 };
 
 #endif
+
+#if 0
++#if 0
++PyTypeObject *type = subElement->ob_type;
++const char* p = type->tp_name;
++std::cout << "My type is " << p << std::endl;
++#endif
+#endif
