@@ -50,12 +50,14 @@ int main ()
    fourier.read_result (dataNew);
 
 #if 1
+std::cout << __FILE__ << __LINE__ << std::endl;
    // instantiate an interface to the "fourier" python function
    CallPy savefig (
          ".",           // python path
          "downsample",  // module name
          "savefig",     // function name
          3);            // number of arguments
+std::cout << __FILE__ << __LINE__ << std::endl;
 
 #if 0
 std::cout << "dataNew = " << std::endl;

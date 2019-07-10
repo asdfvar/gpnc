@@ -19,24 +19,18 @@ class CallPy {
 
          // set the python path to the requested location
          setenv ("PYTHONPATH", py_path.c_str (), 1);
-std::cout << __FILE__ << __LINE__ << std::endl;
 
          // initialize the python interpreter
-         Py_Initialize ();
-std::cout << __FILE__ << __LINE__ << std::endl;
+         if (Py_IsInitialized() == 0) Py_Initialize ();
 
          PyObject *pName = PyString_FromString (module_name.c_str ());
-std::cout << __FILE__ << __LINE__ << std::endl;
          pyModule         = PyImport_Import (pName);
-std::cout << __FILE__ << __LINE__ << std::endl;
          Py_DECREF (pName);
 
-std::cout << __FILE__ << __LINE__ << std::endl;
          if (pyModule != nullptr)
          {
             pyFunc = PyObject_GetAttrString (pyModule, function_name.c_str ());
          }
-std::cout << __FILE__ << __LINE__ << std::endl;
 
          // python tuple to be passed as the argument list to the specified python function
          pyArgs     = PyTuple_New (num_args);
