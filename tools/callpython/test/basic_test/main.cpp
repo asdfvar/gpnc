@@ -10,11 +10,12 @@ int main ()
    int y = 9;
 
    // instantiate an instance for specified python function
-   CallPy py_multiplier (
-         ".",          // python path
-         "arithmetic", // module name
-         "multiply",   // function name
-         2);           // number of arguments
+   CallPy py_multiplier ("."); // python path
+//         "arithmetic", // module name
+//         "multiply",   // function name
+//         2);           // number of arguments
+
+   PyObject *multiplier_module = py_multiplier.import_module ("arithmetic");
 
    // set the arguments
    py_multiplier.set_arg (x);
@@ -23,6 +24,7 @@ int main ()
    // execute the python function
    py_multiplier.execute ();
 
+#if 0
    int z[4] = { 3, 1, 4, 1 };
 
    // instantiate an instance for specified python function
@@ -78,6 +80,7 @@ int main ()
       std::cout << w[ind] << ", ";
    }
    std::cout << std::endl;
+#endif
 
    return 0;
 }

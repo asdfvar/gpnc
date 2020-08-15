@@ -11,10 +11,7 @@ class CallPy {
    public:
 
       // constructor name: CallPy
-      CallPy (const std::string py_path,
-               const std::string module_name,
-               const std::string function_name,
-               const int num_args)
+      CallPy (const std::string py_path)
       {
 
          // set the python path to the requested location
@@ -23,10 +20,7 @@ class CallPy {
          // initialize the python interpreter
          if (Py_IsInitialized() == 0) Py_Initialize ();
 
-         PyObject *pName = PyString_FromString (module_name.c_str ());
-         pyModule         = PyImport_Import (pName);
-         Py_DECREF (pName);
-
+#if 0
          if (pyModule != nullptr)
          {
             pyFunc = PyObject_GetAttrString (pyModule, function_name.c_str ());
@@ -35,11 +29,13 @@ class CallPy {
          // python tuple to be passed as the argument list to the specified python function
          pyArgs     = PyTuple_New (num_args);
          argument   = 0;
+#endif
       }
 
       // destructor name: CallPy
       ~CallPy (void)
       {
+#if 0
          // dereference the python type
          if (pyResult == Py_None) Py_XDECREF (pyResult);
 
@@ -54,9 +50,44 @@ class CallPy {
 
          // dereference the python arguments
          Py_XDECREF (pyArgs);
+#endif
 
          // close the python interpreter
          Py_Finalize ();
+      }
+
+      // function name: import_module from CallPy
+      PyObject *import_module (const std::string module_name)
+      {
+std::cout << __FILE__ << __LINE__ << std::endl;
+#if 1
+         PyObject *pyModule;
+         PyObject *pName  = PyString_FromString (module_name.c_str ());
+         if (pyModule == Py_None) pyModule = PyImport_Import (pName);
+         Py_DECREF (pName);
+#else
+         PyObject *pyModule;
+         PyObject *pyModule = PyImport_AddModule (module_name.c_str ());
+         if (pyModule == Py_None) PyImport_ImportModule (module_name.c_str ());
+#endif
+std::cout << __FILE__ << __LINE__ << std::endl;
+
+         return pyModule;
+
+      }
+
+      // function name: py_function from CallPy
+      PyObject *py_function (
+            PyObject          *module,
+            const std::string  function_name)
+      {
+         PyObject *pyFunc;
+         if (module != nullptr)
+         {
+            pyFunc = PyObject_GetAttrString (module, function_name.c_str ());
+         }
+
+         return pyFunc;
       }
 
       // function name: set_arg from CallPy
