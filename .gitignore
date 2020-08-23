@@ -33,3 +33,6 @@
 *.exe
 *.out
 *.app
+
+# IDE meta data
+.vscode

@@ -22,29 +22,39 @@ namespace comm {
 
          ~COMM3D (void);
 
-         template <typename type> bool send_to_next_dim2 (
-               type* data,
-               int src_size,
-               int tag);
+         template<typename type>
+            bool send_up (
+                  type *data,
+                  int dataSize,
+                  int tag);
 
-         template <typename type> bool receive_from_previous_dim2 (
-               type* data,
-               int src_size,
-               int tag);
+         template<typename type>
+            bool send_down (
+                  type *data,
+                  int dataSize,
+                  int tag);
 
-         bool wait_for_send_to_next_dim2 (int tag);
+         template <typename type>
+            bool receive_up (
+                  type *data,
+                  int src_size,
+                  int tag);
+
+         template <typename type>
+            bool receive_down (
+                  type *data,
+                  int src_size,
+                  int tag);
+
+         bool wait_for_send_up      (int tag);
+         bool wait_for_send_down    (int tag);
+         bool wait_for_receive_up   (int tag);
+         bool wait_for_receive_down (int tag);
 
       protected:
 
-         int                        numCommSendDim2Handles;
-         int                        numTilesDim2;
-         std::vector <MPI_Request*> localSendRequestsDim2;
-         std::vector <MPI_Request*> localReceiveRequestsDim2;
-
-      private:
-
-         MPI_Comm dimension2Comm;
-         int      dimension2Rank;
+         int rankUp;
+         int rankDown;
    };
 
 } // namespace comm
