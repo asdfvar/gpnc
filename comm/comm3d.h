@@ -6,38 +6,56 @@
 
 namespace comm {
 
-/*
-** class name: COMM3D from COMM
-*/
-class COMM3D : public COMM2D {
+   /*
+    ** class name: COMM3D from COMM
+    */
+   class COMM3D : public COMM2D {
 
-   public:
+      public:
 
-      COMM3D (
-            int       *argc,
-            char      **argv[],
-            const int numStages,
-            const int thisStageNum,
-            const int tiles[3]);
+         COMM3D (
+               int       *argc,
+               char      **argv[],
+               const int numStages,
+               const int thisStageNum,
+               const int tiles[3]);
 
-      ~COMM3D (void);
+         ~COMM3D (void);
 
-      template <typename type> bool send_to_next_dim2 (type* data, int src_size, int tag);
-      template <typename type> bool receive_from_previous_dim2 (type* data, int src_size, int tag);
-      bool wait_for_send_to_next_dim2 (int tag);
+         template<typename type>
+            bool send_up (
+                  type *data,
+                  int dataSize,
+                  int tag);
 
-   protected:
+         template<typename type>
+            bool send_down (
+                  type *data,
+                  int dataSize,
+                  int tag);
 
-      int                        numCommSendDim2Handles;
-      int                        numTilesDim2;
-      std::vector <MPI_Request*> localSendRequestsDim2;
-      std::vector <MPI_Request*> localReceiveRequestsDim2;
+         template <typename type>
+            bool receive_up (
+                  type *data,
+                  int src_size,
+                  int tag);
 
-   private:
+         template <typename type>
+            bool receive_down (
+                  type *data,
+                  int src_size,
+                  int tag);
 
-      MPI_Comm dimension2Comm;
-      int      dimension2Rank;
-};
+         bool wait_for_send_up      (int tag);
+         bool wait_for_send_down    (int tag);
+         bool wait_for_receive_up   (int tag);
+         bool wait_for_receive_down (int tag);
+
+      protected:
+
+         int rankUp;
+         int rankDown;
+   };
 
 } // namespace comm
 #endif

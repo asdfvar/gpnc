@@ -72,5 +72,7 @@ int main (int argc, char *argv[])
       ": rank " << Comm.rank() << " received rank " <<
       receivedRank << " from backward" << std::endl;
 
+   std::cout << "module 3 is done" << std::endl;
+
    return 0;
 }
