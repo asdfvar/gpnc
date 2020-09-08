@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage{tikz}
 \usepackage{amsmath}
+\usepackage{amsfonts}
 %
 \begin{document}
 %
@@ -44,11 +45,12 @@
 %
 Back propagation derivation for the ANN.
 
-A caveat: the range for summation indexing is assumed from context in these notes.
+A caveat: the range for summation indexing is assumed from its context in these notes.
+A term such as $k \in N$ will refer to indexing over $N$ integers in $\mathbb{Z}$
 
 First define some shorthand:
 \begin{equation} \label{eq:psi}
-\psi^i_p = \sum_{k} y_k^i \omega_{p,k}^i + b^iu_p^i
+\psi^i_p = \sum_{k \in N^i} y_k^i \omega_{p,k}^i + b^iu_p^i
 \end{equation}
 %
 The first, interior, and last layers are denoted with $x$, $y$, and $z$ respectively. Hence, \eqref{eq:psi} will refer to the respective layer. Superscripts refer to which layer.
@@ -57,21 +59,32 @@ The first, interior, and last layers are denoted with $x$, $y$, and $z$ respecti
 z_p := g(\psi_p^N)
 \end{equation}
 %
-where $g$ is the activation function typically defined as:
+where $g$ is the activation function. The sigmoid function is defined as:
 %
 \begin{equation} \label{eq:g}
 g(x;\beta) := \frac{1}{1 + e^{-\beta x}}
 \end{equation}
 %
-and so it follows that the derivative of the activation function would be
+which is the activation function of choice here.
+It follows that the derivative of this activation function is
 %
 \begin{equation} \label{eq:gp}
 g'(x;\beta) = \beta \left( 1 - g(x;\beta) \right) g(x; \beta).
 \end{equation}
 %
+Some shorthand definition for the activation at the layer at $i+1$:
+%
 \begin{equation} \label{eq:z}
 y_p^{i+1} := g(\psi_p^i)
 \end{equation}
+%
+Defining the rate of change of the error term with the weights at the last layer:
+%
+\begin{equation} \label{eq:delta}
+\delta_{i,j}^N := \frac{\partial E}{\partial \omega_{i,j}^N}
+\end{equation}
+%
+Let the error be defined as:
 %
 \begin{equation} \label{eq:error}
 E := \frac{1}{2} \sum_k (z_k - t_k)^2
@@ -95,12 +108,6 @@ so then, at the last layer,
 \frac{\partial E}{\partial \omega_{i,j}^N} =
 \left[ \frac{\partial E}{\partial z_i} \right] \left[ \frac{\partial z_i}{\partial \omega_{i, j}^N} \right] =
 \left[ z_i - t_i \right] \left[ y_j^N g' (\psi_i^N) \right].
-\end{equation}
-%
-Defining
-%
-\begin{equation} \label{eq:delta}
-\delta_{i,j}^N := \frac{\partial E}{\partial \omega_{i,j}^N}
 \end{equation}
 %
 expanding \eqref{eq:delta} with \eqref{eq:last_layer_derror}:
