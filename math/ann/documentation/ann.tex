@@ -43,21 +43,19 @@
 \end{tikzpicture}
 \end{center}
 %
-Back propagation derivation for the ANN.
+Back propagation derivation for the traditional ANN.
 
 A caveat: the range for summation indexing is assumed from its context in these notes.
-A term such as $k \in N$ will refer to indexing over $N$ integers in $\mathbb{Z}$
+Since no absolute frame of reference will be necessary, a term such as $k \in M$ will refer to indexing over $M$ integers in $\mathbb{Z}$ ($M$ is used because $N$ will be used to refer to the number of layers in the network).
 
-First define some shorthand:
+First define some shorthand $\psi_p^i$ to be the $p^{th}$ element of the result of the corresponding weights applied to the nodes at the $i^{th}$ layer along with the bias term $b^i$ and bias weight $u_p^i$:
+%
 \begin{equation} \label{eq:psi}
-\psi^i_p = \sum_{k \in N^i} y_k^i \omega_{p,k}^i + b^iu_p^i
+\psi_p^i = \sum_{k \in M^i} y_k^i \omega_{p,k}^i + b^iu_p^i
 \end{equation}
 %
-The first, interior, and last layers are denoted with $x$, $y$, and $z$ respectively. Hence, \eqref{eq:psi} will refer to the respective layer. Superscripts refer to which layer.
-%
-\begin{equation} \label{eq:z}
-z_p := g(\psi_p^N)
-\end{equation}
+Superscripts refer to the specified layer.
+Hence, \eqref{eq:psi} will refer to the $i^{th}$ layer before undergoing activation.
 %
 where $g$ is the activation function. The sigmoid function is defined as:
 %
@@ -72,17 +70,22 @@ It follows that the derivative of this activation function is
 g'(x;\beta) = \beta \left( 1 - g(x;\beta) \right) g(x; \beta).
 \end{equation}
 %
-Some shorthand definition for the activation at the layer at $i+1$:
+Promotion to the next layer (at $i+1$) is after the activation is performed at the current layer (at $i$):
 %
 \begin{equation} \label{eq:z}
 y_p^{i+1} := g(\psi_p^i)
 \end{equation}
 %
-Defining the rate of change of the error term with the weights at the last layer:
+The zero-based index is used to refer to the specified layer.
+For convenience (and slight redundancy with the terms $y^0$ and $y^{N-1}$), the first, interior, and last layers are denoted with $x$, $y$, and $z$ respectively.
+It follows that $x = y^0$ and $z = y^{N-1}$.
+Therefore, the last layer is then:
 %
-\begin{equation} \label{eq:delta}
-\delta_{i,j}^N := \frac{\partial E}{\partial \omega_{i,j}^N}
+\begin{equation} \label{eq:z}
+z_p = g(\psi_p^{N-2})
 \end{equation}
+%
+with $N$ denoting the number of layers of the network.
 %
 Let the error be defined as:
 %
@@ -102,28 +105,38 @@ notice that
 \frac{\delta z_i}{\delta \omega_{p,j}} = 0, \ \ \ \forall i \neq p
 \end{equation}
 %
-so then, at the last layer,
+so then, at the last layer, defining the rate of change of the error term with the weights at the last layer:
 %
-\begin{equation} \label{eq:last_layer_derror}
-\frac{\partial E}{\partial \omega_{i,j}^N} =
-\left[ \frac{\partial E}{\partial z_i} \right] \left[ \frac{\partial z_i}{\partial \omega_{i, j}^N} \right] =
-\left[ z_i - t_i \right] \left[ y_j^N g' (\psi_i^N) \right].
+\begin{equation} \label{eq:delta}
+\delta_{i,j} := \frac{\partial E}{\partial \omega_{i,j}^{N-2}}
 \end{equation}
 %
-expanding \eqref{eq:delta} with \eqref{eq:last_layer_derror}:
+\begin{equation} \label{eq:last_layer_derror}
+\frac{\partial E}{\partial \omega_{i,j}^{N-2}} =
+\left( \frac{\partial E}{\partial z_i} \right) \left( \frac{\partial z_i}{\partial g} \right) \left ( \frac{\partial g}{\partial \omega_{i, j}^{N-2}} \right )
+\end{equation}
+%
+**There appears to be an error after this point. Looks like a "beta" term is missing at least**
+%
+\begin{equation} \label{eq:last_layer_derror3}
+=
+\left( z_i - t_i \right) \left( y_j^{N-2} g' (\psi_i^{N-2}) \right).
+\end{equation}
 %
 \begin{equation} \label{eq:delta_full}
-\delta_{i,j}^N = 
-\left ( z_i - t_i \right ) y_j^N g' (\psi_i^N)
+\delta_{i,j} = 
+\left ( z_i - t_i \right ) y_j^{N-2} g' (\psi_i^{N-2})
 \end{equation}
 %
 \begin{equation} \label{eq:gamma}
-\gamma_{i,j} := (z_j - t_j) g'(\psi_j^N)
+\gamma_{i,j} := (z_j - t_j) g'(\psi_j^{N-2})
 \end{equation}
 %
 \begin{equation} \label{eq:gamma_array}
 \gamma_i := \sum_j \gamma_{i,j}
 \end{equation}
+%
+Expanding the derivative of the error term w.r.t. the $N-1$ layer bias weights:
 %
 \begin{equation} \label{eq:derive_du_nm1}
 \begin{aligned}
@@ -131,7 +144,7 @@ expanding \eqref{eq:delta} with \eqref{eq:last_layer_derror}:
 \sum_{k_{N+1}} \frac{\partial E}{\partial z_{k_{N+1}}} \frac{\partial z_{k_{N+1}}}{\partial g} \frac{\partial g}{\partial \psi_{k_{N+1}}^N} \sum_{k_N} \frac{\partial \psi_{k_{N+1}}^N}{\partial y_{k_N}^N} \frac{\partial y_{k_{N}}}{\partial g} \frac{\partial g}{\partial \psi_{k_N}^{N-1}} \sum_{k_{N-1}=i} \frac{\partial \psi_{k_N}^{N-1}}{\partial u_i^{N-1}} \\
 & = \sum_{k_{N+1}} \frac{\partial E}{\partial z_{k_{N+1}}} \frac{\partial g}{\partial \psi_{k_{N+1}}^N} \sum_{k_N} \frac{\partial \psi_{k_{N+1}}^N}{\partial y_{k_N}^N} \frac{\partial g}{\partial \psi_{k_N}^{N-1}} \sum_{k_{N-1}=i} \frac{\partial \psi_{k_N}^{N-1}}{\partial u_i^{N-1}} \\
 & = \sum_{k_{N+1}} \frac{\partial E}{\partial z_{k_{N+1}}} \frac{\partial g}{\partial \psi_{k_{N+1}}^N} \frac{\partial \psi_{k_{N+1}}^N}{\partial y_i^N} \frac{\partial g}{\partial \psi_i^{N-1}} \frac{\partial \psi_i^{N-1}}{\partial u_i^{N-1}} \\
-& = \sum_{k_{N+1}} (z_{k_n+1}
+& = \sum_{k_{N+1}} (z_{k_{N+1}} - t_{k_{N+1}}) (
 \end{aligned}
 \end{equation}
 %
