@@ -62,11 +62,16 @@ it follows that
 y_r^q
 \end{equation}
 %
-and
-%
 \begin{equation} \label{eq:dpsi_u}
 \frac{\partial \psi_p^q}{\partial u_p^q} =
 b^q
+\end{equation}
+%
+and
+%
+\begin{equation} \label{eq:dpsi_y}
+\frac{\partial \psi_p^q}{\partial y_r^q} =
+\omega_{p,r}^q
 \end{equation}
 %
 %\begin{equation} \label{eq:dpsi_w}
@@ -124,7 +129,7 @@ then
 \frac{\partial E}{\partial z_p} = z_p - t_p
 \end{equation}
 %
-so then, at the last layer, defining the rate of change of the error term with the weights at the last layer:
+so then, at the last layer, defining the rate of change of the error term with the weights to the last layer:
 %
 \begin{equation} \label{eq:delta}
 \delta_{i,j} := \frac{\partial E}{\partial \omega_{i,j}^{N-2}}
@@ -144,7 +149,7 @@ so then
 \left( \frac{\partial E}{\partial z_i} \right)
 \left( \frac{\partial z_i}{\partial g} \right)
 \left( \frac{\partial g}{\partial \psi_i^{N-2}} \right)
-\left( \frac{\partial \psi_i^{N-2}}{\partial \omega_{i, j}^{N-2}} \right )
+\left( \frac{\partial \psi_i^{N-2}}{\partial \omega_{i, j}^{N-2}} \right)
 \end{equation}
 %
 \begin{equation} \label{eq:last_layer_derror3}
@@ -158,26 +163,72 @@ so then
 Rearranging:
 \begin{equation} \label{eq:delta_full}
 \delta_{i,j} = 
-\left ( z_i - t_i \right ) y_j^{N-2} g' (\psi_i^{N-2})
+\frac{\partial E}{\partial \omega_{i,j}^{N-2}} =
+\left ( z_i - t_i \right ) *
+g' (\psi_i^{N-2}) *
+y_j^{N-2}
+\end{equation}
+%
+Likewise, the partial of the error term with the bias is:
+%
+\begin{equation} \label{eq:d_bias}
+\frac{\partial E}{\partial u_{i}^{N-2}} =
+\left ( z_i - t_i \right ) *
+g' (\psi_i^{N-2}) *
+b^{N-2}.
 \end{equation}
 %
 \begin{equation} \label{eq:gamma}
-\gamma_{i,j} := (z_j - t_j) g'(\psi_j^{N-2})
+\gamma_i := (z_i - t_i) g'(\psi_i^{N-2})
 \end{equation}
 %
-\begin{equation} \label{eq:gamma_array}
-\gamma_i := \sum_j \gamma_{i,j}
-\end{equation}
-%
-Expanding the derivative of the error term w.r.t. the $N-1$ layer bias weights:
+Expanding the derivative of the error term w.r.t. the $N-3$ layer weights:
 %
 \begin{equation} \label{eq:derive_du_nm1}
 \begin{aligned}
-\frac{\partial E}{\partial u_i^{N-1}} &= 
-\sum_{k_{N+1}} \frac{\partial E}{\partial z_{k_{N+1}}} \frac{\partial z_{k_{N+1}}}{\partial g} \frac{\partial g}{\partial \psi_{k_{N+1}}^N} \sum_{k_N} \frac{\partial \psi_{k_{N+1}}^N}{\partial y_{k_N}^N} \frac{\partial y_{k_{N}}}{\partial g} \frac{\partial g}{\partial \psi_{k_N}^{N-1}} \sum_{k_{N-1}=i} \frac{\partial \psi_{k_N}^{N-1}}{\partial u_i^{N-1}} \\
-& = \sum_{k_{N+1}} \frac{\partial E}{\partial z_{k_{N+1}}} \frac{\partial g}{\partial \psi_{k_{N+1}}^N} \sum_{k_N} \frac{\partial \psi_{k_{N+1}}^N}{\partial y_{k_N}^N} \frac{\partial g}{\partial \psi_{k_N}^{N-1}} \sum_{k_{N-1}=i} \frac{\partial \psi_{k_N}^{N-1}}{\partial u_i^{N-1}} \\
-& = \sum_{k_{N+1}} \frac{\partial E}{\partial z_{k_{N+1}}} \frac{\partial g}{\partial \psi_{k_{N+1}}^N} \frac{\partial \psi_{k_{N+1}}^N}{\partial y_i^N} \frac{\partial g}{\partial \psi_i^{N-1}} \frac{\partial \psi_i^{N-1}}{\partial u_i^{N-1}} \\
-& = \sum_{k_{N+1}} (z_{k_{N+1}} - t_{k_{N+1}}) (
+\frac{\partial E}{\partial \omega_{i,j}^{N-3}} &= 
+%
+\sum_{k_{N-1}}
+\frac{\partial E}{\partial z_{k_{N-1}}}
+\frac{\partial z_{k_{N-1}}}{\partial g}
+\frac{\partial g}{\partial \psi_{k_{N-1}}^{N-2}}
+%
+\sum_{k_{N-2}}
+\frac{\partial \psi_{k_{N-1}}^{N-2}}{\partial y_{k_{N-2}}^{N-2}}
+\frac{\partial y_{k_{N-2}}^{N-2}}{\partial g}
+\frac{\partial g}{\partial \psi_{k_{N-2}}^{N-3}}
+%
+\sum_{k_{N-3}=i}
+\frac{\partial \psi_{k_{N-2}}^{N-3}}{\partial \omega_{k_{N-3,j}}^{N-3}} \\
+%%
+& = \sum_{k_{N-1}}
+\left( z_{k_{N-1}} - t_{k_{N-1}} \right)
+%
+(1)
+\left( g' \left( \psi_{k_{N-1}}^{N-2} \right) \right)
+%
+\sum_{k_{N-2}}
+\left( \omega_{k_{N-1},k_{N-2}}^{N-2} \right)
+(1)
+\left( g' (\psi_{k_{N-2}}^{N-3}) \right)
+\left( y_j^{N-3} \right) \\
+%%
+& = y_j^{N-3} \sum_{k_{N-1}}
+\left(z_{k_{N-1}} - t_{k_{N-1}}\right)
+%
+g' \left(\psi_{k_{N-1}}^{N-2}\right)
+%
+\sum_{k_{N-2}}
+\omega_{k_{N-1},k_{N-2}}^{N-2}
+g' \left( \psi_{k_{N-2}}^{N-3} \right) \\
+%%
+& = y_j^{N-3} \sum_{k_{N-1}}
+\gamma_{k_{N-1}}
+%
+\sum_{k_{N-2}}
+\omega_{k_{N-1},k_{N-2}}^{N-2}
+g' \left( \psi_{k_{N-2}}^{N-3} \right)
+%%
 \end{aligned}
 \end{equation}
 %
