@@ -7,9 +7,10 @@
 %
 % paper title
 \title{ANN}
-\author{Craig~Euler}
+%\author{Craig~Euler}
 %
 \maketitle
+Unfinished, generic network-topology figure:
 %
 \begin{center}
 \begin{tikzpicture}
@@ -46,16 +47,38 @@
 Back propagation derivation for the traditional ANN.
 
 A caveat: the range for summation indexing is assumed from its context in these notes.
-Since no absolute frame of reference will be necessary, a term such as $k \in M$ will refer to indexing over $M$ integers in $\mathbb{Z}$ ($M$ is used because $N$ will be used to refer to the number of layers in the network).
+Since no absolute frame of reference will be necessary, a term such as $k \in M$ will refer to indexing over $M \subset \mathbb{Z}$ and $N$ will refer to the number of layers in the network.
 
-First define some shorthand $\psi_p^i$ to be the $p^{th}$ element of the result of the corresponding weights applied to the nodes at the $i^{th}$ layer along with the bias term $b^i$ and bias weight $u_p^i$:
+First define some shorthand $\psi_p^q$ to be the $p^{th}$ element of the result of the corresponding weights applied to the nodes at the $q^{th}$ layer along with the bias term $b^q$ and bias weight $u_p^q$:
 %
 \begin{equation} \label{eq:psi}
-\psi_p^i = \sum_{k \in M^i} y_k^i \omega_{p,k}^i + b^iu_p^i
+\psi_p^q = \sum_{k \in M^q} y_k^q \omega_{p,k}^q + b^q u_p^q
 \end{equation}
 %
+it follows that
+%
+\begin{equation} \label{eq:dpsi_w}
+\frac{\partial \psi_p^q}{\partial \omega_{p,r}^q} =
+y_r^q
+\end{equation}
+%
+and
+%
+\begin{equation} \label{eq:dpsi_u}
+\frac{\partial \psi_p^q}{\partial u_p^q} =
+b^q
+\end{equation}
+%
+%\begin{equation} \label{eq:dpsi_w}
+%\frac{\partial \psi_p^q}{\partial \omega_{q,r}^q} =
+%\begin{cases}
+%\sum_{k \in M^q} y_k^q \omega_{p,k}^q + b^iu_p^q, & 1 \\
+%k, & 2
+%\end{cases}
+%\end{equation}
+%
 Superscripts refer to the specified layer.
-Hence, \eqref{eq:psi} will refer to the $i^{th}$ layer before undergoing activation.
+Hence, \eqref{eq:psi} will refer to the $q^{th}$ layer before undergoing activation.
 %
 where $g$ is the activation function. The sigmoid function is defined as:
 %
@@ -64,16 +87,18 @@ g(x;\beta) := \frac{1}{1 + e^{-\beta x}}
 \end{equation}
 %
 which is the activation function of choice here.
-It follows that the derivative of this activation function is
+It follows that
 %
 \begin{equation} \label{eq:gp}
-g'(x;\beta) = \beta \left( 1 - g(x;\beta) \right) g(x; \beta).
+\frac{d g}{d x} = \beta \left( 1 - g(x;\beta) \right) g(x; \beta).
 \end{equation}
 %
-Promotion to the next layer (at $i+1$) is after the activation is performed at the current layer (at $i$):
+To keep the activation function generic, $g'$ will be used to refer to its derivative.
+
+Promotion to the next layer (at $q+1$) will be defined to be after the activation is performed at the current layer (at $q$):
 %
 \begin{equation} \label{eq:z}
-y_p^{i+1} := g(\psi_p^i)
+y_p^{q+1} := g(\psi_p^q)
 \end{equation}
 %
 The zero-based index is used to refer to the specified layer.
@@ -99,28 +124,36 @@ then
 \frac{\partial E}{\partial z_p} = z_p - t_p
 \end{equation}
 %
-notice that
-%
-\begin{equation} \label{eq:last_layer_derror_eq_0}
-\frac{\delta z_i}{\delta \omega_{p,j}} = 0, \ \ \ \forall i \neq p
-\end{equation}
-%
 so then, at the last layer, defining the rate of change of the error term with the weights at the last layer:
 %
 \begin{equation} \label{eq:delta}
 \delta_{i,j} := \frac{\partial E}{\partial \omega_{i,j}^{N-2}}
 \end{equation}
 %
+notice that
+%
+\begin{equation} \label{eq:last_layer_derror_eq_0}
+\frac{\partial z_i}{\partial \omega_{p,j}} = 0, \ \ \ \forall i \neq p
+\end{equation}
+%
+so then
+%
 \begin{equation} \label{eq:last_layer_derror}
 \frac{\partial E}{\partial \omega_{i,j}^{N-2}} =
-\left( \frac{\partial E}{\partial z_i} \right) \left( \frac{\partial z_i}{\partial g} \right) \left ( \frac{\partial g}{\partial \omega_{i, j}^{N-2}} \right )
+\left( \frac{\partial E}{\partial z_i} \right)
+\left( \frac{\partial z_i}{\partial g} \right)
+\left( \frac{\partial g}{\partial \psi_i^{N-2}} \right)
+\left( \frac{\partial \psi_i^{N-2}}{\partial \omega_{i, j}^{N-2}} \right )
 \end{equation}
 %
 **There appears to be an error after this point. Looks like a "beta" term is missing at least**
 %
 \begin{equation} \label{eq:last_layer_derror3}
 =
-\left( z_i - t_i \right) \left( y_j^{N-2} g' (\psi_i^{N-2}) \right).
+\left( z_i - t_i \right)
+\left( 1 \right)
+\left( \beta (1 - g(\psi_i^{N-2}; \beta)) g(\psi_i^{N-2}; \beta) \right)
+\left( y_j^{N-2} \right).
 \end{equation}
 %
 \begin{equation} \label{eq:delta_full}
