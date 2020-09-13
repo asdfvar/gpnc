@@ -1,9 +1,12 @@
 \documentclass{article}
+\usepackage[in]{fullpage}
 \usepackage{tikz}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 %
 \begin{document}
+%\pdfpageheight=10in
+%\pdfpagewidth=9in
 %
 % paper title
 \title{ANN}
@@ -52,10 +55,10 @@ Since no absolute frame of reference will be necessary, a term such as $k \in M$
 First define some shorthand $\psi_p^q$ to be the $p^{th}$ element of the result of the corresponding weights applied to the nodes at the $q^{th}$ layer along with the bias term $b^q$ and bias weight $u_p^q$:
 %
 \begin{equation} \label{eq:psi}
-\psi_p^q = \sum_{k \in M^q} y_k^q \omega_{p,k}^q + b^q u_p^q
+\psi_p^q = \sum_{k \in M^q} y_k^q \omega_{p,k}^q + b^q u_p^q.
 \end{equation}
 %
-it follows that
+For reference, it follows that
 %
 \begin{equation} \label{eq:dpsi_w}
 \frac{\partial \psi_p^q}{\partial \omega_{p,r}^q} =
@@ -129,10 +132,14 @@ then
 \frac{\partial E}{\partial z_p} = z_p - t_p
 \end{equation}
 %
-so then, at the last layer, defining the rate of change of the error term with the weights to the last layer:
+\begin{equation} \label{eq:gamma}
+\gamma_i := (z_i - t_i) g'(\psi_i^{N-2})
+\end{equation}
+%
+so then, at the last layer, defining the rate of change of the error term with the weights to the last layer (not sure if I should define delta like this):
 %
 \begin{equation} \label{eq:delta}
-\delta_{i,j} := \frac{\partial E}{\partial \omega_{i,j}^{N-2}}
+\delta_{i,j}^{N-2} := \frac{\partial E}{\partial \omega_{i,j}^{N-2}}
 \end{equation}
 %
 notice that
@@ -144,42 +151,34 @@ notice that
 so then
 %
 \begin{equation} \label{eq:last_layer_derror}
-\delta_{i,j} =
+\begin{aligned}
+\delta_{i,j}^{N-2} &=
 \frac{\partial E}{\partial \omega_{i,j}^{N-2}} =
 \left( \frac{\partial E}{\partial z_i} \right)
 \left( \frac{\partial z_i}{\partial g} \right)
 \left( \frac{\partial g}{\partial \psi_i^{N-2}} \right)
-\left( \frac{\partial \psi_i^{N-2}}{\partial \omega_{i, j}^{N-2}} \right)
-\end{equation}
-%
-\begin{equation} \label{eq:last_layer_derror3}
-=
+\left( \frac{\partial \psi_i^{N-2}}{\partial \omega_{i, j}^{N-2}} \right) \\
+&=
 \left( z_i - t_i \right)
 \left( 1 \right)
-\left( g' (\psi_i^{N-1}) \right)
-\left( y_j^{N-2} \right).
-\end{equation}
-%
-Rearranging:
-\begin{equation} \label{eq:delta_full}
-\delta_{i,j} = 
-\frac{\partial E}{\partial \omega_{i,j}^{N-2}} =
-\left ( z_i - t_i \right ) *
-g' (\psi_i^{N-2}) *
+\left( g' (\psi_i^{N-2}) \right)
+\left( y_j^{N-2} \right) \\
+&=
 y_j^{N-2}
+\left( z_i - t_i \right)
+g' (\psi_i^{N-2}) \\
+&=
+y_j^{N-2}
+\gamma_i.
+\end{aligned}
 \end{equation}
 %
 Likewise, the partial of the error term with the bias is:
 %
 \begin{equation} \label{eq:d_bias}
 \frac{\partial E}{\partial u_{i}^{N-2}} =
-\left ( z_i - t_i \right ) *
-g' (\psi_i^{N-2}) *
-b^{N-2}.
-\end{equation}
-%
-\begin{equation} \label{eq:gamma}
-\gamma_i := (z_i - t_i) g'(\psi_i^{N-2})
+b^{N-2}
+\gamma_i.
 \end{equation}
 %
 Expanding the derivative of the error term w.r.t. the $N-3$ layer weights:
@@ -222,7 +221,14 @@ g' \left(\psi_{k_{N-1}}^{N-2}\right)
 \omega_{k_{N-1},k_{N-2}}^{N-2}
 g' \left( \psi_{k_{N-2}}^{N-3} \right) \\
 %%
-& = y_j^{N-3} \sum_{k_{N-1}}
+\delta_{i,j}^{N-3} & = y_j^{N-3} \sum_{k_{N-1}}
+\gamma_{k_{N-1}}
+%
+\sum_{k_{N-2}}
+\omega_{k_{N-1},k_{N-2}}^{N-2}
+g' \left( \psi_{k_{N-2}}^{N-3} \right)
+%%
+\delta_{i,j}^{N-3} & = y_j^{N-3} \sum_{k_{N-1}}
 \gamma_{k_{N-1}}
 %
 \sum_{k_{N-2}}
@@ -232,7 +238,8 @@ g' \left( \psi_{k_{N-2}}^{N-3} \right)
 \end{aligned}
 \end{equation}
 %
-then
+** Stopped here. need to reevaluate the rest ** \\
+Expanding inductively,
 %
 \begin{equation} \label{eq:delta2}
 \delta_{i,j}^{N-1} =
