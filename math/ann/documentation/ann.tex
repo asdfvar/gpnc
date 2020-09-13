@@ -139,6 +139,7 @@ notice that
 so then
 %
 \begin{equation} \label{eq:last_layer_derror}
+\delta_{i,j} =
 \frac{\partial E}{\partial \omega_{i,j}^{N-2}} =
 \left( \frac{\partial E}{\partial z_i} \right)
 \left( \frac{\partial z_i}{\partial g} \right)
@@ -146,16 +147,15 @@ so then
 \left( \frac{\partial \psi_i^{N-2}}{\partial \omega_{i, j}^{N-2}} \right )
 \end{equation}
 %
-**There appears to be an error after this point. Looks like a "beta" term is missing at least**
-%
 \begin{equation} \label{eq:last_layer_derror3}
 =
 \left( z_i - t_i \right)
 \left( 1 \right)
-\left( \beta (1 - g(\psi_i^{N-2}; \beta)) g(\psi_i^{N-2}; \beta) \right)
+\left( g' (\psi_i^{N-1}) \right)
 \left( y_j^{N-2} \right).
 \end{equation}
 %
+Rearranging:
 \begin{equation} \label{eq:delta_full}
 \delta_{i,j} = 
 \left ( z_i - t_i \right ) y_j^{N-2} g' (\psi_i^{N-2})
