@@ -52,10 +52,10 @@ Back propagation derivation for the traditional ANN.
 A caveat: the range for summation indexing is assumed from its context in these notes.
 Since no absolute frame of reference will be necessary, a term such as $k \in M$ will refer to indexing over $M \subset \mathbb{Z}$ and $N$ will refer to the number of layers in the network.
 
-First define some shorthand $\psi_p^q$ to be the $p^{th}$ element of the result of the corresponding weights applied to the nodes at the $q^{th}$ layer along with the bias term $b^q$ and bias weight $u_p^q$:
+First define some shorthand $\psi_p^q$ to be the $p^{th}$ element of the result of the corresponding weights applied to the nodes at the $q^{th}$ layer along with the bias term $b^q$ (often just 1) and bias weight $u_p^q$:
 %
 \begin{equation} \label{eq:psi}
-\psi_p^q = \sum_{k \in M^q} y_k^q \omega_{p,k}^q + b^q u_p^q.
+\psi_p^q = \sum_{k \in M^q} y_k^q \omega_{p,k}^q + b^q u_p^q, \; \; \; \; \; \forall p \in M^{q+1}.
 \end{equation}
 %
 For reference, it follows that
@@ -285,12 +285,16 @@ g' \left( \psi_{k_{N-2}}^{N-3} \right) \\
 \omega_{k_{N-2},k_{N-3}}^{N-3}
 g' \left( \psi_{k_{N-3}}^{N-4} \right) \\
 %%
-\delta_{i,j}^{N-3} &= y_j^{N-3} \sum_{k_{N-1}}
+\delta_{i,j}^{N-4} &= y_j^{N-4} \sum_{k_{N-1}}
 \gamma_{k_{N-1}}
 %
 \sum_{k_{N-2}}
 \omega_{k_{N-1},k_{N-2}}^{N-2}
-g' \left( \psi_{k_{N-2}}^{N-3} \right) \\
+g' \left( \psi_{k_{N-2}}^{N-3} \right)
+%
+\sum_{k_{N-3}}
+\omega_{k_{N-2},k_{N-3}}^{N-3}
+g' \left( \psi_{k_{N-3}}^{N-4} \right) \\
 %%
 \end{aligned}
 \end{equation}
@@ -303,10 +307,10 @@ Expanding inductively,
 \sum_{k_{N+1}} \delta_{k_{N+1},j}^N \omega_{k_{N+1},i}^N
 \end{equation}
 %
-and
+Choosing a step size $\eta > 0$, gradient descent is applied at each layer $q \in [0, N-1)$:
 %
 \begin{equation} \label{eq:end_weights}
-\omega_{new}^N = \omega_{old}^N - \eta \delta^N
+\omega_{new}^q = \omega_{old}^q - \eta \delta^q
 \end{equation}
 %
 interior weights, for $p < N$, are updated as follows:
