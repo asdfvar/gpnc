@@ -3,6 +3,7 @@
 \usepackage{tikz}
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{bm}
 %
 \begin{document}
 %\pdfpageheight=10in
@@ -61,8 +62,11 @@ First define some shorthand $\psi_p^q$ to be the $p^{th}$ element of the result 
 For reference, it follows that
 %
 \begin{equation} \label{eq:dpsi_w}
-\frac{\partial \psi_p^q}{\partial \omega_{p,r}^q} =
-y_r^q
+\frac{\partial \psi_p^q}{\partial \omega_{s,r}^q} =
+\begin{cases}
+y_r^q, & p = s \\
+0, & p =/= s
+\end{cases}
 \end{equation}
 %
 \begin{equation} \label{eq:dpsi_u}
@@ -136,24 +140,11 @@ then
 \gamma_i := (z_i - t_i) g'(\psi_i^{N-2})
 \end{equation}
 %
-so then, at the last layer, defining the rate of change of the error term with the weights to the last layer (not sure if I should define delta like this):
-%
-\begin{equation} \label{eq:delta}
-\delta_{i,j}^{N-2} := \frac{\partial E}{\partial \omega_{i,j}^{N-2}}
-\end{equation}
-%
-notice that
-%
-\begin{equation} \label{eq:last_layer_derror_eq_0}
-\frac{\partial z_i}{\partial \omega_{p,j}} = 0, \ \ \ \forall i \neq p
-\end{equation}
-%
-so then
+the rate of change of the error term with the weights to the last layer is
 %
 \begin{equation} \label{eq:last_layer_derror}
 \begin{aligned}
-\delta_{i,j}^{N-2} &=
-\frac{\partial E}{\partial \omega_{i,j}^{N-2}} =
+\frac{\partial E}{\partial \omega_{i,j}^{N-2}} &=
 \left( \frac{\partial E}{\partial z_i} \right)
 \left( \frac{\partial z_i}{\partial g} \right)
 \left( \frac{\partial g}{\partial \psi_i^{N-2}} \right)
@@ -173,6 +164,12 @@ y_j^{N-2}
 \end{aligned}
 \end{equation}
 %
+notice that
+%
+\begin{equation} \label{eq:last_layer_derror_eq_0}
+\frac{\partial z_i}{\partial \omega_{p,j}} = 0, \ \ \ \forall i \neq p
+\end{equation}
+%
 Likewise, the partial of the error term with the bias is:
 %
 \begin{equation} \label{eq:d_bias}
@@ -181,7 +178,7 @@ b^{N-2}
 \gamma_i.
 \end{equation}
 %
-Expanding the derivative of the error term w.r.t. the $N-3$ layer weights:
+Expanding the derivative of the error term w.r.t. the $N-3$ layer weights (note that the $k_{N-2}$ term must also equal $i$ because the last summation term is otherwise zero):
 %
 \begin{equation} \label{eq:derive_du_nm3}
 \begin{aligned}
@@ -221,7 +218,7 @@ g' \left(\psi_{k_{N-1}}^{N-2}\right)
 \omega_{k_{N-1},k_{N-2}}^{N-2}
 g' \left( \psi_{k_{N-2}}^{N-3} \right) \\
 %%
-\delta_{i,j}^{N-3} & = y_j^{N-3} \sum_{k_{N-1}}
+& = y_j^{N-3} \sum_{k_{N-1}}
 \gamma_{k_{N-1}}
 %
 \sum_{k_{N-2}}
@@ -235,7 +232,7 @@ Expanding the derivative of the error term w.r.t. the $N-4$ layer weights:
 %
 \begin{equation} \label{eq:derive_du_nm4}
 \begin{aligned}
-\frac{\partial E}{\partial \omega_{i,j}^{N-4}} &= 
+\frac{\partial E}{\partial \omega_{i,j}^{N-4}} =& \;
 %
 \sum_{k_{N-1}}
 \frac{\partial E}{\partial z_{k_{N-1}}}
@@ -247,7 +244,7 @@ Expanding the derivative of the error term w.r.t. the $N-4$ layer weights:
 \frac{\partial y_{k_{N-2}}^{N-2}}{\partial g}
 \frac{\partial g}{\partial \psi_{k_{N-2}}^{N-3}} \\
 %
-&\sum_{k_{N-3}}
+& \;\sum_{k_{N-3}}
 \frac{\partial \psi_{k_{N-2}}^{N-3}}{\partial y_{k_{N-3}}^{N-3}}
 \frac{\partial y_{k_{N-3}}^{N-3}}{\partial g}
 \frac{\partial g}{\partial \psi_{k_{N-3}}^{N-4}}
@@ -255,7 +252,7 @@ Expanding the derivative of the error term w.r.t. the $N-4$ layer weights:
 \sum_{k_{N-4}=i}
 \frac{\partial \psi_{k_{N-3}}^{N-4}}{\partial \omega_{k_{N-4,j}}^{N-4}} \\
 %%
-& = \sum_{k_{N-1}}
+=& \; \sum_{k_{N-1}}
 \left( z_{k_{N-1}} - t_{k_{N-1}} \right)
 %
 (1)
@@ -266,26 +263,26 @@ Expanding the derivative of the error term w.r.t. the $N-4$ layer weights:
 (1)
 \left( g' (\psi_{k_{N-2}}^{N-3}) \right) \\
 %
-&\sum_{k_{N-3}}
+& \;\sum_{k_{N-3}}
 \left( \omega_{k_{N-2},k_{N-3}}^{N-3} \right)
 (1)
 \left( g' (\psi_{k_{N-3}}^{N-4}) \right)
 %
 \left( y_j^{N-4} \right) \\
 %%
-& = y_j^{N-4} \sum_{k_{N-1}}
-\left(z_{k_{N-1}} - t_{k_{N-1}}\right)
-g' \left(\psi_{k_{N-1}}^{N-2}\right)
+=& \; y_j^{N-4} \sum_{k_{N-1}}
+\left( z_{k_{N-1}} - t_{k_{N-1}} \right)
+g' \left( \psi_{k_{N-1}}^{N-2} \right)
 %
 \sum_{k_{N-2}}
 \omega_{k_{N-1},k_{N-2}}^{N-2}
 g' \left( \psi_{k_{N-2}}^{N-3} \right) \\
 %
-&\sum_{k_{N-3}}
+& \;\sum_{k_{N-3}}
 \omega_{k_{N-2},k_{N-3}}^{N-3}
 g' \left( \psi_{k_{N-3}}^{N-4} \right) \\
 %%
-\delta_{i,j}^{N-4} &= y_j^{N-4} \sum_{k_{N-1}}
+=& \; y_j^{N-4} \sum_{k_{N-1}}
 \gamma_{k_{N-1}}
 %
 \sum_{k_{N-2}}
@@ -298,6 +295,20 @@ g' \left( \psi_{k_{N-3}}^{N-4} \right) \\
 %%
 \end{aligned}
 \end{equation}
+%
+letting $\bm{\gamma}$ be a row vector and $\bm{\psi}$ be column vectors, the matrix notation would then be:
+%
+\begin{equation} \label{eq:derive_du_nm4_matrix}
+\frac{\partial E}{\partial \omega_{i,j}^{N-4}} =
+y_j^{N-4} \;
+\bm{\gamma} \;
+\bm{\omega}^{N-2} \;
+g' (\bm{\psi}^{N-3}) \;
+\bm{\omega}^{N-3} \;
+g' (\bm{\psi}^{N-4})
+\end{equation}
+%
+notice there's no dependence on $i$. \\
 %
 ** Stopped here. need to reevaluate the rest ** \\
 Expanding inductively,
