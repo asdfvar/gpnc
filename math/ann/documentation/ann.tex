@@ -178,7 +178,7 @@ b^{N-2}
 \gamma_i.
 \end{equation}
 %
-Expanding the derivative of the error term w.r.t. the $N-3$ layer weights (note that the $k_{N-2}$ term must also equal $i$ because the last summation term is otherwise zero):
+Expanding the derivative of the error term w.r.t. the $N-3$ layer weights:
 %
 \begin{equation} \label{eq:derive_du_nm3}
 \begin{aligned}
@@ -203,32 +203,30 @@ Expanding the derivative of the error term w.r.t. the $N-3$ layer weights (note 
 (1)
 \left( g' \left( \psi_{k_{N-1}}^{N-2} \right) \right)
 %
-\sum_{k_{N-2}}
-\left( \omega_{k_{N-1},k_{N-2}}^{N-2} \right)
+\left( \omega_{k_{N-1},i}^{N-2} \right)
 (1)
-\left( g' (\psi_{k_{N-2}}^{N-3}) \right)
+\left( g' (\psi_i^{N-3}) \right)
 \left( y_j^{N-3} \right) \\
 %%
 & = y_j^{N-3} \sum_{k_{N-1}}
-\left(z_{k_{N-1}} - t_{k_{N-1}}\right)
+\left( z_{k_{N-1}} - t_{k_{N-1}} \right)
 %
 g' \left(\psi_{k_{N-1}}^{N-2}\right)
 %
-\sum_{k_{N-2}}
-\omega_{k_{N-1},k_{N-2}}^{N-2}
-g' \left( \psi_{k_{N-2}}^{N-3} \right) \\
+\omega_{k_{N-1},i}^{N-2}
+g' \left( \psi_i^{N-3} \right) \\
 %%
 & = y_j^{N-3} \sum_{k_{N-1}}
 \gamma_{k_{N-1}}
 %
-\sum_{k_{N-2}}
-\omega_{k_{N-1},k_{N-2}}^{N-2}
-g' \left( \psi_{k_{N-2}}^{N-3} \right) \\
+\omega_{k_{N-1},i}^{N-2}
+g' \left( \psi_i^{N-3} \right) \\
 %%
 \end{aligned}
 \end{equation}
 %
-Expanding the derivative of the error term w.r.t. the $N-4$ layer weights:
+Expanding the derivative of the error term w.r.t. the $N-4$ layer weights: \\
+left off here. $k_{N-3}$ must equal $i$ otherwise it's zero
 %
 \begin{equation} \label{eq:derive_du_nm4}
 \begin{aligned}
@@ -263,10 +261,9 @@ Expanding the derivative of the error term w.r.t. the $N-4$ layer weights:
 (1)
 \left( g' (\psi_{k_{N-2}}^{N-3}) \right) \\
 %
-& \;\sum_{k_{N-3}}
-\left( \omega_{k_{N-2},k_{N-3}}^{N-3} \right)
+& \; \left( \omega_{k_{N-2},i}^{N-3} \right)
 (1)
-\left( g' (\psi_{k_{N-3}}^{N-4}) \right)
+\left( g' (\psi_i^{N-4}) \right)
 %
 \left( y_j^{N-4} \right) \\
 %%
@@ -278,9 +275,8 @@ g' \left( \psi_{k_{N-1}}^{N-2} \right)
 \omega_{k_{N-1},k_{N-2}}^{N-2}
 g' \left( \psi_{k_{N-2}}^{N-3} \right) \\
 %
-& \;\sum_{k_{N-3}}
-\omega_{k_{N-2},k_{N-3}}^{N-3}
-g' \left( \psi_{k_{N-3}}^{N-4} \right) \\
+& \; \omega_{k_{N-2},i}^{N-3}
+g' \left( \psi_i^{N-4} \right) \\
 %%
 =& \; y_j^{N-4} \sum_{k_{N-1}}
 \gamma_{k_{N-1}}
@@ -289,9 +285,8 @@ g' \left( \psi_{k_{N-3}}^{N-4} \right) \\
 \omega_{k_{N-1},k_{N-2}}^{N-2}
 g' \left( \psi_{k_{N-2}}^{N-3} \right)
 %
-\sum_{k_{N-3}}
-\omega_{k_{N-2},k_{N-3}}^{N-3}
-g' \left( \psi_{k_{N-3}}^{N-4} \right) \\
+\omega_{k_{N-2},i}^{N-3}
+g' \left( \psi_i^{N-4} \right) \\
 %%
 \end{aligned}
 \end{equation}
