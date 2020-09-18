@@ -65,7 +65,7 @@ For reference, it follows that
 \frac{\partial \psi_p^q}{\partial \omega_{s,r}^q} =
 \begin{cases}
 y_r^q, & p = s \\
-0, & p =/= s
+0, & p \neq s
 \end{cases}
 \end{equation}
 %
@@ -208,25 +208,29 @@ Expanding the derivative of the error term w.r.t. the $N-3$ layer weights:
 \left( g' (\psi_i^{N-3}) \right)
 \left( y_j^{N-3} \right) \\
 %%
-& = y_j^{N-3} \sum_{k_{N-1}}
+& =
+\sum_{k_{N-1}}
 \left( z_{k_{N-1}} - t_{k_{N-1}} \right)
 %
 g' \left(\psi_{k_{N-1}}^{N-2}\right)
 %
 \omega_{k_{N-1},i}^{N-2}
-g' \left( \psi_i^{N-3} \right) \\
+g' \left( \psi_i^{N-3} \right)
+y_j^{N-3} \\
 %%
-& = y_j^{N-3} \sum_{k_{N-1}}
+& =
+\left(
+\sum_{k_{N-1}}
 \gamma_{k_{N-1}}
-%
 \omega_{k_{N-1},i}^{N-2}
-g' \left( \psi_i^{N-3} \right) \\
+\right)
+g' \left( \psi_i^{N-3} \right)
+y_j^{N-3} \\
 %%
 \end{aligned}
 \end{equation}
 %
-Expanding the derivative of the error term w.r.t. the $N-4$ layer weights: \\
-left off here. $k_{N-3}$ must equal $i$ otherwise it's zero
+Expanding the derivative of the error term w.r.t. the $N-4$ layer weights:
 %
 \begin{equation} \label{eq:derive_du_nm4}
 \begin{aligned}
@@ -267,7 +271,8 @@ left off here. $k_{N-3}$ must equal $i$ otherwise it's zero
 %
 \left( y_j^{N-4} \right) \\
 %%
-=& \; y_j^{N-4} \sum_{k_{N-1}}
+=& \;
+\sum_{k_{N-1}}
 \left( z_{k_{N-1}} - t_{k_{N-1}} \right)
 g' \left( \psi_{k_{N-1}}^{N-2} \right)
 %
@@ -276,73 +281,89 @@ g' \left( \psi_{k_{N-1}}^{N-2} \right)
 g' \left( \psi_{k_{N-2}}^{N-3} \right) \\
 %
 & \; \omega_{k_{N-2},i}^{N-3}
-g' \left( \psi_i^{N-4} \right) \\
+g' \left( \psi_i^{N-4} \right)
+y_j^{N-4} \\
 %%
-=& \; y_j^{N-4} \sum_{k_{N-1}}
+=& \;
+\left(
+\sum_{k_{N-1}}
 \gamma_{k_{N-1}}
 %
 \sum_{k_{N-2}}
 \omega_{k_{N-1},k_{N-2}}^{N-2}
 g' \left( \psi_{k_{N-2}}^{N-3} \right)
 %
-\omega_{k_{N-2},i}^{N-3}
-g' \left( \psi_i^{N-4} \right) \\
+\omega_{k_{N-2},i}^{N-3} \;
+\right)
+g' \left( \psi_i^{N-4} \right)
+y_j^{N-4} \\
 %%
 \end{aligned}
 \end{equation}
 %
-letting $\bm{\gamma}$ be a row vector and $\bm{\psi}$ be column vectors, the matrix notation would then be:
+\begin{equation} \label{eq:derive_du_nm5}
+\frac{\partial E}{\partial \omega_{i,j}^{N-5}} =
+\left(
+\sum_{k_{N-1}}
+\gamma_{k_{N-1}}
 %
-\begin{equation} \label{eq:derive_du_nm4_matrix}
-\frac{\partial E}{\partial \omega_{i,j}^{N-4}} =
-y_j^{N-4} \;
+\sum_{k_{N-2}}
+\omega_{k_{N-1},k_{N-2}}^{N-2}
+g' \left( \psi_{k_{N-2}}^{N-3} \right)
+%
+\sum_{k_{N-3}}
+\omega_{k_{N-2},k_{N-3}}^{N-3}
+g' \left( \psi_{k_{N-3}}^{N-4} \right)
+%
+\omega_{k_{N-3},i}^{N-4} \;
+\right)
+g' \left( \psi_i^{N-5} \right)
+y_j^{N-5} \\
+%
+\end{equation}
+%
+letting $\bm{\gamma}$ and $\bm{y}$ be row vectors and $\bm{\psi}$ be column vectors, the matrix notation would then be:
+%
+\begin{equation} \label{eq:derive_du_nm5_matrix}
+\frac{\partial \bm{E}}{\partial \bm{\omega}^{N-5}} =
+\left(
 \bm{\gamma} \;
 \bm{\omega}^{N-2} \;
 g' (\bm{\psi}^{N-3}) \;
 \bm{\omega}^{N-3} \;
-g' (\bm{\psi}^{N-4})
+g' (\bm{\psi}^{N-4}) \;
+\right)^T \;
+\odot
+\left(
+\bm{\omega}^{N-4} \;
+g' (\bm{\psi}^{N-5})
+\bm{y}^{N-5} \\
+\right)
 \end{equation}
 %
-notice there's no dependence on $i$. \\
+\begin{equation} \label{eq:delta}
+\bm{\delta}^q := \bm{\omega}^q \; g' \left( \bm{\psi}^{q-1} \right)
+\end{equation}
 %
-** Stopped here. need to reevaluate the rest ** \\
-Expanding inductively,
-%
-\begin{equation} \label{eq:delta2}
-\delta_{i,j}^{N-1} =
-\sum_{k_{N+1}} \delta_{k_{N+1},j}^N \omega_{k_{N+1},i}^N
+\begin{equation} \label{eq:derive_du_nm5_matrix_delta}
+\frac{\partial \bm{E}}{\partial \bm{\omega}^{N-p}} =
+\left(
+\bm{\gamma} \;
+\prod_{q=[2,p-2)}
+\left( \bm{\delta}^{N-q} \right)
+\right)^T
+\odot
+\left(
+\bm{\delta}^{N-p+1}
+\bm{y}^{N-p}
+\right)
 \end{equation}
 %
 Choosing a step size $\eta > 0$, gradient descent is applied at each layer $q \in [0, N-1)$:
 %
 \begin{equation} \label{eq:end_weights}
-\omega_{new}^q = \omega_{old}^q - \eta \delta^q
-\end{equation}
-%
-interior weights, for $p < N$, are updated as follows:
-%
-\begin{equation} \label{eq:w_weights}
-\omega_{new}^p = \omega_{old}^p - \eta \delta_w^p
-\end{equation}
-%
-\begin{equation} \label{eq:u_weights}
-u_{new}^p = u_{old}^p - \eta \delta_u^p
-\end{equation}
-%
-where
-%
-\begin{equation} \label{eq:w_delta}
-\delta_w^{q} = g'(\psi^{q}) (y^{q})^T \odot (\omega^{q+1})^T (\zeta^{q+2})^T ... (\zeta^N)^T \odot \gamma
-\end{equation}
-%
-\begin{equation} \label{eq:u_delta}
-\delta_u^{q} = g'(\psi^{q}) (b^{q})^T \odot (\omega^{q+1})^T (\zeta^{q+2})^T ... (\zeta^N)^T \odot \gamma
-\end{equation}
-%
-where
-%
-\begin{equation} \label{eq:u_delta}
-\zeta_{i,j}^q = \omega_{i,j}^q y_j^{\prime q} = \omega_{i,j}^q \beta (1 - y_j^q) y_j^q
+\omega_{new}^q = \omega_{old}^q - \eta
+\frac{\partial \bm{E}}{\partial \bm{\omega}^q}
 \end{equation}
 %
 \end{document}
