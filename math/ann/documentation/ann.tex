@@ -322,24 +322,30 @@ y_j^{N-5} \\
 %
 \end{equation}
 %
-letting $\bm{\gamma}$ and $\bm{y}$ be row vectors and $\bm{\psi}$ terms be column vectors, the matrix notation would then be:
+letting $\bm{\gamma}$ and $\bm{y}$ be row vectors and the $\bm{\psi}$ terms be column vectors, \eqref{eq:derive_du_nm5} can then be expressed as:
 %
 \begin{equation} \label{eq:derive_du_nm5_matrix}
 \frac{\partial \bm{E}}{\partial \bm{\omega}^{N-5}} =
+\left(
 \left(
 \bm{\gamma} \;
 \bm{\omega}^{N-2} \;
 g' (\bm{\psi}^{N-3}) \;
 \bm{\omega}^{N-3} \;
 g' (\bm{\psi}^{N-4}) \;
+\bm{\omega}^{N-4} \;
 \right)^T \;
+\cdots
+\right) \;
 \odot
 \left(
-\bm{\omega}^{N-4} \;
 g' (\bm{\psi}^{N-5})
 \bm{y}^{N-5} \\
 \right)
 \end{equation}
+%
+where $\cdots$ represents the terms repeated to the appropriate size to perform the Hadamard product.
+More generally, using the following definition:
 %
 \begin{equation} \label{eq:delta}
 \bm{\delta}^q := \bm{\omega}^q \; g' \left( \bm{\psi}^{q-1} \right)
@@ -348,10 +354,14 @@ g' (\bm{\psi}^{N-5})
 \begin{equation} \label{eq:derive_du_nm5_matrix_delta}
 \frac{\partial \bm{E}}{\partial \bm{\omega}^{N-p}} =
 \left(
+\left(
 \bm{\gamma} \;
-\prod_{q=[2,p-2)}
+\prod_{q=2}^{p-3}
 \left( \bm{\delta}^{N-q} \right)
+\bm{\omega}^{N-(p-1)}
 \right)^T
+\cdots
+\right) \;
 \odot
 \left(
 \bm{\delta}^{N-p+1}
@@ -359,7 +369,7 @@ g' (\bm{\psi}^{N-5})
 \right)
 \end{equation}
 %
-Choosing a step size $\eta > 0$, gradient descent is applied at each layer $q \in [0, N-1)$:
+Choosing a step size $\eta > 0$, gradient descent is applied at each layer, $q \in [0, N-1)$, to advance the network weights to the next iteration as follows:
 %
 \begin{equation} \label{eq:end_weights}
 \omega_{new}^q = \omega_{old}^q - \eta
