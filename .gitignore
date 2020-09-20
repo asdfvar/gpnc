@@ -1,5 +1,5 @@
 # Swap files
-*.swp
+.*.swp
 
 # Prerequisites
 *.d
@@ -36,3 +36,7 @@
 
 # IDE meta data
 .vscode
+
+# Python files
+*.pyc
+__pycache__
