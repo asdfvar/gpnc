@@ -349,6 +349,7 @@ then \eqref{eq:derive_du_nm3}, \eqref{eq:derive_du_nm4}, and \eqref{eq:derive_du
 \odot
 \left(
 g' (\bm{\psi}^{N-3}) \;
+\otimes
 \bm{y}^{N-3} \\
 \right)
 \end{equation}
@@ -367,6 +368,7 @@ g' (\bm{\psi}^{N-3}) \;
 \odot
 \left(
 g' (\bm{\psi}^{N-4}) \;
+\otimes
 \bm{y}^{N-4} \\
 \right)
 \end{equation}
@@ -387,41 +389,47 @@ g' (\bm{\psi}^{N-4}) \;
 \odot
 \left(
 g' (\bm{\psi}^{N-5}) \;
+\otimes
 \bm{y}^{N-5} \\
 \right)
 \end{equation}
 %
 where $\cdots$ represents the terms repeated to the length of the last $\bm{y}$ term (appropriate size to perform the Hadamard product).
 The error relative to the bias weights are expressed the same way but with the $\bm{y}$ terms replaced with a vector of ones.
-More generally, using the following definition:
-*** TODO: define $\bm{\delta}^0$ to be $\bm{\gamma} \bm{G}' ( \bm{\psi}^{N-2} ) \bm{\omega}^{N-2}$ ***
+Using the following definition:
 %
 \begin{equation} \label{eq:delta0}
-\bm{\delta}^0 := \bm{\gamma} \; \bm{\omega}^{N-2}
+\bm{\delta}^{N-2} := \bm{\gamma} \; \bm{\omega}^{N-2}
 \end{equation}
 %
 \begin{equation} \label{eq:deltaq}
-\bm{\delta}^{q+1} :=
+\bm{\delta}^{q} :=
 \left(
-\bm{\delta}^q \;
+\bm{\delta}^{q+1} \;
 \right)
 \left(
-\bm{G}' (\bm{\psi}^{N-(q+2)}) \;
-\bm{\omega}^{N-(q+2)}
+\bm{G}' (\bm{\psi}^q) \;
+\bm{\omega}^q
 \right)
 \end{equation}
 %
 \begin{equation} \label{eq:derive_du_nmp_matrix_delta}
 \frac{\partial \bm{E}}{\partial \bm{\omega}^{N-p}} =
-\bm{\delta}^{p-3}
+\left(
+\left(
+\bm{\delta}^{N-p+1}
+\right)^T
+\cdots
+\right)
 \odot
 \left(
 g' \left( \bm{\psi}^{N-p} \right)
+\otimes
 \bm{y}^{N-p}
 \right)
 \end{equation}
 %
-Choosing a step size $\eta > 0$, gradient descent is applied at each layer, $q \in [0, N-1)$, to advance the network weights to the next iteration as follows:
+Choosing a step size $\eta > 0$, gradient descent is applied at each layer to advance the network weights to the next iteration as follows:
 %
 \begin{equation} \label{eq:end_weights}
 \omega_{new}^q = \omega_{old}^q - \eta
