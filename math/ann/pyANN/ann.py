@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+import random
+from matplotlib import pyplot as plt
+
 import numpy as np
 
 class ANN:
@@ -26,58 +29,38 @@ class ANN:
          y  = sigmoid (y, self.beta)
       return y
 
-   def back (self, Input, Output):
+   def back (self, Input, Output, stepsize):
       z = self.forward (Input)
-      gamma = (z - Output)
+      diff = z - Output
+      gamma = diff * dsigmoid (self.psi[self.N - 2], self.beta)
 
-      #delta = gamma * dsigmoid (self.psi[self.N - 2], self.beta)
-      delta = gamma
+      for ind in np.arange (self.N - 2, -1, -1):
+         if (ind == self.N - 2):
+            dEdw = np.outer (gamma, self.y[ind])
+            self.weights[ind] -= stepsize * dEdw
+            dEdu = gamma
+            self.bias[ind]    -= stepsize * dEdu
 
-      # layer N - 2
-      dEw = np.outer (gamma, self.y[self.N - 2])
-      # modify N - 2 weights appropriately
+            # update delta for the next layer
+            delta = np.matmul (gamma, self.weights[ind])
+         else:
 
-      #delta = np.matmul (gamma, self.weights[self.N - 2])
+            # use the previously calculated delta to update the weights
+            LHS  = np.tile (delta, (len (self.y[ind]), 1)).transpose ()
+            gp   = dsigmoid (self.psi[ind], self.beta)
+            RHS  = np.outer (gp, self.y[ind])
+            dEdw = LHS * RHS
 
-      # TODO: work this out by hand then do the same (generally) for the notes (paper)
-      print ("gamma:")
-      print (gamma)
-      print (str (self.N) + " layers (zero indexed):")
-      for ind in np.arange (self.N - 2, 0, -1):
-         print ("layer " + str (ind) + ":")
-         print ("weights are:")
-         print (self.weights[ind])
-         print ("y:")
-         print (self.y[ind])
-         print ("--> psi:")
-         print (self.psi[ind])
-         gp    = dsigmoid (self.psi[ind], self.beta)
-         Gp    = np.diag (gp)
-         print ("--> G':")
-         print (Gp)
-         aux   = np.matmul (Gp, self.weights[ind])
-         delta = np.matmul (delta, aux)
-         print ("--> delta:")
-         print (delta)
-         repDelta = np.tile (delta, (len (self.psi[ind]), 1)).transpose ()
-         RHS = np.outer (sigmoid (self.psi[ind], self.beta), self.y[ind])
-         print ("--> RHS:")
-         print (RHS)
-         print ("=======")
+            self.weights[ind] -= stepsize * dEdw
+            dEdu = delta * gp
+            self.bias[ind]    -= stepsize * dEdu
 
-'''
-      delta = gamma
-      print (gamma)
-      print (self.psi[self.N - 2])
-      # layer N - 3, ..., 0
-#      for ind in range (self.N - 3):
-      # delta = g' (psi^q) * w^q
-      delta = np.matmul (delta, dsigmoid (self.psi[self.N - 2], self.beta))
-      print (delta)
-      delta = np.matmul (delta, self.weights[self.N - 2])
-      rht = np.outer (dsigmoid (self.psi[self.N - 3], self.beta), self.y[self.N-3])
-      dEw = np.matmul (delta.transpose (), rht)
-'''
+            # update delta for the next layer
+            Gp    = np.diag (gp)
+            Gpw   = np.matmul (Gp, self.weights[ind])
+            delta = np.matmul (delta, Gpw)
+
+      return 0.5 * np.sum (diff * diff)
 
 def sigmoid (x, beta):
    return 1.0 / (1.0 + np.exp (-beta * x))
@@ -87,20 +70,37 @@ def dsigmoid (x, beta):
    return beta * (1 - sig) * sig
 
 if __name__ == "__main__":
-   NN = ANN ([4, 3, 2, 3], 0.4)
-   Input = np.random.rand (4)
-   #print (NN.forward (Input))
-   Output = np.random.rand (3)
-   NN.back (Input, Output)
+   NN = ANN ([4, 3, 2, 2], 0.4)
 
-'''
-   vector  = np.array ([1, 2, 3, 4])
-   vector2 = np.array ([4, 3, 2, 1])
-   diagv  = np.diag (vector)
-   print (len (vector))
-   print (diagv)
-   print ()
-   print (np.tile (vector, (3, 1)))
-   print ()
-   print (np.outer (vector, vector2))
-'''
+   Input = []
+   Input.append (np.array ([1.0, 1.0, 1.0, 1.0]))
+   Input.append (np.array ([1.1, 0.9, 0.9, 1.1]))
+   Input.append (np.array ([0.9, 0.7, 1.1, 1.0]))
+   Input.append (np.array ([0.8, 0.9, 1.0, 0.8]))
+
+   Input.append (np.array ([-1.0, -1.0, -1.0, -1.0]))
+   Input.append (np.array ([-1.1, -0.9, -0.9, -1.1]))
+   Input.append (np.array ([-0.9, -0.7, -1.1, -1.0]))
+   Input.append (np.array ([-0.8, -0.9, -1.0, -0.8]))
+
+   Output = []
+   Output.append (np.array ([1.0, 0.0]))
+   Output.append (np.array ([1.0, 0.0]))
+   Output.append (np.array ([1.0, 0.0]))
+   Output.append (np.array ([1.0, 0.0]))
+
+   Output.append (np.array ([0.0, 1.0]))
+   Output.append (np.array ([0.0, 1.0]))
+   Output.append (np.array ([0.0, 1.0]))
+   Output.append (np.array ([0.0, 1.0]))
+
+   #print (NN.forward (Input))
+   error_list = []
+   for k in range (100000):
+      
+      randind = random.randint (0, 3)
+      Error = NN.back (Input[randind], Output[randind], 0.01)
+      error_list.append (Error)
+
+   plt.plot (error_list)
+   plt.show ()
