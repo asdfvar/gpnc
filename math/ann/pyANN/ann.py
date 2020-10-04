@@ -70,7 +70,7 @@ def dsigmoid (x, beta):
    return beta * (1 - sig) * sig
 
 if __name__ == "__main__":
-   NN = ANN ([4, 3, 2, 2], 0.4)
+   NN = ANN ([4, 3, 2, 2], 0.99)
 
    Input = []
    Input.append (np.array ([1.0, 1.0, 1.0, 1.0]))
@@ -98,9 +98,12 @@ if __name__ == "__main__":
    error_list = []
    for k in range (100000):
       
-      randind = random.randint (0, 3)
+      randind = random.randint (0, 7)
       Error = NN.back (Input[randind], Output[randind], 0.01)
       error_list.append (Error)
 
    plt.plot (error_list)
    plt.show ()
+
+   print (NN.forward (np.array ([2, 2, 2, 2])))
+   print (NN.forward (np.array ([-1, -1, -1, -1])))
