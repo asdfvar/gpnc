@@ -56,7 +56,8 @@ Since no absolute frame of reference will be necessary, a term such as $k \in M$
 First define some shorthand $\psi_p^q$ to be the $p^{th}$ element of the result of the corresponding weights applied to the nodes at the $q^{th}$ layer along with the bias term $b^q$ (often just 1) and bias weight $u_p^q$:
 %
 \begin{equation} \label{eq:psi}
-\psi_p^q = \sum_{k \in M^q} y_k^q \omega_{p,k}^q + b^q u_p^q, \; \; \; \; \; \forall p \in M^{q+1}.
+\psi_p^q = \sum_{k \in M^q} y_k^q \omega_{p,k}^q + b^q u_p^q, \; \; \; \; \;
+\forall p \in M^q.
 \end{equation}
 %
 For reference, it follows that
@@ -373,7 +374,7 @@ g' (\bm{\psi}^{N-4}) \;
 \right)
 \end{equation}
 %
-\begin{equation} \label{eq:derive_du_nm5_matrix}
+\begin{equation} \label{eq:derive_dw_nm5_matrix}
 \frac{\partial \bm{E}}{\partial \bm{\omega}^{N-5}} =
 \left(
 \left(
@@ -395,7 +396,6 @@ g' (\bm{\psi}^{N-5}) \;
 \end{equation}
 %
 where $\cdots$ represents the terms repeated to the length of the last $\bm{y}$ term (appropriate size to perform the Hadamard product).
-The error relative to the bias weights are expressed the same way but with the $\bm{y}$ terms replaced with a vector of ones.
 Using the following definition:
 %
 \begin{equation} \label{eq:delta0}
@@ -413,7 +413,7 @@ Using the following definition:
 \right)
 \end{equation}
 %
-\begin{equation} \label{eq:derive_du_nmp_matrix_delta}
+\begin{equation} \label{eq:derive_dw_nmp_matrix_delta}
 \frac{\partial \bm{E}}{\partial \bm{\omega}^{N-p}} =
 \left(
 \left(
@@ -429,6 +429,23 @@ g' \left( \bm{\psi}^{N-p} \right)
 \right)
 \end{equation}
 %
+\begin{equation} \label{eq:derive_du_nmp_matrix_delta}
+\frac{\partial \bm{E}}{\partial \bm{u}^{N-p}} =
+\left(
+\left(
+\bm{\delta}^{N-p+1}
+\right)^T
+\cdots
+\right)
+\odot
+\left(
+g' \left( \bm{\psi}^{N-p} \right)
+\odot
+\bm{b}^{N-p}
+\right)
+\end{equation}
+%
+Notice the dependence on the previous delta term.
 Choosing a step size $\eta > 0$, gradient descent is applied at each layer to advance the network weights to the next iteration as follows:
 %
 \begin{equation} \label{eq:end_weights}
