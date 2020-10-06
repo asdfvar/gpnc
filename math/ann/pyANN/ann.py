@@ -52,10 +52,11 @@ class ANN:
             dEdu = delta * gp
             self.bias[ind]    -= stepsize * dEdu
 
-            # update delta for the next layer
-            Gp    = np.diag (gp)
-            Gpw   = np.matmul (Gp, self.weights[ind])
-            delta = np.matmul (delta, Gpw)
+            if ind > 0:
+               # update delta for the next layer
+               Gp    = np.diag (gp)
+               Gpw   = np.matmul (Gp, self.weights[ind])
+               delta = np.matmul (delta, Gpw)
 
       z = self.forward (Input)
       diff = z - Output

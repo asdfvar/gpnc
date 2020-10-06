@@ -43,13 +43,14 @@ for weights in NN.weights:
    print (weights)
    print ()
 
+fig1 = plt.figure (1)
 plt.plot (error_list)
 plt.title ("Error")
-plt.show ()
 
 xgrid = np.linspace (-2.0, 2.0, 100)
 ygrid = np.linspace (-2.0, 2.0, 100)
 
+fig2 = plt.figure (2)
 start = time.time ()
 for y in ygrid:
    for x in xgrid:
