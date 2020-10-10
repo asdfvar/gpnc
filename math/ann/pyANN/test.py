@@ -5,6 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import random
 import time
+import progressbar
 
 NN = ann.ANN ([2, 3, 3, 1], 0.9)
 
@@ -31,7 +32,7 @@ for ind in range (6):
 N = 5000000
 error_list = np.zeros (N)
 start = time.time ()
-for k in range (N):
+for k in progressbar.progressbar (range (N)):
    randind = random.randint (0, len (Input) - 1)
    Error = NN.back (Input[randind], Output[randind], 0.01)
    error_list[k] = Error
