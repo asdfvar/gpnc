@@ -13,23 +13,31 @@ Input = []
 Output = []
 
 for ind in range (6):
-   Input.append (np.random.normal ([-1.0, 0.0], 0.2))
+   Input.append (np.random.normal ([-1.0, -1.0], 0.2))
    Output.append (np.array ([1.0]))
 
 for ind in range (6):
-   Input.append (np.random.normal ([1.0, 0.0], 0.2))
+   Input.append (np.random.normal ([1.0, -1.0], 0.2))
    Output.append (np.array ([1.0]))
+
+for ind in range (6):
+   Input.append (np.random.normal ([0.0, 1.0], 0.2))
+   Output.append (np.array ([1.0]))
+
+for ind in range (6):
+   Input.append (np.random.normal ([-1.0, 1.0], 0.2))
+   Output.append (np.array ([0.0]))
 
 for ind in range (6):
    Input.append (np.random.normal ([1.0, 1.0], 0.2))
    Output.append (np.array ([0.0]))
 
 for ind in range (6):
-   Input.append (np.random.normal ([0.0, 0.0], 0.2))
+   Input.append (np.random.normal ([0.0, -1.0], 0.2))
    Output.append (np.array ([0.0]))
 
 # Train
-N = 5000000
+N = 10000000
 error_list = np.zeros (N)
 start = time.time ()
 for k in progressbar.progressbar (range (N)):
@@ -53,7 +61,7 @@ ygrid = np.linspace (-2.0, 2.0, 100)
 
 fig2 = plt.figure (2)
 start = time.time ()
-for y in ygrid:
+for y in progressbar.progressbar (ygrid):
    for x in xgrid:
       value = NN.forward (np.array ([x, y]))[0]
       if value >= 0.5: Color = 'darksalmon'
