@@ -7,7 +7,7 @@ import random
 import time
 import progressbar
 
-NN = ann.ANN ([2, 3, 3, 1], 0.9)
+NN = ann.ANN ([2, 3, 3, 1], "sigmoid", 0.9)
 
 Input = []
 Output = []

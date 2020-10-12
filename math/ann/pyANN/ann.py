@@ -3,18 +3,21 @@
 import numpy as np
 
 class ANN:
-   def __init__(self, layers, beta):
+   def __init__(self, layers, actFunc, beta = 0.9):
       self.N = len (layers)
       self.weights = [None] * (self.N - 1)
       self.bias    = [None] * (self.N - 1)
       self.psi     = [None] * (self.N)
       self.y       = [None] * (self.N)
+
+      actFuncs = {"sigmoid": self.sigmoid (beta)}
+      self.g       = actFuncs[actFunc]
+
       for ind in range (len (self.weights)):
          # weights
          self.weights[ind] = np.random.rand (layers[ind + 1], layers[ind])
          # bias weights
          self.bias[ind] = np.random.rand (layers[ind + 1])
-      self.beta = beta
 
    def forward (self, Input):
       y = Input
@@ -23,13 +26,13 @@ class ANN:
          y  = np.matmul (self.weights[ind], y)
          y += self.bias[ind]
          self.psi[ind] = y
-         y  = sigmoid (y, self.beta)
+         y  = self.g.activate (y)
       return y
 
    def back (self, Input, Output, stepsize):
       z = self.forward (Input)
       diff = z - Output
-      gamma = diff * dsigmoid (self.psi[self.N - 2], self.beta)
+      gamma = diff * self.g.dactivate (self.psi[self.N - 2])
 
       for ind in np.arange (self.N - 2, -1, -1):
          if (ind == self.N - 2):
@@ -44,7 +47,7 @@ class ANN:
 
             # use the previously calculated delta to update the weights
             LHS  = np.tile (delta, (len (self.y[ind]), 1)).transpose ()
-            gp   = dsigmoid (self.psi[ind], self.beta)
+            gp   = self.g.dactivate (self.psi[ind])
             RHS  = np.outer (gp, self.y[ind])
             dEdw = LHS * RHS
 
@@ -62,9 +65,15 @@ class ANN:
       diff = z - Output
       return 0.5 * np.sum (diff * diff)
 
-def sigmoid (x, beta):
-   return 1.0 / (1.0 + np.exp (-beta * x))
+   class activation:
+      def activate  (self, x): pass
+      def dactivate (self, x): pass
 
-def dsigmoid (x, beta):
-   sig = sigmoid (x, beta)
-   return beta * (1 - sig) * sig
+   class sigmoid (activation):
+      def __init__ (self, beta):
+         self.beta = beta
+      def activate (self, x):
+         return 1.0 / (1.0 + np.exp (-self.beta * x))
+      def dactivate (self, x):
+         sig = self.activate (x)
+         return self.beta * (1 - sig) * sig
