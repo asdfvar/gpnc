@@ -10,7 +10,9 @@ class ANN:
       self.psi     = [None] * (self.N)
       self.y       = [None] * (self.N)
 
-      actFuncs = {"sigmoid": self.sigmoid (beta)}
+      actFuncs = {"sigmoid": self.sigmoid (beta),
+                  "unit":    self.unit () }
+
       self.g       = actFuncs[actFunc]
 
       for ind in range (len (self.weights)):
@@ -68,6 +70,10 @@ class ANN:
    class activation:
       def activate  (self, x): pass
       def dactivate (self, x): pass
+
+   class unit:
+      def activate  (self, x): return x
+      def dactivate (self, x): return np.ones (len (x))
 
    class sigmoid (activation):
       def __init__ (self, beta):
