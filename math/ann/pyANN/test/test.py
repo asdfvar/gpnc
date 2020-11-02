@@ -1,5 +1,10 @@
 #!/usr/bin/python3
 
+import os
+import sys
+
+sys.path.append (os.getcwd () + "/..")
+
 import ann
 import numpy as np
 from matplotlib import pyplot as plt
