@@ -56,8 +56,12 @@ class ANN:
       for layer in range (self.N - 1):
          for batch in range (len (self.y[layer])):
             for channel in range (len (self.y[layer][batch])):
-               self.psi[layer][batch][channel] = np.matmul (self.weights[layer][channel], self.y[layer][batch][channel]) + self.bias[layer][channel]
-               self.y[layer + 1][batch][channel] = self.g.activate (self.psi[layer][batch][channel])
+               lweights = self.weights[layer][channel]
+               y = self.y[layer][batch][channel]
+               bias = self.bias[layer][channel]
+               self.psi[layer][batch][channel] = np.matmul (lweights, y) + bias
+               psi = self.psi[layer][batch][channel]
+               self.y[layer + 1][batch][channel] = self.g.activate (psi)
       return self.y[self.N - 1]
 
    # "Input" is in the form of [batch, channel, 2-D numpy array]
@@ -119,15 +123,11 @@ class ANN:
 
       return Error
 
-   class activation:
-      def activate  (self, x): pass
-      def dactivate (self, x): pass
-
    class unit:
       def activate  (self, x): return x
       def dactivate (self, x): return np.ones (len (x))
 
-   class sigmoid (activation):
+   class sigmoid:
       def __init__ (self, beta):
          self.beta = beta
       def activate (self, x):
