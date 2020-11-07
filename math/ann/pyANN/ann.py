@@ -40,23 +40,17 @@ class ANN:
       self.y     = []
       self.delta = []
       for layer in range (self.N):
-         lpsiarray = []
-         lyarray = []
-         ldeltaarray = []
+         self.psi.append   ([])
+         self.y.append     ([])
+         self.delta.append ([])
          for batch in range (len (Input)):
-            lbatch1 = []
-            lbatch2 = []
-            lbatch3 = []
+            self.psi[layer].append   ([])
+            self.y[layer].append     ([])
+            self.delta[layer].append ([])
             for channel in range (self.numChannels[layer]):
-               lbatch1.append ([None])
-               lbatch2.append ([None])
-               lbatch3.append ([None])
-            lpsiarray.append   (lbatch1)
-            lyarray.append     (lbatch2)
-            ldeltaarray.append (lbatch3)
-         self.psi.append     (lpsiarray)
-         self.y.append       (lyarray)
-         self.delta.append   (lbatch3)
+               self.psi[layer][channel].append   ([])
+               self.y[layer][channel].append     ([])
+               self.delta[layer][channel].append ([])
 
       self.y[0] = Input
       for layer in range (self.N - 1):
@@ -71,7 +65,7 @@ class ANN:
    # "stepsize" is a positive real number specifying the step size used in gradient descent
    def back (self, Input, Output, stepsize):
       z = self.forward (Input)
-      # the following are expressed as [batch, channel, numpy array]
+      # the following are expressed as [batch][channel][numpy array]
       diff  = []
       gamma = []
       for batch in range (len (z)):
@@ -86,33 +80,35 @@ class ANN:
       for layer in np.arange (self.N - 2, -1, -1):
          for batch in range (len (self.y[layer])):
             for channel in range (len (self.y[layer][batch])):
+               lweights = self.weights[layer][channel]
+               ldelta = self.delta[batch][channel]
                # last layer
                if (layer == self.N - 2):
                   dEdw = np.outer (gamma[batch][channel], self.y[layer][batch][channel])
-                  self.weights[layer][channel] -= stepsize * dEdw
+                  lweights -= stepsize * dEdw
                   dEdu = gamma[batch][channel]
-                  self.bias[layer][channel]    -= stepsize * dEdu
+                  self.bias[layer][channel] -= stepsize * dEdu
 
                   # update delta for the next layer
-                  self.delta[batch][channel] = np.matmul (gamma[batch][channel], self.weights[layer][channel])
+                  self.delta[batch][channel] = np.matmul (gamma[batch][channel], lweights)
 
                # all other interior layers
                else:
                   # use the previously calculated delta to update the weights
-                  LHS  = np.tile (self.delta[batch][channel], (len (self.y[layer]), 1)).transpose ()
+                  LHS  = np.tile (ldelta, (len (self.y[layer]), 1)).transpose ()
                   gp   = self.g.dactivate (self.psi[layer][batch][channel])
                   RHS  = np.outer (gp, self.y[layer])
                   dEdw = LHS * RHS
 
-                  self.weights[layer][channel] -= stepsize * dEdw
-                  dEdu          = self.delta[batch][channel] * gp
+                  lweights -= stepsize * dEdw
+                  dEdu          = ldelta * gp
                   self.bias[layer]             -= stepsize * dEdu
 
                   if layer > 0:
                      # update delta for the next layer
                      Gp    = np.diag (gp)
-                     Gpw   = np.matmul (Gp, self.weights[layer][channel])
-                     self.delta[batch][channel] = np.matmul (self.delta[batch][channel], Gpw)
+                     Gpw   = np.matmul (Gp, lweights)
+                     self.delta[batch][channel] = np.matmul (ldelta, Gpw)
 
       Error = 0.0
       z = self.forward (Input)
