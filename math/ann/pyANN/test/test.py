@@ -12,6 +12,9 @@ import random
 import time
 import progressbar
 
+np.random.seed (0)
+random.seed (0)
+
 NN = ann.ANN ([2, 3, 3, 1], [1, 1, 1, 1], "sigmoid", 0.9)
 
 Input  = []
@@ -45,7 +48,6 @@ for ind in range (6):
 N = 10000000
 error_list = np.zeros (N)
 start = time.time ()
-#for k in range (N):
 for k in progressbar.progressbar (range (N)):
    randind = random.randint (0, len (Input) - 1)
    Error = NN.back ([Input[randind]], [Output[randind]], 0.01)
