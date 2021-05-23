@@ -8,7 +8,7 @@ OBJS_4 = module_4.o
 OBJS_5 = module_5.o
 
 LIBDIRS = -L../
-LIBS    = -lcomm
+LIBS    = -lcomm -lmpi
 
 INC = -I../         \
       -I/$(MPI_INC) \
