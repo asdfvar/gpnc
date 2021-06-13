@@ -23,7 +23,7 @@ where
 \omega_N = e^{-2 \pi \mathrm {i} / N}
 \end {equation}
 %
-$\forall x_p \in \mathbb {C}$
+$\forall x_p \in \mathbb {C}$. The FFT exploits two facts about the twiddle factors:
 %
 \begin {equation}
 \begin {aligned}
@@ -33,17 +33,7 @@ $\forall x_p \in \mathbb {C}$
 \end {aligned}
 \end {equation}
 %
-and
-%
-\begin {equation}
-\begin {aligned}
-\omega_N^{k} &= e^{-2 \pi \mathrm {i} (k) / N}                   \\
-             &= \left (e^{-2 \pi \mathrm {i} (-k) / N} \right)^* \\
-             &= \left (\omega_{N}^{-k} \right)^*
-\end {aligned}
-\end {equation}
-%
-and
+and symmetry
 %
 \begin {equation}
 \begin {aligned}
@@ -56,7 +46,7 @@ and
 %
 which means
 %
-\begin {equation}
+\begin {equation} \label {eq:xk}
 \begin {aligned}
 X_k &= \sum_{p = 0}^{N-1} (x_p \omega_N^{k p}) \\
     &= \sum_{m = 0}^{N/2-1} (x_{2m} \omega_N^{k 2 m} + x_{2m+1} \omega_N^{k (2 m + 1)}) \\
@@ -66,13 +56,37 @@ X_k &= \sum_{p = 0}^{N-1} (x_p \omega_N^{k p}) \\
 %
 for $2m = p$.
 %
-\begin {equation}
+\begin {equation} \label {eq:xksym}
 \begin {aligned}
 X_{k + N/2} &= \sum_{p = 0}^{N-1} (x_p \omega_N^{(k + N/2) p}) \\
             &= \sum_{p = 0}^{N-1} (x_p \omega_N^{k p}) (\omega_N^{p N/2}) \\
             &= \sum_{p = 0}^{N-1} (x_p \omega_N^{k p}) (-1)^p \\
             &= \sum_{m = 0}^{N/2-1} (x_{2m} \omega_{N/2}^{k m} (-1)^{2m}) + \omega_N^{k} \sum_{m = 0}^{N/2-1} (x_{2m+1} \omega_{N/2}^{km} (-1)^{2m+1}) \\
             &= \sum_{m = 0}^{N/2-1} (x_{2m} \omega_{N/2}^{k m}) - \omega_N^{k} \sum_{m = 0}^{N/2-1} (x_{2m+1} \omega_{N/2}^{km})
+%
+\end {aligned}
+\end {equation}
+%
+Where the difference between (\ref{eq:xk}) and (\ref{eq:xksym}) is a "-" between the two components.
+%
+\vfill
+%
+For $\mathbb {R} \rightarrow \mathbb {C}$ transforms, Given
+%
+\begin {equation}
+\begin {aligned}
+\left (\omega_N^{k} \right)^* &= \left (e^{-2 \pi \mathrm {i} (k) / N} \right)^* \\
+                              &= e^{-2 \pi \mathrm {i} (-k) / N} \\
+                              &= \omega_{N}^{-k}
+\end {aligned}
+\end {equation}
+%
+if $x_p \in \mathbb {R}$, then
+\begin {equation}
+\begin {aligned}
+X_k^* = \sum_{p = -N/2+1}^{N/2} (x_p \omega_N^{k p})^*
+      = \sum_{p = -N/2+1}^{N/2} (x_p \omega_N^{-k p})
+      = X_{-k}
 \end {aligned}
 \end {equation}
 %
