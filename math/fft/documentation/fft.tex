@@ -6,10 +6,12 @@
 \begin{document}
 %
 % paper title
-\title{Fast Fourier Transform}
+\title{Discrete Fourier Transform}
 %\author{Craig~Euler}
 %
 \maketitle
+%
+\section {Fast Fourier Transform}
 %
 The Fast Fourier Transform (FFT) is a fast implementation of the Discrete Fourier Transform (DFT) where the DFT is defined as:
 %
@@ -33,7 +35,7 @@ $\forall x_p \in \mathbb {C}$. Having $N$ multiplies and $N-1$ adds over $N$ poi
 \end {aligned}
 \end {equation}
 %
-and symmetry
+and symmetry (which is apparent on the unit circle)
 %
 \begin {equation} \label {symmetry}
 \begin {aligned}
@@ -78,24 +80,32 @@ If the number of points is radix 2, then the process can be done $log_2 (N)$ tim
 %
 Set $p \rightarrow m + N/2 - 1$, then (\ref{eq:dft}) becomes
 %
-\begin {equation}
+\begin {equation} \label {eq:redef}
 \begin {aligned}
 X_k &= \sum_{p = 0}^{N-1} (x_p \omega^{k p}) \\
     &= \sum_{m = -N/2 + 1}^{N/2} (x_{m + N/2 - 1} \omega^{k (m + N/2 - 1)}) \\
-X_k &= \omega^{k N/2 - k} \sum_{m = -N/2 + 1}^{N/2} (x_{m + N/2 - 1} \omega^{k m})
+X_k &= \omega^{k (N/2 - 1)} \sum_{m = -N/2 + 1}^{N/2} (x_{m + N/2 - 1} \omega^{k m}).
 \end {aligned}
 \end {equation}
 %
-effectively changing the indices.
+Then, define $z_m := x_{m + N/2 - 1}$ so that (\ref{eq:redef}) becomes
+%
+\begin {equation}
+\begin {aligned}
+X_k &= \omega^{k (N/2 - 1)} \sum_{m = -N/2 + 1}^{N/2} (x_{m + N/2 - 1} \omega^{k m}) \\
+X_k &= \omega^{k (N/2 - 1)} \sum_{m = -N/2 + 1}^{N/2} (z_m \omega^{k m})
+\end {aligned}
+\end {equation}
+%
+effectively changing the indices to $(-N/2, N/2]$.
 Then, without loss of generality on the index of $x$, the DFT definition can be tweaked a bit to range from $(-N/2, N/2]$.
 If $x_p \in \mathbb {R}$ $\forall p$ and given
 %
 \begin {equation}
-\begin {aligned}
-\left (\omega_N^{k} \right)^* &= \left (e^{-2 \pi \mathrm {i} / N (k)} \right)^* \\
-                              &= e^{-2 \pi \mathrm {i} / N (-k)} \\
-\left (\omega_N^{k} \right)^* &= \omega_{N}^{-k}
-\end {aligned}
+\left (\omega_N^{k} \right)^*
+ = \left (e^{-2 \pi \mathrm {i} / N (k)} \right)^* 
+ = e^{-2 \pi \mathrm {i} / N (-k)} 
+ = \omega_{N}^{-k}
 \end {equation}
 %
 then
