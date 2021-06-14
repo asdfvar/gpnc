@@ -23,38 +23,40 @@ where
 \omega_N = e^{-2 \pi \mathrm {i} / N}
 \end {equation}
 %
-$\forall x_p \in \mathbb {C}$. The FFT exploits two facts about the twiddle factors:
+$\forall x_p \in \mathbb {C}$. Having $N$ multiplies and $N-1$ adds over $N$ points, the DFT has a total number of $2 N^2 - N$ add/multiplies or an order of complexity $O(N^2)$. The FFT exploits two facts about the twiddle factors:
 %
-\begin {equation}
+\begin {equation} \label {half}
 \begin {aligned}
 \omega_N^{2m} &= e^{-2 \pi \mathrm {i} (2m) / N}    \\
               &= e^{-2 \pi \mathrm {i} m / (N / 2)} \\
-              &= \omega_{N/2}^m
+\omega_N^{2m} &= \omega_{N/2}^m
 \end {aligned}
 \end {equation}
 %
 and symmetry
 %
-\begin {equation}
+\begin {equation} \label {symmetry}
 \begin {aligned}
 \omega_N^{k + N/2} &= e^{-2 \pi \mathrm {i} (k + N/2) / N} \\
              &= \left (e^{-2 \pi \mathrm {i} (k) / N} \right) \left (e^{-2 \pi \mathrm {i} (N/2) / N} \right) \\
              &= \left (e^{-2 \pi \mathrm {i} (k) / N} \right) \left (-1 \right) \\
-             &= -\omega_{N}^{k}
+\omega_N^{k + N/2} &= -\omega_{N}^{k}
 \end {aligned}
 \end {equation}
 %
-which means
+which means, from setting $p \rightarrow 2m$, splitting the sum over the even and odd terms, and using (\ref{half}),
 %
 \begin {equation} \label {eq:xk}
 \begin {aligned}
 X_k &= \sum_{p = 0}^{N-1} (x_p \omega_N^{k p}) \\
     &= \sum_{m = 0}^{N/2-1} (x_{2m} \omega_N^{k 2 m} + x_{2m+1} \omega_N^{k (2 m + 1)}) \\
-    &= \sum_{m = 0}^{N/2-1} (x_{2m} \omega_{N/2}^{k m}) + \omega_N^{k} \sum_{m = 0}^{N/2-1} (x_{2m+1} \omega_{N/2}^{km})
+    &= \sum_{m = 0}^{N/2-1} (x_{2m} \omega_{N/2}^{k m}) + \omega_N^{k} \sum_{m = 0}^{N/2-1} (x_{2m+1} \omega_{N/2}^{km}) \\
+X_k &= DFT(x_{even}; N/2) + \omega_N^{k} DFT(x_{odd}; N/2)
 \end {aligned}
 \end {equation}
 %
-for $2m = p$.
+is now broken up into two smaller DFT's.
+Another observation, from using (\ref{symmetry}), symmetry is observed:
 %
 \begin {equation} \label {eq:xksym}
 \begin {aligned}
@@ -62,26 +64,42 @@ X_{k + N/2} &= \sum_{p = 0}^{N-1} (x_p \omega_N^{(k + N/2) p}) \\
             &= \sum_{p = 0}^{N-1} (x_p \omega_N^{k p}) (\omega_N^{p N/2}) \\
             &= \sum_{p = 0}^{N-1} (x_p \omega_N^{k p}) (-1)^p \\
             &= \sum_{m = 0}^{N/2-1} (x_{2m} \omega_{N/2}^{k m} (-1)^{2m}) + \omega_N^{k} \sum_{m = 0}^{N/2-1} (x_{2m+1} \omega_{N/2}^{km} (-1)^{2m+1}) \\
-            &= \sum_{m = 0}^{N/2-1} (x_{2m} \omega_{N/2}^{k m}) - \omega_N^{k} \sum_{m = 0}^{N/2-1} (x_{2m+1} \omega_{N/2}^{km})
+            &= \sum_{m = 0}^{N/2-1} (x_{2m} \omega_{N/2}^{k m}) - \omega_N^{k} \sum_{m = 0}^{N/2-1} (x_{2m+1} \omega_{N/2}^{km}) \\
+X_{k + N/2} &= DFT(x_{even}; N/2) - \omega_N^{k} DFT(x_{odd}; N/2)
 %
 \end {aligned}
 \end {equation}
 %
 Where the difference between (\ref{eq:xk}) and (\ref{eq:xksym}) is a "-" between the two components.
+With $N/2$ multiplies and $N/2 - 1$ adds from each of the smaller DFT's over $N/2$ points applied twice followed by an additional $N/2$ multiplies from the twiddle factors (on the outside of the sum terms) and $N$ adds between the two DFT's across all $k$ results in a total of $2 * N/2 * (N/2 + N/2 - 1) + N/2 + N$ or $N^2 + N/2$ add/multiplies roughly halving the number of operations ($2 N^2 - N \rightarrow N^2 + N/2 = (2 N^2 - N) / 2 + N$).
+If the number of points is radix 2, then the process can be done $log_2 (N)$ times.
 %
-\vfill
+\section {Conjugate Symmetry}
 %
-For $\mathbb {R} \rightarrow \mathbb {C}$ transforms, Given
+Set $p \rightarrow m + N/2 - 1$, then (\ref{eq:dft}) becomes
 %
 \begin {equation}
 \begin {aligned}
-\left (\omega_N^{k} \right)^* &= \left (e^{-2 \pi \mathrm {i} (k) / N} \right)^* \\
-                              &= e^{-2 \pi \mathrm {i} (-k) / N} \\
-                              &= \omega_{N}^{-k}
+X_k &= \sum_{p = 0}^{N-1} (x_p \omega^{k p}) \\
+    &= \sum_{m = -N/2 + 1}^{N/2} (x_{m + N/2 - 1} \omega^{k (m + N/2 - 1)}) \\
+X_k &= \omega^{k N/2 - k} \sum_{m = -N/2 + 1}^{N/2} (x_{m + N/2 - 1} \omega^{k m})
 \end {aligned}
 \end {equation}
 %
-if $x_p \in \mathbb {R}$, then
+effectively changing the indices.
+Then, without loss of generality on the index of $x$, the DFT definition can be tweaked a bit to range from $(-N/2, N/2]$.
+If $x_p \in \mathbb {R}$ $\forall p$ and given
+%
+\begin {equation}
+\begin {aligned}
+\left (\omega_N^{k} \right)^* &= \left (e^{-2 \pi \mathrm {i} / N (k)} \right)^* \\
+                              &= e^{-2 \pi \mathrm {i} / N (-k)} \\
+\left (\omega_N^{k} \right)^* &= \omega_{N}^{-k}
+\end {aligned}
+\end {equation}
+%
+then
+%
 \begin {equation}
 \begin {aligned}
 X_k^* = \sum_{p = -N/2+1}^{N/2} (x_p \omega_N^{k p})^*
@@ -89,5 +107,7 @@ X_k^* = \sum_{p = -N/2+1}^{N/2} (x_p \omega_N^{k p})^*
       = X_{-k}
 \end {aligned}
 \end {equation}
+%
+showing conjugate symmetry for $\mathbb{R} \rightarrow \mathbb{C}$ transforms.
 %
 \end{document}
