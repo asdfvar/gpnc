@@ -3,3 +3,8 @@
 
 # Compiled Static libraries
 *.a
+
+# LaTeX-compiled files
+*.aux
+*.log
+*.pdf
