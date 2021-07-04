@@ -53,7 +53,7 @@ which means, from setting $p \rightarrow 2m$, splitting the sum over the even an
 X_k &= \sum_{p = 0}^{N-1} (x_p \omega_N^{k p}) \\
     &= \sum_{m = 0}^{N/2-1} (x_{2m} \omega_N^{k 2 m} + x_{2m+1} \omega_N^{k (2 m + 1)}) \\
     &= \sum_{m = 0}^{N/2-1} (x_{2m} \omega_{N/2}^{k m}) + \omega_N^{k} \sum_{m = 0}^{N/2-1} (x_{2m+1} \omega_{N/2}^{km}) \\
-X_k &= DFT(x_{even}; N/2) + \omega_N^{k} DFT(x_{odd}; N/2)
+X_k &= DFT_k(x_{even}; N/2) + \omega_N^{k} DFT_k(x_{odd}; N/2)
 \end {aligned}
 \end {equation}
 %
@@ -67,14 +67,64 @@ X_{k + N/2} &= \sum_{p = 0}^{N-1} (x_p \omega_N^{(k + N/2) p}) \\
             &= \sum_{p = 0}^{N-1} (x_p \omega_N^{k p}) (-1)^p \\
             &= \sum_{m = 0}^{N/2-1} (x_{2m} \omega_{N/2}^{k m} (-1)^{2m}) + \omega_N^{k} \sum_{m = 0}^{N/2-1} (x_{2m+1} \omega_{N/2}^{km} (-1)^{2m+1}) \\
             &= \sum_{m = 0}^{N/2-1} (x_{2m} \omega_{N/2}^{k m}) - \omega_N^{k} \sum_{m = 0}^{N/2-1} (x_{2m+1} \omega_{N/2}^{km}) \\
-X_{k + N/2} &= DFT(x_{even}; N/2) - \omega_N^{k} DFT(x_{odd}; N/2)
-%
+X_{k + N/2} &= DFT_k(x_{even}; N/2) - \omega_N^{k} DFT_k(x_{odd}; N/2).
 \end {aligned}
 \end {equation}
 %
-Where the difference between (\ref{eq:xk}) and (\ref{eq:xksym}) is a "-" between the two components.
+Re-writing (\ref{eq:xk}) and (\ref{eq:xksym}) for convenience:
+%
+\begin {equation}
+\begin {aligned}
+&X_k         &= DFT_k(x_{even}; N/2) + \omega_N^{k} DFT_k(x_{odd}; N/2) \\
+&X_{k + N/2} &= DFT_k(x_{even}; N/2) - \omega_N^{k} DFT_k(x_{odd}; N/2).
+\end {aligned}
+\end {equation}
+%
+The difference between (\ref{eq:xk}) and (\ref{eq:xksym}) is a "-" between the two components.
+
 With $N/2$ multiplies and $N/2 - 1$ adds from each of the smaller DFT's over $N/2$ points applied twice followed by an additional $N/2$ multiplies from the twiddle factors (on the outside of the sum terms) and $N$ adds between the two DFT's across all $k$ results in a total of $2 * N/2 * (N/2 + N/2 - 1) + N/2 + N$ or $N^2 + N/2$ add/multiplies roughly halving the number of operations ($2 N^2 - N \rightarrow N^2 + N/2 = (2 N^2 - N) / 2 + N$).
-If the number of points is radix 2, then the process can be done $log_2 (N)$ times.
+
+Defining $F_0 (N)$ to be the number of adds/multiplies of the DFT of $N$ points:
+%
+\begin {equation} \label {eq:F0}
+F_0 (N) := 2 N^2 - N
+\end {equation}
+%
+and if $F_1(N)$ is the first "decimation" of the DFT, then there will be $2 F_0(N/2)$ smaller DFT's followed by $N/2$ adds and $N$ multiplies ($3/2 N$ add/multiplies), or
+%
+\begin {equation} \label {eq:F1}
+\begin {aligned}
+F_1 (N) &:= 2 F_0 (N/2) + 3/2 N \\
+         &= N^2 + N/2 \\
+         &= (2 N^2 - N)/2 + N \\
+F_1 (N)  &= F_0(N)/2 + N
+\end {aligned}
+\end {equation}
+%
+it follows that
+%
+\begin {equation} \label {eq:Fa}
+\begin {aligned}
+F_\alpha (N) &= 2 F_{\alpha - 1} (N/2) + 3/2 N
+\end {aligned}
+\end {equation}
+%
+Then, inductively repeating the number of "decimations", $F(N)$ reduces down to
+%
+\begin {equation} \label {eq:Fb}
+\begin {aligned}
+F_\beta (N) &= 2^\beta F_{\alpha - \beta} (N/2^\beta) + 3/2 \beta N
+\end {aligned}
+\end {equation}
+%
+hence
+%
+\begin {equation} \label {eq:Fa}
+\begin {aligned}
+F_\alpha (N) &= 2^\alpha F_0 (N/2^\alpha) + 3/2 \alpha N \\
+F_\alpha (N) &= N^2/2^{\alpha - 1} - N + 3/2 \alpha N
+\end {aligned}
+\end {equation}
 %
 \section {Conjugate Symmetry}
 %
