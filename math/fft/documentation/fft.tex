@@ -80,7 +80,7 @@ Re-writing (\ref{eq:xk}) and (\ref{eq:xksym}) for convenience:
 \end {aligned}
 \end {equation}
 %
-The difference between (\ref{eq:xk}) and (\ref{eq:xksym}) is a "-" between the two components.
+The difference between (\ref{eq:xk}) and (\ref{eq:xksym}) is a ``-'' between the two components.
 
 With $N/2$ multiplies and $N/2 - 1$ adds from each of the smaller DFT's over $N/2$ points applied twice followed by an additional $N/2$ multiplies from the twiddle factors (on the outside of the sum terms) and $N$ adds between the two DFT's across all $k$ results in a total of $2 * N/2 * (N/2 + N/2 - 1) + N/2 + N$ or $N^2 + N/2$ add/multiplies roughly halving the number of operations ($2 N^2 - N \rightarrow N^2 + N/2 = (2 N^2 - N) / 2 + N$).
 
@@ -90,26 +90,33 @@ Defining $F_0 (N)$ to be the number of adds/multiplies (FLOPs) of the DFT of $N$
 F_0 (N) := 2 N^2 - N
 \end {equation}
 %
-and if $F_n(N)$ is the $n^{th}$ "decimation" of the DFT, then, at the first decimation, there will be $2 F_0(N/2)$ smaller DFT's followed by $N/2$ adds and $N$ multiplies ($3/2 N$ add/multiplies), or
+and if $F_n(N)$ is the $n^{th}$ ``decimation'' of the DFT, then, at the first decimation, there will be $2 F_0(N/2)$ smaller DFT's followed by $N/2$ adds and $N$ multiplies ($3/2 N$ add/multiplies), or
 %
 \begin {equation} \label {eq:F1}
+F_1 (N) := 2 F_0 (N/2) + 3/2 N
+\end {equation}
+%
+Interestingly, (\ref{eq:F1}) can be expressed in terms of $F_0(N)$ as
+%
+\begin {equation}
 \begin {aligned}
-F_1 (N) &:= 2 F_0 (N/2) + 3/2 N \\
-         &= N^2 + N/2 \\
-         &= (2 N^2 - N)/2 + N \\
-F_1 (N)  &= F_0(N)/2 + N
+F_1 (N) &= 2 F_0 (N/2) + 3/2 N \\
+        &= N^2 + N/2 \\
+        &= (2 N^2 - N)/2 + N \\
+F_1 (N) &= F_0(N)/2 + N
 \end {aligned}
 \end {equation}
 %
-it follows that
+and whether this generalizes or not is for another time.
+It does, however, follow that (\ref{eq:F1}) generalizes for all decimations of $n$:
 %
-\begin {equation} \label {eq:Fa}
+\begin {equation} \label {eq:Fn}
 \begin {aligned}
-F_\alpha (N) &= 2 F_{\alpha - 1} (N/2) + 3/2 N
+F_n (N) &= 2 F_{n - 1} (N/2) + 3/2 N
 \end {aligned}
 \end {equation}
 %
-Then, inductively repeating the number of "decimations", $F(N)$ reduces down to
+Then, inductively repeating the number of ``decimations'', $F(N)$ reduces down to
 %
 \begin {equation} \label {eq:Fb}
 \begin {aligned}
@@ -119,20 +126,29 @@ F_\beta (N) &= 2^\beta F_{\alpha - \beta} (N/2^\beta) + 3/2 \beta N
 %
 hence
 %
+\begin {equation} \label {eq:Fa}
+F_\alpha (N) = 2^\alpha F_0 (N/2^\alpha) + 3/2 \alpha N.
+\end {equation}
+%
+Expanding on (\ref{eq:Fa}),
+%
 \begin {equation}
 \begin {aligned}
 F_\alpha (N) &= 2^\alpha F_0 (N/2^\alpha) + 3/2 \alpha N \\
-F_\alpha (N) &= N^2/2^{\alpha - 1} + 3/2 \alpha N - N
+F_\alpha (N) &= N^2/2^{\alpha - 1} + 3/2 \alpha N - N \\
+F_\alpha (N) &= N (N/2^{\alpha - 1} + 3/2 \alpha - 1)
 \end {aligned}
 \end {equation}
 %
 and if $N = 2^\alpha$, then
 %
-\begin {equation}
+\begin {equation} \label {eq:Fradix2}
 \begin {aligned}
-F_\alpha (2^\alpha) &= 2^{\alpha} (1 + 3/2 \alpha)
+F_\alpha (2^\alpha) &= 2^{\alpha} (1 + 3/2 \alpha).
 \end {aligned}
 \end {equation}
+%
+Notice that $log_2 (N = 2^\alpha) = \alpha$ showing that (\ref{eq:Fradix2}) is proportional to $N log_2 (N)$ for radix $2$ values of $N$.
 %
 \section {Conjugate Symmetry}
 %
