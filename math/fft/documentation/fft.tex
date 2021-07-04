@@ -71,7 +71,7 @@ X_{k + N/2} &= DFT_k(x_{even}; N/2) - \omega_N^{k} DFT_k(x_{odd}; N/2).
 \end {aligned}
 \end {equation}
 %
-Re-writing (\ref{eq:xk}) and (\ref{eq:xksym}) for convenience:
+Re-writing (\ref{eq:xk}) and (\ref{eq:xksym}) together for convenience:
 %
 \begin {equation}
 \begin {aligned}
@@ -80,7 +80,6 @@ Re-writing (\ref{eq:xk}) and (\ref{eq:xksym}) for convenience:
 \end {aligned}
 \end {equation}
 %
-The difference between (\ref{eq:xk}) and (\ref{eq:xksym}) is a ``-'' between the two components.
 
 With $N/2$ multiplies and $N/2 - 1$ adds from each of the smaller DFT's over $N/2$ points applied twice followed by an additional $N/2$ multiplies from the twiddle factors (on the outside of the sum terms) and $N$ adds between the two DFT's across all $k$ results in a total of $2 * N/2 * (N/2 + N/2 - 1) + N/2 + N$ or $N^2 + N/2$ add/multiplies roughly halving the number of operations ($2 N^2 - N \rightarrow N^2 + N/2 = (2 N^2 - N) / 2 + N$).
 
@@ -186,12 +185,45 @@ then
 %
 \begin {equation}
 \begin {aligned}
-X_k^* = \omega^{k (N/2 - 1)} \sum_{p = -N/2+1}^{N/2} (x_p \omega_N^{k p})^*
+X_k^* = \left( \omega^{k (N/2 - 1)} \sum_{p = -N/2+1}^{N/2} (x_p \omega_N^{k p}) \right)^*
       = \omega^{(-k) (N/2 - 1)} \sum_{p = -N/2+1}^{N/2} (x_p \omega_N^{(-k) p})
       = X_{-k}
 \end {aligned}
 \end {equation}
 %
 showing conjugate symmetry for $\mathbb{R} \rightarrow \mathbb{C}$ transforms.
+
+\section {$\mathbb{R} \rightarrow \mathbb{C}$ Transforms}
+%
+As a result of conjugate symmetry, $\mathbb{R} \rightarrow \mathbb{C}$ transforms only need to account for roughly half of the data.
+
+One approach is to explicitly develop an FFT implementation that is aware of $\mathbb{R} \rightarrow \mathbb{C}$ transforms and only compute half the result effectively saving space and processing.
+However, there is an interesting trick.
+Starting from the definition of the DFT (\ref{eq:dft}) and multiplexing two real, independent data arrays $\{x\},\{y\} \in \mathbb{R}^n$ into $\{z\} \in \mathbb{C}^n$ such that $z_i = x_i + \mathrm {i} y_i$ $\forall x_i,y_i \in X,Y$:
+%
+\begin {equation}
+\begin {aligned}
+Z_k &= \sum_{p = 0}^{N-1} (z_p \omega^{k p}) = \sum_{p = 0}^{N-1} (x_p \omega^{k p}) + \mathrm{i} \sum_{p = 0}^{N-1} (y_p \omega^{k p}) \\
+Z_k &= X_k + \mathrm{i} Y_k \\
+\end {aligned}
+\end {equation}
+%
+and so, by exploiting conjugate symmetry,
+%
+\begin {equation}
+\begin {aligned}
+\frac{1}{2} (Z_k + Z_{-k}^*) &= \frac{1}{2} (X_k + \mathrm{i} Y_k + (X_{-k} + \mathrm{i} Y_{-k})^*) = \frac{1}{2} (X_k + \mathrm{i} Y_k + X_k - \mathrm{i} Y_k) \\
+\frac{1}{2} (Z_k + Z_{-k}^*) &= X_k
+\end {aligned}
+\end {equation}
+%
+and
+%
+\begin {equation}
+\begin {aligned}
+\frac{1}{2} (-\mathrm{i} Z_k + \mathrm{i} Z_{-k}^*) &= \frac{1}{2} (-\mathrm{i} X_k + Y_k + \mathrm{i} (X_{-k} + Y_{-k})^*) = \frac{1}{2} (-\mathrm{i} X_k + Y_k + \mathrm{i} X_k + Y_k) \\
+\frac{1}{2} (-\mathrm{i} Z_k + \mathrm{i} Z_{-k}^*) &= Y_k
+\end {aligned}
+\end {equation}
 %
 \end{document}
