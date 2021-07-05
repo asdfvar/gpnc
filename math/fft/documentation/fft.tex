@@ -83,7 +83,7 @@ Re-writing (\ref{eq:xk}) and (\ref{eq:xksym}) together for convenience:
 
 With $N/2$ multiplies and $N/2 - 1$ adds from each of the smaller DFT's over $N/2$ points applied twice followed by an additional $N/2$ multiplies from the twiddle factors (on the outside of the sum terms) and $N$ adds between the two DFT's across all $k$ results in a total of $2 * N/2 * (N/2 + N/2 - 1) + N/2 + N$ or $N^2 + N/2$ add/multiplies roughly halving the number of operations ($2 N^2 - N \rightarrow N^2 + N/2 = (2 N^2 - N) / 2 + N$).
 
-Defining $F_n : \mathbb{Z} \mapsto (\mathbb{Z}, \mathbb{Z})$ to be the mapping from the number of points to the number of complex (multiply, adds) of the DFT at decimation $n$. At no decimation,
+Defining $F_n : \mathbb{W} \mapsto (\mathbb{W}, \mathbb{W})$ to be the mapping from the number of points to the number of complex (multiply, adds) of the DFT at decimation $n$. At no decimation,
 %
 \begin {equation} \label {eq:F0}
 F_0 (N) := (N^2, N^2 - N)
