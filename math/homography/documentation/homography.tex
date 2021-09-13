@@ -1,0 +1,78 @@
+\documentclass{article}
+\usepackage[in]{fullpage}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+%
+\begin{document}
+%
+% paper title
+\title {Homography}
+%\author{Craig~Euler}
+%
+\maketitle
+%
+\section {The Homography}
+%
+Words words words then
+%
+\begin {equation} \label {eq:homography}
+H = d R + t n^t
+\end {equation}
+%
+\section {Decomposition of the Homography}
+%
+The derivation of this decomposition is based on the paper ``Motion and Structure from Motion in a piecewise planar environment'' by Olivier Faugeras and Francis Lustman.
+
+Start by computing the components of the SVD of (\ref {eq:homography}) to obtain $H = U \Lambda V^t$. It follows that $\Lambda$ is also a homography with components:
+%
+\begin {equation} \label {eq:homography_p}
+\Lambda = d' R' + t' n'
+\end {equation}
+%
+where
+%
+\begin {equation}
+\begin {aligned}
+R &= s U R' V^t \\
+t &= U t' \\
+n &= V n' \\
+d &= s d' \\
+s &= det (U) det (V)
+\end {aligned}
+\end {equation}
+%
+Using the canonical basis $(e_1, e_2, e_3)$, $n' = x_1 e_1 + x_2 e_2 + x_3 e_3$, (\ref {eq:homography_p}) is written into its components:
+%
+\begin {equation} \label {eq:homography_components}
+d_i e_i = d' R' e_i + t' x_i
+\end {equation}
+%
+where $d_i$ is a component of the diagonal matrix $\Lambda$.
+Multiply equation $i$ of (\ref {eq:homography_components}) by $x_j$ and equation $j$ by $x_i$ and subtract to eliminate $t$ and obtain:
+%
+\begin {equation} \label {eq:eliminate_t}
+d' R' (x_j e_i - x_i e_j) = d_i x_j e_i - d_j x_i e_j.
+\end {equation}
+%
+Take the $L_2$ norm of (\ref {eq:eliminate_t}):
+%
+\begin {equation}
+||d' R' (x_j e_i - x_i e_j)||^2 = ||d_i x_j e_i - d_j x_i e_j||^2
+\end {equation}
+%
+Since $R'$ is a rotation and hence preserves the vector norm, it can be eliminated
+%
+\begin {equation}
+\begin {aligned}
+||d' (x_j e_i - x_i e_j)||^2 &= ||d_i x_j e_i - d_j x_i e_j||^2 \\
+d'^2 (x_j^2 + x_i^2) &= d_i^2 x_j^2 + d_j^2 x_i^2 \\
+\end {aligned}
+\end {equation}
+%
+Re-ordering the terms produces the system of equations:
+%
+\begin {equation}
+(d'^2 - d_j^2) x_i^2 + (d'^2 - d_i^2) x_j^2 = 0
+\end {equation}
+%
+\end{document}
