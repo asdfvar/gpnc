@@ -1,12 +1,12 @@
 #!/bin/bash
 
-$HOME/user_libs/openmpi/bin/mpirun   \
-   --mca orte_base_help_aggregate 0  \
-   -oversubscribe                    \
-   -n 1 module_0.exe  :              \
-   -n 1 module_1.exe  :              \
-   -n 2 module_2.exe  :              \
-   -n 12 module_3.exe :              \
-   -n 1 module_4.exe  :              \
-   -n 24 module_5.exe :              \
+$HOME/local/openmpi/v4.1.1/bin/mpirun \
+   --mca orte_base_help_aggregate 0   \
+   -oversubscribe                     \
+   -n 1 module_0.exe  :               \
+   -n 1 module_1.exe  :               \
+   -n 2 module_2.exe  :               \
+   -n 12 module_3.exe :               \
+   -n 1 module_4.exe  :               \
+   -n 24 module_5.exe :               \
 #
