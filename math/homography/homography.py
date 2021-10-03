@@ -120,7 +120,6 @@ def decompose_homography (H):
 
    d = []
    for el in range (4):
-      #d.append (np.mean (np.diag (np.matmul ((np.eye (3) * lamb - np.outer (tp[el], normalp[el].transpose ())), Rp[el].transpose ()))))
       dpRp = np.eye (3) * lamb - np.outer (tp[el], normalp[el])
       dpdiag = np.matmul (dpRp, Rp[el].transpose ())
       d.append (s * np.mean (np.diag (dpdiag)))

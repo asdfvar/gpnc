@@ -23,7 +23,7 @@ H = d R + t n^t
 %
 The derivation of this decomposition is based on the paper ``Motion and Structure from Motion in a piecewise planar environment'' by Olivier Faugeras and Francis Lustman.
 
-Start by computing the components of the SVD of (\eqref {eq:homography}) to obtain $H = U \Lambda V^t$. It follows that $\Lambda$ is also a homography with components:
+Start by computing the components of the SVD of \eqref {eq:homography} to obtain $H = U \Lambda V^t$. It follows that $\Lambda$ is also a homography with components:
 %
 \begin {equation} \label {eq:homography_p}
 \Lambda = d' R' + t' n'
@@ -35,37 +35,37 @@ where
 \begin {aligned}
 R &= s U R' V^t \\
 t &= U t' \\
-n &= V n' \\
+\hat {n} &= V \hat {n}' \\
 d &= s d' \\
 s &= det (U) det (V)
 \end {aligned}
 \end {equation}
 %
-Using the canonical basis $(e_1, e_2, e_3)$, $n' = x_1 e_1 + x_2 e_2 + x_3 e_3$, (\eqref {eq:homography_p}) is written into its components:
+Using the canonical basis $(e_1, e_2, e_3)$, $\hat {n}' = \hat{n}'_1 e_1 + \hat{n}'_2 e_2 + \hat{n}'_3 e_3$, \eqref {eq:homography_p} is written into its components:
 %
 \begin {equation} \label {eq:homography_components}
-d_i e_i = d' R' e_i + t' x_i
+\lambda_i e_i = d' R' e_i + t' \hat{n}'_i
 \end {equation}
 %
-where $d_i$ is a component of the diagonal matrix $\Lambda$.
-Multiply equation $i$ of (\eqref {eq:homography_components}) by $x_j$ and equation $j$ by $x_i$ and subtract to eliminate $t$ and obtain:
+where $\lambda_i$ is a component of the diagonal matrix $\Lambda$.
+Multiply equation $i$ of \eqref {eq:homography_components} by $\hat{n}'_j$ and equation $j$ by $\hat{n}'_i$ and subtract to eliminate $t$ and obtain:
 %
 \begin {equation} \label {eq:eliminate_t}
-d' R' (x_j e_i - x_i e_j) = d_i x_j e_i - d_j x_i e_j.
+d' R' (\hat{n}'_j e_i - \hat{n}'_i e_j) = \lambda_i \hat{n}'_j e_i - \lambda_j \hat{n}'_i e_j.
 \end {equation}
 %
-Take the $L_2$ norm of (\eqref {eq:eliminate_t}):
+Take the $L_2$ norm of \eqref {eq:eliminate_t}:
 %
 \begin {equation}
-||d' R' (x_j e_i - x_i e_j)||^2 = ||d_i x_j e_i - d_j x_i e_j||^2
+||d' R' (\hat{n}'_j e_i - \hat{n}'_i e_j)||^2 = ||\lambda_i \hat{n}'_j e_i - \lambda_j \hat{n}'_i e_j||^2
 \end {equation}
 %
 Since $R'$ is a rotation and hence preserves the vector norm, it can be eliminated
 %
 \begin {equation}
 \begin {aligned}
-||d' (x_j e_i - x_i e_j)||^2 &= ||d_i x_j e_i - d_j x_i e_j||^2 \\
-d'^2 (x_j^2 + x_i^2) &= d_i^2 x_j^2 + d_j^2 x_i^2
+||d' (\hat{n}'_j e_i - \hat{n}'_i e_j)||^2 &= ||\lambda_i \hat{n}'_j e_i - \lambda_j \hat{n}'_i e_j||^2 \\
+d'^2 (\hat{n}'^2_j + \hat{n}'^2_i) &= \lambda_i^2 \hat{n}'^2_j + \lambda^2_j \hat{n}'^2_i
 \end {aligned}
 \end {equation}
 %
@@ -73,26 +73,28 @@ Re-ordering the terms produces the system of equations:
 %
 \begin {equation}
 \label {eq:system_of_equations}
-(d'^2 - d_j^2) x_i^2 + (d'^2 - d_i^2) x_j^2 = 0
+(d'^2 - \lambda_j^2) \hat{n}'^2_i + (d'^2 - \lambda_i^2) \hat{n}'^2_j = 0
 \end {equation}
 %
 which means that the determinant must be zero:
 %
 \begin {equation}
-(d'^2 - d_1^2) (d'^2 - d_2^2) (d'^2 - d_3^2) = 0.
+(d'^2 - \lambda_1^2) (d'^2 - \lambda_2^2) (d'^2 - \lambda_3^2) = 0.
 \end {equation}
 %
-Because $d_1 > d_2 > d_3$ and (\eqref {eq:system_of_equations}), it follows that $d' = \pm d_2$.
+Because $\lambda_1 > \lambda_2 > \lambda_3$ and \eqref {eq:system_of_equations}, it follows that $d' = \pm \lambda_2$.
 %
-Using the fact that $n'$ has a unit norm and (\eqref {eq:system_of_equations}), it follows that
+Using the fact that $n'$ has a unit norm and \eqref {eq:system_of_equations}, it follows that
 %
 \begin {equation}
 \label {eq:normal}
+\left \{
 \begin {aligned}
-x_1 &= \epsilon_1 \sqrt {\frac {d_1^2 - d_2^2}{d_1^2 - d_3^2}} \\
-x_2 &= 0 \\
-x_3 &= \epsilon_3 \sqrt {\frac {d_2^2 - d_3^2}{d_1^2 - d_3^2}}
+\hat{n}'_1 &= \epsilon_1 \sqrt {\frac {\lambda_1^2 - \lambda_2^2}{\lambda_1^2 - \lambda_3^2}} \\
+\hat{n}'_2 &= 0 \\
+\hat{n}'_3 &= \epsilon_3 \sqrt {\frac {\lambda_2^2 - \lambda_3^2}{\lambda_1^2 - \lambda_3^2}}
 \end {aligned}
+\right.
 \end {equation}
 %
 where $\epsilon_1, \epsilon_3 = \pm 1$.
@@ -101,9 +103,10 @@ where $\epsilon_1, \epsilon_3 = \pm 1$.
 \textbf {Case $d' > 0$:}
 
 \noindent
-because $x_2 = 0$ and $d' = d_2$, if follows from from \eqref {eq:homography_components} that $R' e_2 = e_2$ and so $R'$ is a rotation matrix about $e_2$:
+because $\hat{n}'_2 = 0$ and $d' = \lambda_2$, if follows from from \eqref {eq:homography_components} that $R' e_2 = e_2$ and so $R'$ is a rotation matrix about $e_2$:
 %
 \begin {equation}
+R' =
 \begin {pmatrix}
 cos \theta & 0 & -sin \theta \\
 0          & 1 &    0        \\
@@ -115,19 +118,19 @@ Using \eqref {eq:eliminate_t} and \eqref {eq:normal},
 %
 \begin {equation}
 \begin {aligned}
-sin \theta &= (d_1 - d_3) \frac {x_1 x_3} {d_2} \\
-cos \theta &= \frac {d_1 x_3^2 + d_3 x_1^2} {d_2}
+sin \theta &= (\lambda_1 - \lambda_3) \frac {\hat{n}'_1 \hat{n}'_3} {\lambda_2} \\
+cos \theta &= \frac {\lambda_1 \hat{n}'^2_3 + \lambda_3 \hat{n}'^2_1} {\lambda_2}
 \end {aligned}
 \end {equation}
 %
 substituting the appropriate values into \eqref {eq:homography_components} yeilds
 %
 \begin {equation}
-t' = (d_1 - d_3)
+t' = (\lambda_1 - \lambda_3)
 \begin {pmatrix}
-x_1 \\
+\hat{n}'_1 \\
 0 \\
--x_3 \\
+-\hat{n}'_3 \\
 \end {pmatrix}
 \end {equation}
 
@@ -138,6 +141,7 @@ x_1 \\
 Then $R' e_2 = -e_2$ and so $R'$ can be written as
 %
 \begin {equation}
+R' =
 \begin {pmatrix}
 cos \phi &  0 &  sin \phi \\
 0        & -1 &  0        \\
@@ -149,19 +153,19 @@ with
 %
 \begin {equation}
 \begin {aligned}
-sin \phi &= \frac {d_1 + d_3} {d_2} x_1 x_3 \\
-cos \phi &= \frac {d_3 x_1^2 - d_1 x_3^2} {d_2}
+sin \phi &= \frac {\lambda_1 + \lambda_3} {\lambda_2} \hat{n}'_1 \hat{n}'_3 \\
+cos \phi &= \frac {\lambda_3 \hat{n}'^2_1 - \lambda_1 \hat{n}'^2_3} {\lambda_2}
 \end {aligned}
 \end {equation}
 %
 And, similar to the process before,
 %
 \begin {equation}
-t' = (d_1 + d_3)
+t' = (\lambda_1 + \lambda_3)
 \begin {pmatrix}
-x_1 \\
+\hat{n}'_1 \\
 0 \\
-x_3
+\hat{n}'_3
 \end {pmatrix}
 \end {equation}
 %
