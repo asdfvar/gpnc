@@ -526,7 +526,7 @@ namespace comm {
          if (found)
          {
             // create the new request if it doesn't already exist for this rank
-            while (sendStageRank >= receiveFromStageRequests[tagIndex].size()) {
+            while (sendStageRank >= receiveFromStageRequests[sendStage][tagIndex].size()) {
                receiveFromStageRequests[sendStage][tagIndex].push_back (new MPI_Request);
             }
 
