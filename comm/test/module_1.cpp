@@ -9,17 +9,24 @@ int main (int argc, char *argv[])
 
    float *array = new float[4];
 
-   Comm.receive_from_stage (
-      array, // data
-      4,     // data size
-      0,     // sending stage
-      0,     // sending stage rank
-      0);    // tag
+   int tag = 0;
 
-   Comm.wait_for_receive_from_stage (
-      0,     // sending stage
-      0,     // sending stage rank
-      0);    // tag
+   for (int itt = 0; itt < 20; itt++)
+   {
+      Comm.receive_from_stage (
+            array, // data
+            4,     // data size
+            0,     // sending stage
+            0,     // sending stage rank
+            tag);  // tag
+
+      Comm.wait_for_receive_from_stage (
+            0,     // sending stage
+            0,     // sending stage rank
+            tag);  // tag
+   }
+
+   tag++;
 
    std::cout << __FILE__ << ": received data: ";
    for (int ind = 0; ind < 4; ind++)
@@ -37,12 +44,12 @@ int main (int argc, char *argv[])
       4,     // data size
       0,     // receive stage
       0,     // receive stage rank
-      1);    // tag
+      tag);  // tag
 
    Comm.wait_for_send_to_stage (
       0,     // receive stage
       0,     // receive stage rank
-      1);    // tag
+      tag);  // tag
 
    delete[] array;
 
