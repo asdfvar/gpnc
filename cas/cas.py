@@ -27,7 +27,7 @@ class Variable:
    def __str__ (self):
       return str (self.value)
 
-class Addition:
+class Operation:
    def __init__ (self, term1, term2):
       self.terms = list()
       if isinstance (term1, Addition):
@@ -38,6 +38,8 @@ class Addition:
          self.terms += term2.terms
       else:
          self.terms.append (term2)
+
+class Addition (Operation):
 
    def evaluate (self):
 
@@ -74,16 +76,14 @@ class Addition:
       else:
          return components
 
-class Multiplication:
-   def __init__ (self, term1, term2):
-      self.terms = list()
-      self.terms.append (term1)
-      self.terms.append (term2)
+class Multiplication (Operation):
+
    def evaluate (self):
       ret = None
       if isinstance (self.terms[0], Number) and isinstance (self.terms[1], Number):
          ret = Number (self.terms[0] * self.terms[1])
       return ret
+
    def __str__ (self):
       return str (self.terms[0]) + " * " + str (self.terms[1])
 
