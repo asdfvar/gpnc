@@ -24,10 +24,14 @@ class Variable:
    def __init__ (self, value):
       self.value = value
 
+   def __eq__ (self, other):
+      return self.value == other.value
+
    def __str__ (self):
       return str (self.value)
 
-class Operation:
+class Addition:
+
    def __init__ (self, term1, term2):
       self.terms = list()
       if isinstance (term1, Addition):
@@ -39,17 +43,15 @@ class Operation:
       else:
          self.terms.append (term2)
 
-class Addition (Operation):
-
    def evaluate (self):
 
       # Sum all the Numbered terms of the list of terms
-      sum_terms = Number (0)
+      sum_term = Number (0)
       terms = copy.copy (self.terms)
       while len (terms) > 0:
          term = terms.pop ()
          if isinstance (term, Number):
-            sum_terms += term
+            sum_term += term
 
       # Remove all existing Numbers from the list of terms
       ind = 0
@@ -60,8 +62,8 @@ class Addition (Operation):
          ind += 1
 
       # Append the final summed Number to the end of the list of terms
-      if not sum_terms.is_empty ():
-         self.terms.append (Number (sum_terms))
+      if not sum_term.is_empty ():
+         self.terms.append (Number (sum_term))
 
    def __str__ (self):
       components = None
@@ -76,7 +78,18 @@ class Addition (Operation):
       else:
          return components
 
-class Multiplication (Operation):
+class Multiplication:
+
+   def __init__ (self, term1, term2):
+      self.terms = list()
+      if isinstance (term1, Multiplication):
+         self.terms += term1.terms
+      else:
+         self.terms.append (term1)
+      if isinstance (term2, Multiplication):
+         self.terms += term2.terms
+      else:
+         self.terms.append (term2)
 
    def evaluate (self):
       ret = None
