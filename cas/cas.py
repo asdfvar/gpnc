@@ -77,8 +77,9 @@ if __name__ == "__main__":
    op = OperationBi (Variable (7), Variable (5), '+')
    op = OperationBi (op, Variable (100), '+')
    op  = OperationBi (op, Variable ('a'), '+')
-   op  = OperationBi (op, OperationBi (Variable (4), Variable (5), '*'), '+')
-   op  = OperationBi (op, Variable (7), '+')
+   op1 = OperationBi (Variable (4), Variable (5), '*')
+   op2 = OperationBi (op1, Variable (5), '+')
+   op  = OperationBi (op, op2, '+')
 
    print ("binary operand consists of " + str (op))
    result = op.evaluate ()
