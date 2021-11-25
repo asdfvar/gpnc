@@ -7,9 +7,6 @@ class Variable:
       self.coef = coef
       self.exp  = exp
 
-   def __eq__ (self, other):
-      return self.term == other.term and self.exp == other.exp
-
    def __str__ (self):
       return str (self.term)
 
