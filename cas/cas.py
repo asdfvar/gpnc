@@ -21,7 +21,7 @@ class Variable:
          ret = Addition (self, other)
       return ret
 
-   def __mult__ (self, other):
+   def __mul__ (self, other):
       ret = None
       if isinstance (self.term, type (other.term)):
          if isinstance (self.term, int) or isinstance (self.term, float) or isinstance (self.term, complex):
@@ -64,14 +64,20 @@ class Addition:
       inda = 0
       while inda < len (self.terms):
          indb = inda + 1
-         while indb < len (self.terms):
-            while type (self.terms[inda].term) == type (self.terms[indb].term):
-               self.terms[inda] += self.terms[indb]
-               self.terms.pop (indb)
-               if indb >= len (self.terms): break
-            indb += 1
+         if isinstance (self.terms[inda], Addition):
+            self.terms[inda].evaluate ()
+         elif isinstance (self.terms[inda], Multiplication):
+            self.terms[inda].evaluate ()
+         else:
+            while indb < len (self.terms):
+               while isinstance (self.terms[inda], Variable) and \
+                     isinstance (self.terms[indb], Variable) and \
+                     type (self.terms[inda].term) == type (self.terms[indb].term):
+                  self.terms[inda] += self.terms[indb]
+                  self.terms.pop (indb)
+                  if indb >= len (self.terms): break
+               indb += 1
          inda += 1
-      print ()
 
    def __str__ (self):
       components = None
@@ -100,45 +106,36 @@ class Multiplication:
          self.terms.append (term2)
 
    def evaluate (self):
-
-      # Collect all Variable terms in the list of terms
-      variable_terms = list ()
-      for term in self.terms:
-         if isinstance (term, Variable):
-            variable_terms.append (term)
-
-      # Remove all existing Variables from the list of terms
-      ind = 0
-      while ind < len (self.terms):
-         if isinstance (self.terms[ind], Variable):
-            self.terms.pop (ind)
-            ind -= 1
-         ind += 1
-
-      # Coalesce like variable terms from the list of Variables
-
-      # Multiply all the Numbered terms of the list of terms
-      prod_term = Variable (1)
-      terms = copy.copy (self.terms)
-      while len (terms) > 0:
-         term = terms.pop ()
-         if isinstance (term, Variable):
-            prod_term *= term
-
-      # Remove all existing Numbers from the list of terms
-      ind = 0
-      while ind < len (self.terms):
-         if isinstance (self.terms[ind], Variable):
-            self.terms.pop (ind)
-            ind -= 1
-         ind += 1
-
-      # Prepend the final product Variable to the list of terms
-      if not prod_term.is_multiplicative_id ():
-         self.terms.insert (0, Variable (prod_term))
+      inda = 0
+      while inda < len (self.terms):
+         indb = inda + 1
+         if isinstance (self.terms[inda], Addition):
+            self.terms[inda].evaluate ()
+         elif isinstance (self.terms[inda], Multiplication):
+            self.terms[inda].evaluate ()
+         else:
+            while indb < len (self.terms):
+               while isinstance (self.terms[inda], Variable) and \
+                     isinstance (self.terms[indb], Variable) and \
+                     type (self.terms[inda].term) == type (self.terms[indb].term):
+                  self.terms[inda] *= self.terms[indb]
+                  self.terms.pop (indb)
+                  if indb >= len (self.terms): break
+               indb += 1
+         inda += 1
 
    def __str__ (self):
-      return str (self.terms[0]) + " * " + str (self.terms[1])
+      components = None
+      for term in self.terms:
+         if components is None:
+            components = str (term)
+         else:
+            components += " * " + str (term)
+
+      if components is None:
+         return ""
+      else:
+         return components
 
 if __name__ == "__main__":
    op1 = Addition (Variable (7), Variable (5))
@@ -146,6 +143,7 @@ if __name__ == "__main__":
    op  = Addition (op1, op2)
    op  = Addition (op, Variable ('a'))
    op  = Addition (op, Variable (7))
+   op  = Addition (op, Multiplication (Variable (4), Variable (5)))
 
    print ("binary operand consists of " + str (op))
    op.evaluate ()
