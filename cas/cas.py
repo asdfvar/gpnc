@@ -14,21 +14,26 @@ class Number:
       if isinstance (other, Number):
          ret = Number (other.value * self.value)
       return ret
-   def is_empty (self):
+   def is_addative_id (self):
       if self.value == 0: return True
+      return False
+   def is_multiplicative_id (self):
+      if self.value == 1: return True
       return False
    def __str__ (self):
       return str (self.value)
 
 class Variable:
-   def __init__ (self, value):
-      self.value = value
+   def __init__ (self, coef, term, exp):
+      self.coef = coef
+      self.term = term
+      self.exp  = exp
 
    def __eq__ (self, other):
-      return self.value == other.value
+      return self.term == other.term and self.exp == other.exp
 
    def __str__ (self):
-      return str (self.value)
+      return str (self.term)
 
 class Addition:
 
@@ -61,8 +66,8 @@ class Addition:
             ind -= 1
          ind += 1
 
-      # Append the final summed Number to the end of the list of terms
-      if not sum_term.is_empty ():
+      # Append the final summed Number to the list of terms
+      if not sum_term.is_addative_id ():
          self.terms.append (Number (sum_term))
 
    def __str__ (self):
@@ -92,10 +97,42 @@ class Multiplication:
          self.terms.append (term2)
 
    def evaluate (self):
-      ret = None
-      if isinstance (self.terms[0], Number) and isinstance (self.terms[1], Number):
-         ret = Number (self.terms[0] * self.terms[1])
-      return ret
+
+      # Collect all Variable terms in the list of terms
+      variable_terms = list ()
+      for term in self.terms:
+         if isinstance (term, Variable):
+            variable_terms.append (term)
+
+      # Remove all existing Variables from the list of terms
+      ind = 0
+      while ind < len (self.terms):
+         if isinstance (self.terms[ind], Variable):
+            self.terms.pop (ind)
+            ind -= 1
+         ind += 1
+
+      # Coalesce like variable terms from the list of Variables
+
+      # Multiply all the Numbered terms of the list of terms
+      prod_term = Number (1)
+      terms = copy.copy (self.terms)
+      while len (terms) > 0:
+         term = terms.pop ()
+         if isinstance (term, Number):
+            prod_term *= term
+
+      # Remove all existing Numbers from the list of terms
+      ind = 0
+      while ind < len (self.terms):
+         if isinstance (self.terms[ind], Number):
+            self.terms.pop (ind)
+            ind -= 1
+         ind += 1
+
+      # Prepend the final product Number to the list of terms
+      if not prod_term.is_multiplicative_id ():
+         self.terms.insert (0, Number (prod_term))
 
    def __str__ (self):
       return str (self.terms[0]) + " * " + str (self.terms[1])
