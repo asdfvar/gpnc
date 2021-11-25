@@ -17,6 +17,8 @@ class Variable:
             ret = Variable (other.term + self.term)
          elif self.term == other.term and self.exp == other.exp:
             ret = Variable (self.term, self.coef + other.coef)
+      else:
+         ret = Addition (self, other)
       return ret
 
    def __mult__ (self, other):
@@ -59,26 +61,17 @@ class Addition:
          self.terms.append (term2)
 
    def evaluate (self):
-
-      # Sum all the Numbered terms of the list of terms
-      sum_term = Variable (0)
-      terms = copy.copy (self.terms)
-      while len (terms) > 0:
-         term = terms.pop ()
-         if isinstance (term, Variable):
-            sum_term += term
-
-      # Remove all existing Numbers from the list of terms
-      ind = 0
-      while ind < len (self.terms):
-         if isinstance (self.terms[ind], Variable):
-            self.terms.pop (ind)
-            ind -= 1
-         ind += 1
-
-      # Append the final summed Variable to the list of terms
-      if not sum_term.is_addative_id ():
-         self.terms.append (Variable (sum_term))
+      inda = 0
+      while inda < len (self.terms):
+         indb = inda + 1
+         while indb < len (self.terms):
+            while type (self.terms[inda].term) == type (self.terms[indb].term):
+               self.terms[inda] += self.terms[indb]
+               self.terms.pop (indb)
+               if indb >= len (self.terms): break
+            indb += 1
+         inda += 1
+      print ()
 
    def __str__ (self):
       components = None
@@ -148,12 +141,12 @@ class Multiplication:
       return str (self.terms[0]) + " * " + str (self.terms[1])
 
 if __name__ == "__main__":
-   seven = Variable (7)
-   five  = Variable (5)
-   summ = seven + five
-   print ("sum of numbers " + str (seven) + " and " + str (five) + " is " + str (summ))
+   op1 = Addition (Variable (7), Variable (5))
+   op2 = Addition (Variable (11), Variable (100))
+   op  = Addition (op1, op2)
+   op  = Addition (op, Variable ('a'))
+   op  = Addition (op, Variable (7))
 
-   op = Addition (seven, five)
    print ("binary operand consists of " + str (op))
    op.evaluate ()
    print ("Which evaluates to " + str (op))
