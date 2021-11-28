@@ -104,6 +104,32 @@ def AdditionMany (terms):
 
    return new_terms
 
+def MultiplicationMany (terms):
+
+   accounted = np.ones (len (terms), dtype = 'bool')
+
+   # Multiply the numbered values
+   new_terms = list ()
+   value = 1
+   for ind in range (len (terms)):
+      if isValue (terms[ind]):
+         value *= terms[ind]
+         accounted[ind] = False
+   new_terms.append (value)
+
+   # Multiply the variable values
+   for inda in range (len (terms)):
+      if isinstance (terms[inda], Variable) and accounted[inda]:
+         term = terms[inda]
+         for indb in range (inda + 1, len (terms)):
+            if isinstance (terms[indb], Variable):
+               if terms[inda].term == terms[indb].term:
+                  term *= terms[indb]
+                  accounted[indb] = False
+         new_terms.append (term)
+
+   return new_terms
+
 if __name__ == "__main__":
    op = OperationBi (Variable (7), Variable (5), '+')
    op = OperationBi (op, Variable (100), '+')
@@ -118,5 +144,10 @@ if __name__ == "__main__":
 
    terms = [7, 5, -4, Variable ('a'), Variable ('b'), 3.14, Variable ('b', 3)]
    new_terms = AdditionMany (terms)
+   for term in new_terms: print (term)
 
+   print ()
+
+   terms = [7, 5, -4, Variable ('a'), Variable ('b'), 3.14, Variable ('b', 3)]
+   new_terms = MultiplicationMany (terms)
    for term in new_terms: print (term)
