@@ -1,41 +1,8 @@
 #!/usr/bin/python3
-import numpy as np
+import math
 
-class Variable:
-   def __init__ (self, term, coef = 1, exp = 1):
-      self.term = term
-      self.coef = coef
-      self.exp  = exp
-
-   def __str__ (self):
-      return str (self.term)
-
-   def __add__ (self, other):
-      ret = None
-      if isinstance (self.term, type (other.term)):
-         if self.term == other.term and self.exp == other.exp:
-            ret = Variable (self.term, self.coef + other.coef)
-      else:
-         ret = OperationBi (self, other, '+')
-      return ret
-
-   def __mul__ (self, other):
-      ret = None
-      if isinstance (self.term, type (other.term)):
-         if self.term == other.term:
-            ret = Variable (self.term, self.coef * other.coef, self.exp + other.exp)
-      else:
-         ret = OperationBi (self, other, '*')
-      return ret
-
-   def __str__ (self):
-      components = ""
-      if self.coef != 1:
-         components += str (self.coef) + "*"
-      components += str (self.term)
-      if self.exp != 1:
-         components += "^" + str (self.exp)
-      return components
+def isValue (term):
+   return isinstance (term, int) or isinstance (term, float) or isinstance (term, complex)
 
 class OperationBi:
 
@@ -44,107 +11,95 @@ class OperationBi:
       self.term2 = term2
       self.Type  = Type
 
-   def evaluate (self):
+   def reduce (self):
 
-      if isinstance (self.term1, OperationBi):
-         self.term1 = self.term1.evaluate ()
-      if isinstance (self.term2, OperationBi):
-         self.term2 = self.term2.evaluate ()
+      if isinstance (self.term1, type (self)):
+         self.term1 = self.term1.reduce ()
+      if isinstance (self.term2, type (self)):
+         self.term2 = self.term2.reduce ()
 
-      if isinstance (self.term1, Variable) and isinstance (self.term2, Variable):
+      # If one of the terms is a known number, ensure that the first term is set to one of the
+      # known numbers to reduce the set of possible permutations downstream
+      if isValue (self.term2):
+         self.term1, self.term2 = self.term2, self.term1
+
+      # Apply the operation directly if the two terms are known values
+      if isValue (self.term1) and isValue (self.term2):
          if self.Type == '+':
             return self.term1 + self.term2
-         if self.Type == '*':
+         elif self.Type == '*':
             return self.term1 * self.term2
+         elif self.Type == '/':
+            return self.term1 / self.term2
+         elif self.Type == '^':
+            return self.term1 ** self.term2
+         else:
+            print ("Unrecognized type " + str (self.Type))
+            return None
 
-      elif isValue (self.term1) and isValue (self.term2):
-         if self.Type == '+':
-            return self.term1 + self.term2
-         if self.Type == '*':
-            return self.term1 * self.term2
+      # Handle a*x + b*x -> (a + b)*x for known numbers 'a' and 'b', and unknown 'x'
+      if isinstance (self.term1, type (self)) and isinstance (self.term2, type (self)):
+         if isValue (self.term1.term1) and isValue (self.term2.term1) and \
+            self.term1.term2 == self.term2.term2:
+            if self.Type == '+' and self.term1.type == '*' and self.term2.type == '*':
+               return OperationBi (self.term1.term1 + self.term2.term1, self.term1.term2, '*')
+
+      # Handle a + (b + x) -> (a + b) + x for known numbers 'a' and 'b', and unknown 'x'
+      if isValue (self.term1) and isinstance (self.term2, type (self)):
+         if isValue (self.term2.term1) and isinstance (self.term2.term2, type (str ())) and \
+             self.term2.Type == '+':
+            return OperationBi (self.term1 + self.term2.term1, self.term2.term2, '+')
 
       return self
+
+   def rationalize (self):
+
+      if isinstance (self.term1, type (self)):
+         self.term1 = self.term1.rationalize ()
+      if isinstance (self.term2, type (self)):
+         self.term2 = self.term2.rationalize ()
+
+      if isinstance (self.term1, float):
+         term = self.term1
+         num = math.floor (term)
+         den = 1
+         while num != term:
+            term *= 10
+            num = math.floor (term)
+            den *= 10
+         self.term1 = OperationBi (num, den, '/')
+
+      if isinstance (self.term2, float):
+         term = self.term2
+         num = math.floor (term)
+         den = 1
+         while num != term:
+            term *= 10
+            num = math.floor (term)
+            den *= 10
+         self.term2 = OperationBi (num, den, '/')
 
    def __str__ (self):
       if self.Type == '+':
          return "(" + str (self.term1) + " + " + str (self.term2) + ")"
       if self.Type == '*':
          return "(" + str (self.term1) + " * " + str (self.term2) + ")"
+      if self.Type == '/':
+         return "(" + str (self.term1) + " / " + str (self.term2) + ")"
+      if self.Type == '^':
+         return "(" + str (self.term1) + " ^ " + str (self.term2) + ")"
       return None
-
-def isValue (term):
-   return isinstance (term, int) or isinstance (term, float) or isinstance (term, complex)
-
-def AdditionMany (terms):
-
-   accounted = np.ones (len (terms), dtype = 'bool')
-
-   # Add up the numbered values
-   new_terms = list ()
-   value = 0
-   for ind in range (len (terms)):
-      if isValue (terms[ind]):
-         value += terms[ind]
-         accounted[ind] = False
-   new_terms.append (value)
-
-   # Add up the variable values
-   for inda in range (len (terms)):
-      if isinstance (terms[inda], Variable) and accounted[inda]:
-         term = terms[inda]
-         for indb in range (inda + 1, len (terms)):
-            if isinstance (terms[indb], Variable):
-               if terms[inda].term == terms[indb].term and terms[inda].exp == terms[indb].exp:
-                  term += terms[indb]
-                  accounted[indb] = False
-         new_terms.append (term)
-
-   return new_terms
-
-def MultiplicationMany (terms):
-
-   accounted = np.ones (len (terms), dtype = 'bool')
-
-   # Multiply the numbered values
-   new_terms = list ()
-   value = 1
-   for ind in range (len (terms)):
-      if isValue (terms[ind]):
-         value *= terms[ind]
-         accounted[ind] = False
-   new_terms.append (value)
-
-   # Multiply the variable values
-   for inda in range (len (terms)):
-      if isinstance (terms[inda], Variable) and accounted[inda]:
-         term = terms[inda]
-         for indb in range (inda + 1, len (terms)):
-            if isinstance (terms[indb], Variable):
-               if terms[inda].term == terms[indb].term:
-                  term *= terms[indb]
-                  accounted[indb] = False
-         new_terms.append (term)
-
-   return new_terms
 
 if __name__ == "__main__":
    op = OperationBi (7, 5, '+')
    op = OperationBi (op, 100, '+')
-   op  = OperationBi (op, Variable ('a'), '+')
-   op1 = OperationBi (4, 5, '*')
+   op  = OperationBi (op, 'a', '+')
+   op1 = OperationBi (4.3, 5, '*')
    op2 = OperationBi (op1, 5, '+')
    op  = OperationBi (op, op2, '+')
 
    print ("binary operand consists of " + str (op))
-   result = op.evaluate ()
+   result = op.reduce ()
    print ("Which evaluates to " + str (result))
-
-   terms = [7, 5, -4, Variable ('a'), Variable ('b'), 3.14, Variable ('b', 3)]
-   new_terms = AdditionMany (terms)
-   for term in new_terms: print (term)
-
-   print ()
-
-   terms = [7, 5, -4, Variable ('a'), Variable ('b'), 3.14, Variable ('b', 3)]
-   new_terms = MultiplicationMany (terms)
-   for term in new_terms: print (term)
+   result.rationalize ()
+   print ("Which rationalizes to " + str (result))
