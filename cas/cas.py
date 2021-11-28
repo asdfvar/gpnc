@@ -59,6 +59,19 @@ class OperationBi:
       if isinstance (self.term2, type (self)):
          self.term2 = self.term2.rationalize ()
 
+      def prime_factors (number):
+         factor = 2
+         factors = list ()
+         while factor**2 <= number:
+            if number % factor:
+               factor += 1
+            else:
+               number //= factor
+               factors.append (factor)
+         if number > 1:
+            factors.append (number)
+         return factors
+
       if isinstance (self.term1, float):
          term = self.term1
          num = math.floor (term)
@@ -67,6 +80,14 @@ class OperationBi:
             term *= 10
             num = math.floor (term)
             den *= 10
+
+         num_factors = prime_factors (num)
+         den_factors = prime_factors (den)
+         for factor in den_factors:
+            if factor in num_factors:
+               num //= factor
+               den //= factor
+
          self.term1 = OperationBi (num, den, '/')
 
       if isinstance (self.term2, float):
@@ -77,6 +98,14 @@ class OperationBi:
             term *= 10
             num = math.floor (term)
             den *= 10
+
+         num_factors = prime_factors (num)
+         den_factors = prime_factors (den)
+         for factor in den_factors:
+            if factor in num_factors:
+               num //= factor
+               den //= factor
+
          self.term2 = OperationBi (num, den, '/')
 
    def __str__ (self):
