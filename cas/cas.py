@@ -7,20 +7,13 @@ class Variable:
       self.coef = coef
       self.exp  = exp
 
-   def isValue (self):
-      return isinstance (self.term, int    ) or \
-             isinstance (self.term, float  ) or \
-             isinstance (self.term, complex)
-
    def __str__ (self):
       return str (self.term)
 
    def __add__ (self, other):
       ret = None
       if isinstance (self.term, type (other.term)):
-         if self.isValue ():
-            ret = Variable (other.term + self.term)
-         elif self.term == other.term and self.exp == other.exp:
+         if self.term == other.term and self.exp == other.exp:
             ret = Variable (self.term, self.coef + other.coef)
       else:
          ret = OperationBi (self, other, '+')
@@ -29,9 +22,7 @@ class Variable:
    def __mul__ (self, other):
       ret = None
       if isinstance (self.term, type (other.term)):
-         if self.isValue ():
-            ret = Variable (other.term * self.term)
-         elif self.term == other.term:
+         if self.term == other.term:
             ret = Variable (self.term, self.coef * other.coef, self.exp + other.exp)
       else:
          ret = OperationBi (self, other, '*')
@@ -61,6 +52,12 @@ class OperationBi:
          self.term2 = self.term2.evaluate ()
 
       if isinstance (self.term1, Variable) and isinstance (self.term2, Variable):
+         if self.Type == '+':
+            return self.term1 + self.term2
+         if self.Type == '*':
+            return self.term1 * self.term2
+
+      elif isValue (self.term1) and isValue (self.term2):
          if self.Type == '+':
             return self.term1 + self.term2
          if self.Type == '*':
@@ -131,11 +128,11 @@ def MultiplicationMany (terms):
    return new_terms
 
 if __name__ == "__main__":
-   op = OperationBi (Variable (7), Variable (5), '+')
-   op = OperationBi (op, Variable (100), '+')
+   op = OperationBi (7, 5, '+')
+   op = OperationBi (op, 100, '+')
    op  = OperationBi (op, Variable ('a'), '+')
-   op1 = OperationBi (Variable (4), Variable (5), '*')
-   op2 = OperationBi (op1, Variable (5), '+')
+   op1 = OperationBi (4, 5, '*')
+   op2 = OperationBi (op1, 5, '+')
    op  = OperationBi (op, op2, '+')
 
    print ("binary operand consists of " + str (op))
