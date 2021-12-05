@@ -52,14 +52,50 @@ class OperationBi:
 
       # Handle (x + y)^n -> (x + y) * (x + y)^(n-1) for integer 'n'
       if self.Type == '^':
-         if isinstance (self.term2, int) and self.term2 > 1 and self.term1.Type == '+':
-            # term1 = (x + y)
-            # term2 = n
-            self.term2 = OperationBi (self.term1, self.term2 - 1, '^')
-            self.term2 = self.term2.expand ()
-            return OperationBi (self.term1, self.term2, '*')
-         elif self.term2 == 1:
-            return self.term1
+         if isinstance (self.term1, type (self)):
+            if isinstance (self.term2, int) and self.term2 > 1 and self.term1.Type == '+':
+               # term1 = (x + y)
+               # term2 = n
+               term2 = OperationBi (self.term1, self.term2 - 1, '^')
+               term2 = term2.expand ()
+               term = OperationBi (self.term1, term2, '*')
+               term = term.expand ()
+               return term
+            elif self.term2 == 1:
+               return self.term1
+
+      # Handle (a + b)*(x + y) -> a*x + a*y + b*x + b*y
+      if self.Type == '*':
+         if isinstance (self.term1, type (self)) and isinstance (self.term2, type (self)):
+            if self.term1.Type == '+' and self.term2.Type == '+':
+               # (a*x) + (a*y) + (b*x) + (b*y) correspond to parts
+               #  (1),    (2),    (3), and (4) respectively
+               part1 = OperationBi (self.term1.term1, self.term2.term1, '*')
+               part1 = part1.expand ()
+               part2 = OperationBi (self.term1.term1, self.term2.term2, '*')
+               part2 = part2.expand ()
+               part3 = OperationBi (self.term1.term2, self.term2.term1, '*')
+               part3 = part3.expand ()
+               part4 = OperationBi (self.term1.term2, self.term2.term2, '*')
+               part4 = part4.expand ()
+               # ((a*x) + (a*y)) + ((b*x) + (b*y)) correspond to parts
+               #       (1)      and      (2)       respectively
+               part1 = OperationBi (part1, part2, '+')
+               part1 = part1.expand ()
+               part2 = OperationBi (part3, part4, '+')
+               part2 = part2.expand ()
+               term1 = part1
+               term2 = part2
+               term = OperationBi (term1, term2, '+')
+               term = term.expand ()
+               return term
+
+      # Handle x*x -> x^2
+      if self.Type == '*':
+         if self.term1 == self.term2:
+            term = OperationBi (self.term1, 2, '^')
+            term = term.expand ()
+            return term
 
       return self
 
@@ -123,11 +159,11 @@ class OperationBi:
       if self.Type == '+':
          return "(" + str (self.term1) + " + " + str (self.term2) + ")"
       if self.Type == '*':
-         return "(" + str (self.term1) + " * " + str (self.term2) + ")"
+         return "(" + str (self.term1) + "*" + str (self.term2) + ")"
       if self.Type == '/':
-         return "(" + str (self.term1) + " / " + str (self.term2) + ")"
+         return "(" + str (self.term1) + "/" + str (self.term2) + ")"
       if self.Type == '^':
-         return "(" + str (self.term1) + " ^ " + str (self.term2) + ")"
+         return "(" + str (self.term1) + "^" + str (self.term2) + ")"
       return None
 
 if __name__ == "__main__":
