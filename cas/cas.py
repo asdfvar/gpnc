@@ -11,16 +11,16 @@ class OperationBi:
       self.term2 = term2
       self.Type  = Type
 
-   def reduce (self):
+   def expand (self):
 
       if isinstance (self.term1, type (self)):
-         self.term1 = self.term1.reduce ()
+         self.term1 = self.term1.expand ()
       if isinstance (self.term2, type (self)):
-         self.term2 = self.term2.reduce ()
+         self.term2 = self.term2.expand ()
 
       # If one of the terms is a known number, ensure that the first term is set to one of the
       # known numbers to reduce the set of possible permutations downstream
-      if isValue (self.term2):
+      if isValue (self.term2) and (self.Type == '+' or self.Type == '*'):
          self.term1, self.term2 = self.term2, self.term1
 
       # Apply the operation directly if the two terms are known values
@@ -49,6 +49,17 @@ class OperationBi:
          if isValue (self.term2.term1) and isinstance (self.term2.term2, type (str ())) and \
              self.term2.Type == '+':
             return OperationBi (self.term1 + self.term2.term1, self.term2.term2, '+')
+
+      # Handle (x + y)^n -> (x + y) * (x + y)^(n-1) for integer 'n'
+      if self.Type == '^':
+         if isinstance (self.term2, int) and self.term2 > 1 and self.term1.Type == '+':
+            # term1 = (x + y)
+            # term2 = n
+            self.term2 = OperationBi (self.term1, self.term2 - 1, '^')
+            self.term2 = self.term2.expand ()
+            return OperationBi (self.term1, self.term2, '*')
+         elif self.term2 == 1:
+            return self.term1
 
       return self
 
@@ -128,7 +139,12 @@ if __name__ == "__main__":
    op  = OperationBi (op, op2, '+')
 
    print ("binary operand consists of " + str (op))
-   result = op.reduce ()
+   result = op.expand ()
    print ("Which evaluates to " + str (result))
    result.rationalize ()
    print ("Which rationalizes to " + str (result))
+
+   op = OperationBi ('x', 'y', '+')
+   op = OperationBi (op, 2, '^')
+   print (op)
+   print (op.expand ())
