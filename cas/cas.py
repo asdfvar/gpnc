@@ -23,6 +23,14 @@ class OperationBi:
       if isValue (self.term2) and (self.Type == '+' or self.Type == '*'):
          self.term1, self.term2 = self.term2, self.term1
 
+      # If both of the terms are variable terms, arrange them in alphabetical order
+      if self.Type == '+' or self.Type == '*':
+         if not isValue (self.term1) and not isValue (self.term2):
+            if not isinstance (self.term1, type (self)) and \
+               not isinstance (self.term2, type (self)):
+               if self.term1 > self.term2:
+                  self.term1, self.term2 = self.term2, self.term1
+
       # Apply the operation directly if the two terms are known values
       if isValue (self.term1) and isValue (self.term2):
          if self.Type == '+':
@@ -58,8 +66,8 @@ class OperationBi:
                # term2 = n
                term2 = OperationBi (self.term1, self.term2 - 1, '^')
                term2 = term2.expand ()
-               term = OperationBi (self.term1, term2, '*')
-               term = term.expand ()
+               term  = OperationBi (self.term1, term2, '*')
+               term  = term.expand ()
                return term
             elif self.term2 == 1:
                return self.term1
@@ -89,6 +97,13 @@ class OperationBi:
                term = OperationBi (term1, term2, '+')
                term = term.expand ()
                return term
+
+      # Handle x + x -> 2*x
+      if self.Type == '+':
+         if self.term1 == self.term2:
+            term = OperationBi (2, self.term1, '*')
+            term = term.expand ()
+            return term
 
       # Handle x*x -> x^2
       if self.Type == '*':
@@ -155,6 +170,12 @@ class OperationBi:
 
          self.term2 = OperationBi (num, den, '/')
 
+   def __eq__ (self, other):
+      if isValue (other):
+         return False
+      else:
+         return self.term1 == other.term1 and self.term2 == other.term2
+
    def __str__ (self):
       if self.Type == '+':
          return "(" + str (self.term1) + " + " + str (self.term2) + ")"
@@ -167,20 +188,14 @@ class OperationBi:
       return None
 
 if __name__ == "__main__":
-   op = OperationBi (7, 5, '+')
-   op = OperationBi (op, 100, '+')
-   op  = OperationBi (op, 'a', '+')
-   op1 = OperationBi (4.3, 5, '*')
-   op2 = OperationBi (op1, 5, '+')
-   op  = OperationBi (op, op2, '+')
+   op = OperationBi (OperationBi ('x', 'y', '+'), 2, '^')
+   print (str (op) + " --> " + str (op.expand ()))
 
-   print ("binary operand consists of " + str (op))
-   result = op.expand ()
-   print ("Which evaluates to " + str (result))
-   result.rationalize ()
-   print ("Which rationalizes to " + str (result))
+   op = OperationBi ('x', 'x', '+')
+   print (str (op) + " --> " + str (op.expand ()))
 
-   op = OperationBi ('x', 'y', '+')
-   op = OperationBi (op, 2, '^')
-   print (op)
-   print (op.expand ())
+   op = OperationBi ('y', 'x', '+')
+   print (str (op) + " --> " + str (op.expand ()))
+
+   op = OperationBi (OperationBi ('y', 'x', '*'), OperationBi ('x', 'y', '*'), '+')
+   print (str (op) + " --> " + str (op.expand ()))
