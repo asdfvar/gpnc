@@ -105,49 +105,56 @@ class complex
       complex operator+= (const complex& c)
       {
          *this = *this + c;
+         return *this;
       }
 
       complex operator-= (const complex& c)
       {
          *this = *this - c;
+         return *this;
       }
 
       complex operator*= (const complex& c)
       {
          *this = *this * c;
+         return *this;
       }
 
       complex operator/= (const complex& c)
       {
          *this = *this / c;
+         return *this;
       }
 
       complex operator+= (const dataType& c)
       {
          *this = *this + c;
+         return *this;
       }
 
       complex operator-= (const dataType& c)
       {
          *this = *this - c;
+         return *this;
       }
 
       complex operator*= (const dataType& c)
       {
          *this = *this * c;
+         return *this;
       }
 
       complex operator/= (const dataType& c)
       {
          *this = *this / c;
+         return *this;
       }
 
       friend std::ostream& operator<< (std::ostream& output, const complex& number)
       {
          output << number.real << " + " << number.imag << "i";
+         return output;
       }
-
-   private:
 
       dataType real;
       dataType imag;
