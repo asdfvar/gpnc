@@ -75,7 +75,6 @@ namespace fft {
             y[ind             ] = x[eind] + x[oind];
             y[ind + N/2*stride] = x[eind] - x[oind];
          }
-
       }
       else {
          // Compute the DFT
