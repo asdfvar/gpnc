@@ -16,7 +16,7 @@
 The Fast Fourier Transform (FFT) is a fast implementation of the Discrete Fourier Transform (DFT) where the DFT is defined as:
 %
 \begin {equation} \label {eq:dft}
-X_k = \sum_{p = 0}^{N-1} (x_p \omega^{k p})
+X_k = \sum_{p = 0}^{N-1} (x_p \omega_N^{k p})
 \end {equation}
 %
 where
@@ -35,7 +35,7 @@ $\forall x_p \in \mathbb {C}$. Having $N$ complex multiplies and $N-1$ complex a
 \end {aligned}
 \end {equation}
 %
-and symmetry (which is apparent on the unit circle)
+and symmetry (which, graphically, is apparent on the unit circle)
 %
 \begin {equation} \label {symmetry}
 \begin {aligned}
@@ -46,7 +46,7 @@ and symmetry (which is apparent on the unit circle)
 \end {aligned}
 \end {equation}
 %
-which means, from setting $p \rightarrow 2m$, splitting the sum over the even and odd terms, and using (\ref{half}),
+which means, from setting $p \rightarrow 2m$, splitting the sum over the even and odd terms, and using \eqref{half},
 %
 \begin {equation} \label {eq:xk}
 \begin {aligned}
@@ -58,7 +58,7 @@ X_k &= DFT_k(x_{even}; N/2) + \omega_N^{k} DFT_k(x_{odd}; N/2)
 \end {equation}
 %
 is now broken up into two smaller DFT's.
-Another observation, from using (\ref{symmetry}), symmetry is observed:
+Another observation, from using \eqref{symmetry}, symmetry is observed:
 %
 \begin {equation} \label {eq:xksym}
 \begin {aligned}
@@ -71,9 +71,9 @@ X_{k + N/2} &= DFT_k(x_{even}; N/2) - \omega_N^{k} DFT_k(x_{odd}; N/2).
 \end {aligned}
 \end {equation}
 %
-Re-writing (\ref{eq:xk}) and (\ref{eq:xksym}) together for convenience:
+Re-writing \eqref{eq:xk} and \eqref{eq:xksym} together for convenience:
 %
-\begin {equation}
+\begin {equation} \label {eq:kernel}
 \begin {aligned}
 &X_k         &= DFT_k(x_{even}; N/2) + \omega_N^{k} DFT_k(x_{odd}; N/2) \\
 &X_{k + N/2} &= DFT_k(x_{even}; N/2) - \omega_N^{k} DFT_k(x_{odd}; N/2).
@@ -89,7 +89,7 @@ Defining $F_n : \mathbb{W} \mapsto (\mathbb{W}, \mathbb{W})$ to be the mapping f
 F_0 (N) := (N^2, N^2 - N)
 \end {equation}
 %
-At each decimation $n$, there will be $2 F_{n-1}(N/2)$ smaller DFT's followed by $N/2$ multiplies and $N$ adds, or
+At each decimation $n$, there will be $2 F_{n-1}(N/2)$ from two smaller DFT's followed by $N/2$ multiplies and $N$ adds as a result of \eqref {eq:kernel}, or
 %
 \begin {equation} \label {eq:Fn}
 \begin {aligned}
@@ -103,7 +103,7 @@ Then, inductively repeating the number of ``decimations'', $F(N)$ reduces down t
 F_\alpha (N) = 2^\alpha F_0 (N/2^\alpha) + \alpha (N/2, N).
 \end {equation}
 %
-Expanding on (\ref{eq:Fa}) using (\ref{eq:F0}),
+Expanding on \eqref{eq:Fa} using \eqref{eq:F0},
 %
 \begin {equation}
 \begin {aligned}
@@ -123,11 +123,11 @@ F_\alpha (2^\alpha) &= 2^{\alpha} (1 + \alpha/2, \alpha).
 \end {aligned}
 \end {equation}
 %
-Notice that $log_2 (N = 2^\alpha) = \alpha$ showing that (\ref{eq:Fradix2}) is proportional to $N log_2 (N)$ for radix-$2$ values of $N$.
+Notice that $log_2 (N = 2^\alpha) = \alpha$ showing that \eqref{eq:Fradix2} is proportional to $N log_2 (N)$ for radix-$2$ values of $N$.
 %
 \section {Conjugate Symmetry}
 %
-Set $p := m + N/2 - 1$, then expressing (\ref{eq:dft}) in terms of $m$ becomes
+Set $p := m + N/2 - 1$, then expressing \eqref{eq:dft} in terms of $m$ becomes
 %
 \begin {equation} \label {eq:redef}
 \begin {aligned}
@@ -137,7 +137,7 @@ X_k &= \omega^{k (N/2 - 1)} \sum_{m = -N/2 + 1}^{N/2} (x_{m + N/2 - 1} \omega^{k
 \end {aligned}
 \end {equation}
 %
-Then, define $z_m := x_{m + N/2 - 1}$ so that (\ref{eq:redef}) becomes
+Then, define $z_m := x_{m + N/2 - 1}$ so that \eqref{eq:redef} becomes
 %
 \begin {equation}
 \begin {aligned}
@@ -175,7 +175,7 @@ As a result of conjugate symmetry, $\mathbb{R} \rightarrow \mathbb{C}$ transform
 
 One approach is to explicitly develop an FFT implementation that is aware of $\mathbb{R} \rightarrow \mathbb{C}$ transforms and only compute half the result effectively saving space and processing.
 However, there is an interesting trick.
-Starting from the definition of the DFT (\ref{eq:dft}) and multiplexing two real, independent data arrays $\{x\},\{y\} \in \mathbb{R}^n$ into $\{z\} \in \mathbb{C}^n$ such that $z_i = x_i + \mathrm {i} y_i$ $\forall x_i,y_i \in X,Y$:
+Starting from the definition of the DFT \eqref{eq:dft} and multiplexing two real, independent data arrays $\{x\},\{y\} \in \mathbb{R}^n$ into $\{z\} \in \mathbb{C}^n$ such that $z_i = x_i + \mathrm {i} y_i$ $\forall x_i,y_i \in X,Y$:
 %
 \begin {equation}
 \begin {aligned}
