@@ -152,7 +152,7 @@ class complex
 
       friend std::ostream& operator<< (std::ostream& output, const complex& number)
       {
-         output << number.real << " + " << number.imag << "i";
+         output << number.real << " + " << number.imag << "j";
          return output;
       }
 
