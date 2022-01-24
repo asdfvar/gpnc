@@ -1,12 +1,14 @@
-CC = g++
+AR = ar rcs
 
 OBJS = fft.o
 
+LIB = libfft.a
+
 all: $(OBJS)
-	$(CC) $^ -lm -o fft
+	$(AR) $(LIB) $^
 
 clean:
-	rm -fv $(OBJS) fft
+	rm -fv $(OBJS) $(LIB)
 
 %.o: %.cpp
 	$(CC) -I../ $^ -c
