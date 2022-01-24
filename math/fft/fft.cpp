@@ -48,9 +48,8 @@ namespace fft {
          const int       stride,
          const int       N)
    {
-      if (N % 2 == 0 && N > 2)
+      if (N % 2 == 0)
       {
-
          // FFT the evens
          fftc2c (x, y, w, 2*stride, N/2);
 
