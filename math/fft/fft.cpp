@@ -27,6 +27,20 @@ namespace fft {
       }
    }
 
+   void dftc2c (
+         complex<float>* x,
+         complex<float>* y,
+         const int       N)
+   {
+      complex<float>* w = new complex<float>[N];
+      fft::twiddle (w, N);
+
+      dftc2c (x, y, w, 1, N);
+
+      delete[] w;
+   }
+
+
    void fftc2c (
          complex<float>* x,
          complex<float>* y,
@@ -68,5 +82,18 @@ namespace fft {
          // Compute the DFT
          dftc2c (x, y, w, stride, N);
       }
+   }
+
+   void fftc2c (
+         complex<float>* x,
+         complex<float>* y,
+         const int       N)
+   {
+      complex<float>* w = new complex<float>[N];
+      fft::twiddle (w, N);
+
+      fftc2c (x, y, w, 1, N);
+
+      delete[] w;
    }
 }
