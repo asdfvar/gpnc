@@ -41,18 +41,11 @@ namespace fft {
          // FFT the evens
          fftc2c (x, y, w, 2*stride, N/2);
 
-         // Copy the result back into x for the evens
-         for (int ind = 0, count = 0; count < N/2; ind += 2*stride, count++)
-            x[ind] = y[ind];
-
          // FFT the odds
          fftc2c (x + stride, y + stride, w, 2*stride, N/2);
 
-//         // Copy the result back into x
-//         for (int ind = 0, count = 0; count < N; ind += stride, count++)
-//            x[ind] = y[ind];
-         // Copy the result back into x for the odds
-         for (int ind = stride, count = 0; count < N/2; ind += 2*stride, count++)
+         // Copy the result back into x
+         for (int ind = 0, count = 0; count < N; ind += stride, count++)
             x[ind] = y[ind];
 
          // Apply the twiddle factors to the odd terms
@@ -81,7 +74,7 @@ namespace fft {
 
 int main () {
 
-   const int N = 32;
+   const int N = 2*2*2*3;
    complex<float>* w = new complex<float>[N];
    fft::twiddle (w, N);
 
