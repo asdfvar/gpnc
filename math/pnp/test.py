@@ -10,7 +10,7 @@ import time
 random.seed (0)
 np.random.seed (0)
 
-N = 20
+N = 120
 
 # Define arbitrary points uniformly distributed in a [-1, 1) x [-1, 1) x [-1, 1) box
 P = np.random.rand (3, N) * 2.0 - 1.0
@@ -78,7 +78,7 @@ Re = R0
 
 # Iteratively solve for the rotation and translation
 start = time.time ()
-iterations = 1000
+iterations = 10000
 errors = np.zeros (iterations)
 for iteration in range (iterations):
    Re, te = pose_estimation.iterate (P, v, Re)
@@ -99,6 +99,8 @@ print ("The estimated translation:")
 print (te)
 print ("Absolute error in translation:")
 print (la.norm (te - t))
+print ("Orthogonal error in the estimate:")
+print (error)
 
 # Determine the points from the observer's perspective with the estimated parameters, Q:
 # Qe = Re*P + te
