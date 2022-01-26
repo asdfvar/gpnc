@@ -10,7 +10,7 @@ import time
 random.seed (0)
 np.random.seed (0)
 
-N = 120
+N = 20
 
 # Define arbitrary points uniformly distributed in a [-1, 1) x [-1, 1) x [-1, 1) box
 P = np.random.rand (3, N) * 2.0 - 1.0
@@ -53,10 +53,20 @@ print (pose_estimation.error (P, v, R, t))
 print ()
 
 # Perturb the rotation by a random amount within +/-90 degrees
-R0 = np.matmul (pose_estimation.rotation (
-      np.deg2rad (90.0 * (random.random () - 0.5)),
-      np.deg2rad (90.0 * (random.random () - 0.5)),
-      np.deg2rad (90.0 * (random.random () - 0.5))), R)
+theta_x = 90.0 * (random.random () * 2.0 - 1.0)
+theta_y = 90.0 * (random.random () * 2.0 - 1.0)
+theta_z = 90.0 * (random.random () * 2.0 - 1.0)
+print ()
+print (theta_x)
+print (theta_y)
+print (theta_z)
+print ()
+Roffset = pose_estimation.rotation (
+      np.deg2rad (theta_x),
+      np.deg2rad (theta_y),
+      np.deg2rad (theta_z))
+print ("Roffset = " + str (Roffset))
+R0 = np.matmul (Roffset, R)
 
 # Estimate the initial translation from the initial rotation estimate
 _, t0 = pose_estimation.iterate (P, v, R0)
@@ -78,29 +88,30 @@ Re = R0
 
 # Iteratively solve for the rotation and translation
 start = time.time ()
-iterations = 10000
+iterations = 10
 errors = np.zeros (iterations)
+angle_errors = np.zeros (iterations)
 for iteration in range (iterations):
+   b = np.matmul (Re, [0, 0, 1])
    Re, te = pose_estimation.iterate (P, v, Re)
    error = pose_estimation.error (P, v, Re, te)
    errors[iteration] = error
-#   print ("Orthogonal error after the " + str (iteration) + " iteration = " + str (error))
+   print ("Orthogonal error after the " + str (iteration) + " iteration = " + str (error))
+   a = np.matmul (R, [0, 0, 1])
+   angle_error = np.arccos (np.dot (a,b))
+   #print ("anglular error = " + str (np.rad2deg (angle_error)))
+   angle_errors[iteration] = angle_error
 end = time.time ()
 print ("time = " + str (end - start) + " seconds")
 print ()
 
-print ("The true rotation:")
-print (R)
-print ("The estimated rotation:")
-print (Re)
-print ("The true translation:")
-print (t)
-print ("The estimated translation:")
-print (te)
-print ("Absolute error in translation:")
-print (la.norm (te - t))
-print ("Orthogonal error in the estimate:")
-print (error)
+print ("The true rotation:");      print (R)
+print ("The estimated rotation:"); print (Re)
+print ("The true translation             = " + str (t))
+print ("The estimated translation        = " + str (te))
+print ("Absolute error in translation    = " + str (la.norm (te - t)))
+print ("Orthogonal error in the estimate = " + str (error) + " (" + str (error / N) + " normalized)")
+print ("angular error (degrees)          = " + str (np.rad2deg (angle_error)))
 
 # Determine the points from the observer's perspective with the estimated parameters, Q:
 # Qe = Re*P + te
@@ -110,5 +121,12 @@ Qe = np.matmul (Re, P) + te[:, np.newaxis]
 print ("Relative error |(Qe - Q) / |Q||:")
 print (la.norm ((Qe - Q) / la.norm (Q, axis = 0)))
 
-plt.plot (errors)
+plt.figure();
+plt.semilogy (errors)
+plt.title ("Orthogonal error")
+
+plt.figure();
+plt.semilogy (np.rad2deg (angle_errors))
+plt.title ("Angular error (degrees)")
+
 plt.show ()
