@@ -29,9 +29,8 @@ def error (P, v, R, t):
       Error += la.norm (np.matmul (term_1, term_2))**2
    return Error
 
-# Determine the initial translation estimate, ti, given the rotation
-# estimate, Ri, from the objective function which has a closed form
-# solution:
+# Determine the translation estimate, ti, given the rotation estimate, Ri, from the objective
+# function which has a closed form solution:
 # ti = 1/n * (I - 1/n * sum (Vi, i))^-1 * sum ((Vi - I) * Ri * pi, i)
 # where Vi is the projection matrix: Vi = (vi*vi^t)/(vi^t*vi)
 def translation (P, v, R):
@@ -71,7 +70,8 @@ def iterate (P, v, Ri):
 
    # Perform SVD of M = U * S * Vh
    U, S, Vh = la.svd (M)
-   R = np.matmul (U, Vh).transpose ()
+   #R = np.matmul (U, Vh).transpose ()
+   R = np.matmul (U, Vh)
 
    t = translation (P, v, R)
 
