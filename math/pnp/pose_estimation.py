@@ -48,15 +48,16 @@ def translation (P, v, Re):
 
    return te
 
-# Perform an iteration to improve the estimate of the rotation, R, and
-# translation, t, from an initial rotation estimate, Ri. Q = R*P + t defines
-# the points from the camera's point of view
+# Perform an iteration step of the orthogonal iteration algorithm to improve the estimate of the
+# rotation, R, and translation, t, from an initial rotation estimate, Ri
 def iterate (P, v, Ri):
 
    N = v.shape[1]
 
+   # Estimate the translation given this estimate of the rotation
    ti = translation (P, v, Ri)
 
+   # Compute the projected points, Q, given this estimate of the rotation and translation
    Q = np.matmul (Ri, P) + ti[:, np.newaxis]
    for ind in range (N):
       V = np.outer (v[:,ind], v[:,ind]) / np.dot (v[:,ind], v[:,ind])
@@ -75,6 +76,8 @@ def iterate (P, v, Ri):
 
    # Perform SVD of M = U * S * Vh
    U, S, Vh = la.svd (M)
+
+   # Update to the new rotation estimate
    R = np.matmul (U, Vh)
 
    return R

@@ -10,7 +10,7 @@ import time
 random.seed (0)
 np.random.seed (0)
 
-N = 20
+N = 200
 
 # Define arbitrary points uniformly distributed in a [-1, 1) x [-1, 1) x [-1, 1) box
 P = np.random.rand (3, N) * 2.0 - 1.0
@@ -88,20 +88,13 @@ Re = R0
 
 # Iteratively solve for the rotation and translation
 start = time.time ()
-iterations = 10
+iterations = 60
 errors = np.zeros (iterations)
-angle_errors = np.zeros (iterations)
 for iteration in range (iterations):
-   b = np.matmul (Re, [0, 0, 1])
    Re = pose_estimation.iterate (P, v, Re)
    te = pose_estimation.translation (P, v, Re)
    error = pose_estimation.error (P, v, Re, te)
    errors[iteration] = error
-   print ("Orthogonal error after the " + str (iteration) + " iteration = " + str (error))
-   a = np.matmul (R, [0, 0, 1])
-   angle_error = np.arccos (np.dot (a,b))
-   #print ("anglular error = " + str (np.rad2deg (angle_error)))
-   angle_errors[iteration] = angle_error
 end = time.time ()
 print ("time = " + str (end - start) + " seconds")
 print ()
@@ -112,7 +105,6 @@ print ("The true translation             = " + str (t))
 print ("The estimated translation        = " + str (te))
 print ("Absolute error in translation    = " + str (la.norm (te - t)))
 print ("Orthogonal error in the estimate = " + str (error) + " (" + str (error / N) + " normalized)")
-print ("angular error (degrees)          = " + str (np.rad2deg (angle_error)))
 
 # Determine the points from the observer's perspective with the estimated parameters, Q:
 # Qe = Re*P + te
@@ -125,9 +117,5 @@ print (la.norm ((Qe - Q) / la.norm (Q, axis = 0)))
 plt.figure();
 plt.semilogy (errors)
 plt.title ("Orthogonal error")
-
-plt.figure();
-plt.semilogy (np.rad2deg (angle_errors))
-plt.title ("Angular error (degrees)")
 
 plt.show ()
