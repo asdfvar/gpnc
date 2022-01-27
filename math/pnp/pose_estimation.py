@@ -77,6 +77,4 @@ def iterate (P, v, Ri):
    U, S, Vh = la.svd (M)
    R = np.matmul (U, Vh)
 
-   t = translation (P, v, R)
-
-   return R, t
+   return R

@@ -69,7 +69,7 @@ print ("Roffset = " + str (Roffset))
 R0 = np.matmul (Roffset, R)
 
 # Estimate the initial translation from the initial rotation estimate
-_, t0 = pose_estimation.iterate (P, v, R0)
+t0 = pose_estimation.translation (P, v, R0)
 
 # Determine the points from the observer's perspective with the estimated parameters, Q:
 # Qe = Re*P + te
@@ -93,7 +93,8 @@ errors = np.zeros (iterations)
 angle_errors = np.zeros (iterations)
 for iteration in range (iterations):
    b = np.matmul (Re, [0, 0, 1])
-   Re, te = pose_estimation.iterate (P, v, Re)
+   Re = pose_estimation.iterate (P, v, Re)
+   te = pose_estimation.translation (P, v, Re)
    error = pose_estimation.error (P, v, Re, te)
    errors[iteration] = error
    print ("Orthogonal error after the " + str (iteration) + " iteration = " + str (error))
